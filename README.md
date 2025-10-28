@@ -4,16 +4,6 @@ This repository contains my solved **LeetCode** problems, organized by difficult
 
 ---
 
-## Table of Contents
-
-- [Repository Structure](#repository-structure)  
-- [Getting Started](#getting-started)  
-- [Usage](#usage)  
-- [Contributing](#contributing)  
-- [License](#license)  
-
----
-
 ## Repository Structure
 
 ```
