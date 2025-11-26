@@ -1,0 +1,307 @@
+================================================================================
+LINKED LIST CYCLE - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given head, the head of a linked list, determine if the linked list has a cycle 
+in it.
+
+There is a cycle in a linked list if there is some node in the list that can be 
+reached again by continuously following the next pointer. Internally, pos is 
+used to denote the index of the node that tail's next pointer is connected to. 
+Note that pos is not passed as a parameter.
+
+Return true if there is a cycle in the linked list. Otherwise, return false.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: head = [3,2,0,-4], pos = 1
+  Output: true
+  Explanation: There is a cycle in the linked list, where the tail connects to 
+  the 1st node (0-indexed).
+
+Example 2:
+  Input: head = [1,2], pos = 0
+  Output: true
+  Explanation: There is a cycle in the linked list, where the tail connects to 
+  the 0th node.
+
+Example 3:
+  Input: head = [1], pos = -1
+  Output: false
+  Explanation: There is no cycle in the linked list.
+
+CONSTRAINTS:
+------------
+- The number of the nodes in the list is in the range [0, 10^4]
+- -10^5 <= Node.val <= 10^5
+- pos is -1 or a valid index in the linked-list
+
+Follow-up: Can you solve it using O(1) memory?
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Detecting cycle without modifying list
+2. Achieving O(1) space (follow-up)
+3. Handling empty list and single node
+4. Avoiding infinite loop
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Floyd's Cycle Detection (Two Pointers) ✓ OPTIMAL
+1. Initialize slow and fast pointers at head
+2. Move slow one step, fast two steps
+3. If they meet, cycle exists
+4. If fast reaches null, no cycle
+
+Approach 2: Hash Set
+1. Create set to store visited nodes
+2. Traverse list
+3. If node already in set, cycle exists
+4. If reach null, no cycle
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Floyd's Cycle Detection (Tortoise and Hare):
+---------------------------------------------
+Use two pointers moving at different speeds.
+
+Key insight: If there's a cycle, fast pointer will eventually catch up to slow 
+pointer inside the cycle.
+
+Example with cycle:
+  3 → 2 → 0 → -4
+      ↑________↓
+
+slow starts at 3, fast starts at 3
+
+Step 1: slow=2, fast=0
+Step 2: slow=0, fast=2
+Step 3: slow=-4, fast=-4  ← They meet! Cycle detected
+
+Example without cycle:
+  1 → 2 → 3 → null
+
+slow=1, fast=1
+slow=2, fast=3
+slow=3, fast=null  ← Fast reached end, no cycle
+
+Why It Works:
+-------------
+If there's a cycle:
+- Both pointers eventually enter the cycle
+- Fast pointer is ahead of slow inside cycle
+- Fast gains one position per iteration
+- Eventually fast catches slow
+
+Distance between them decreases by 1 each step, so they must meet.
+
+Hash Set Approach:
+------------------
+Track visited nodes. If we see a node twice, there's a cycle.
+
+Example:
+  3 → 2 → 0 → -4 → (back to 2)
+  
+visited = {}
+Visit 3: add to set
+Visit 2: add to set
+Visit 0: add to set
+Visit -4: add to set
+Visit 2: already in set! → cycle detected
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Floyd's Cycle Detection ✓ OPTIMAL
+def hasCycle(head):
+    slow, fast = head, head
+    
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        
+        if slow == fast:
+            return True
+    
+    return False
+
+
+# Approach 2: Hash Set
+def hasCycle_hashset(head):
+    visited = set()
+    current = head
+    
+    while current:
+        if current in visited:
+            return True
+        visited.add(current)
+        current = current.next
+    
+    return False
+
+
+# LeetCode Solution Class Format
+class Solution:
+    def hasCycle(self, head: Optional[ListNode]) -> bool:
+        slow, fast = head, head
+        
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+            
+            if slow == fast:
+                return True
+        
+        return False
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: Floyd's Cycle Detection
+------------------------------------
+Time Complexity: O(n)
+  - If no cycle: fast reaches end in n/2 steps
+  - If cycle: slow and fast meet within n steps
+  - Total: O(n)
+
+Space Complexity: O(1)
+  - Only using two pointers
+  - Total: O(1) ✓ MEETS FOLLOW-UP
+
+Approach 2: Hash Set
+--------------------
+Time Complexity: O(n)
+  - Visit each node at most once
+  - Set operations are O(1)
+  - Total: O(n)
+
+Space Complexity: O(n)
+  - Set stores up to n nodes
+  - Total: O(n)
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Cycle Exists
+  Input: head = [3,2,0,-4], pos = 1
+  Output: true
+  ✓ Tail connects to node at index 1
+
+Test Case 2: Cycle at Head
+  Input: head = [1,2], pos = 0
+  Output: true
+  ✓ Tail connects to head
+
+Test Case 3: No Cycle
+  Input: head = [1], pos = -1
+  Output: false
+  ✓ Single node, no cycle
+
+Test Case 4: Empty List
+  Input: head = null
+  Output: false
+  ✓ Empty list has no cycle
+
+Test Case 5: Two Nodes No Cycle
+  Input: head = [1,2], pos = -1
+  Output: false
+  ✓ Linear list
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Floyd's Cycle Detection ✓ RECOMMENDED
+--------------------------------------------------
+Two pointers at different speeds.
+
+Pros:
+  - O(n) time, O(1) space
+  - Meets follow-up requirement
+  - Elegant algorithm
+  - No modification of list
+
+Cons:
+  - Less intuitive than hash set
+
+Approach 2: Hash Set
+--------------------
+Track visited nodes.
+
+Pros:
+  - Very intuitive
+  - Easy to implement
+  - O(n) time
+
+Cons:
+  - O(n) space - violates follow-up
+  - Not optimal
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Not Checking fast.next
+   ❌ while fast: fast.next.next causes error
+   ✓ while fast and fast.next
+
+2. Wrong Initial Positions
+   ❌ Starting slow and fast at different nodes
+   ✓ Both start at head
+
+3. Infinite Loop
+   ❌ Not checking for null in cycle
+   ✓ Proper while condition
+
+4. Modifying List
+   ❌ Changing node values or pointers
+   ✓ Use two pointers without modification
+
+5. Not Handling Empty List
+   ❌ Assuming head is not null
+   ✓ Handle head == null case
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Floyd's algorithm is optimal: O(n) time, O(1) space
+2. Two pointers at different speeds detect cycles
+3. Fast pointer moves twice as fast as slow
+4. If cycle exists, pointers will meet
+5. Must check fast and fast.next before accessing
+6. Classic linked list cycle detection problem
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Linked List Cycle II (Medium) - Find cycle start
+- Happy Number (Easy) - Similar cycle detection
+- Find the Duplicate Number (Medium) - Cycle detection
+- Intersection of Two Linked Lists (Easy) - Two pointer technique
+- Remove Linked List Elements (Easy) - Linked list manipulation
+- Reverse Linked List (Easy) - Linked list basics
+
+
+================================================================================

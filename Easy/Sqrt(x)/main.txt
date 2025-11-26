@@ -1,0 +1,345 @@
+================================================================================
+SQRT(X) - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given a non-negative integer x, return the square root of x rounded down to the 
+nearest integer. The returned integer should be non-negative as well.
+
+You must not use any built-in exponent function or operator.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: x = 4
+  Output: 2
+  Explanation: The square root of 4 is 2.
+
+Example 2:
+  Input: x = 8
+  Output: 2
+  Explanation: The square root of 8 is 2.82842..., and since we round it down 
+  to the nearest integer, 2 is returned.
+
+CONSTRAINTS:
+------------
+- 0 <= x <= 2^31 - 1
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Cannot use built-in sqrt() or ** operator
+2. Must round down to integer
+3. Handling edge cases (0, 1)
+4. Achieving efficient solution
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Binary Search (Optimal)
+1. Handle edge cases: if x < 2, return x
+2. Set left = 0, right = x
+3. Binary search for largest num where num² ≤ x
+4. Return the result
+
+Approach 2: Newton's Method (From original code)
+1. Start with initial guess x_n = x/2
+2. Iterate: x_n+1 = 0.5 * (x_n + x/x_n)
+3. Continue until convergence
+4. Return integer part
+
+Approach 3: Linear Search (Not Optimal)
+1. Try each number from 0 to x
+2. Return largest i where i² ≤ x
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Binary Search Approach:
+-----------------------
+We're looking for the largest integer whose square is ≤ x.
+Binary search can find this efficiently in O(log x) time.
+
+Search space: [0, x]
+Condition: num² ≤ x
+
+Example: x = 8
+-----------
+left=0, right=8
+
+mid=4: 4²=16 > 8, search left (right=3)
+mid=1: 1²=1 < 8, search right (left=2)
+mid=2: 2²=4 < 8, search right (left=3)
+mid=3: 3²=9 > 8, search left (right=2)
+
+left > right, return 2
+
+Newton's Method:
+----------------
+Iterative formula: x_n+1 = 0.5 * (x_n + x/x_n)
+
+This converges to √x very quickly (quadratic convergence).
+
+Example: x = 8, start with x_n = 4
+  x_1 = 0.5 * (4 + 8/4) = 0.5 * 6 = 3
+  x_2 = 0.5 * (3 + 8/3) = 0.5 * 5.67 = 2.83
+  x_3 = 0.5 * (2.83 + 8/2.83) ≈ 2.828
+  
+Converges to 2.828..., return int(2.828) = 2
+
+Why Binary Search is Better:
+-----------------------------
+- Guaranteed O(log x) time
+- No floating point arithmetic
+- Simpler to understand
+- More predictable
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Binary Search ✓ RECOMMENDED
+def mySqrt_binary(x):
+    if x < 2:
+        return x
+    
+    left, right = 0, x
+    
+    while left <= right:
+        mid = (left + right) // 2
+        square = mid * mid
+        
+        if square == x:
+            return mid
+        elif square < x:
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    # Return right (largest num where num² ≤ x)
+    return right
+
+
+# Optimized: Reduce search space
+def mySqrt_optimized(x):
+    if x < 2:
+        return x
+    
+    # sqrt(x) can't be more than x/2 for x >= 2
+    left, right = 1, x // 2
+    
+    while left <= right:
+        mid = (left + right) // 2
+        square = mid * mid
+        
+        if square == x:
+            return mid
+        elif square < x:
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    return right
+
+
+# Approach 2: Newton's Method (From original)
+class Solution(object):
+    def mySqrt(self, x):
+        if x <= 1:
+            return x
+        
+        x_n = 0.5 * x  # Initial guess
+        change = 1
+        
+        while change > 0.0001:  # Convergence threshold
+            next_n = 0.5 * (x_n + x / x_n)
+            change = abs(x_n - next_n)
+            x_n = next_n
+        
+        return int(x_n)
+
+
+# LeetCode Solution Class Format
+class Solution:
+    def mySqrt(self, x: int) -> int:
+        if x < 2:
+            return x
+        
+        left, right = 1, x // 2
+        
+        while left <= right:
+            mid = (left + right) // 2
+            square = mid * mid
+            
+            if square == x:
+                return mid
+            elif square < x:
+                left = mid + 1
+            else:
+                right = mid - 1
+        
+        return right
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: Binary Search
+--------------------------
+Time Complexity: O(log x)
+  - Binary search halves search space each iteration
+  - Maximum iterations: log₂(x)
+  - Total: O(log x)
+
+Space Complexity: O(1)
+  - Only using a few variables
+  - Total: O(1)
+
+Approach 2: Newton's Method
+----------------------------
+Time Complexity: O(log x)
+  - Quadratic convergence
+  - Very fast in practice
+  - Total: O(log x)
+
+Space Complexity: O(1)
+  - Only using a few variables
+  - Total: O(1)
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Perfect Square
+  Input: x = 4
+  Output: 2
+  ✓ 2² = 4
+
+Test Case 2: Not Perfect Square
+  Input: x = 8
+  Output: 2
+  ✓ 2² = 4 < 8, 3² = 9 > 8
+
+Test Case 3: Zero
+  Input: x = 0
+  Output: 0
+  ✓ √0 = 0
+
+Test Case 4: One
+  Input: x = 1
+  Output: 1
+  ✓ √1 = 1
+
+Test Case 5: Large Perfect Square
+  Input: x = 16
+  Output: 4
+  ✓ 4² = 16
+
+Test Case 6: Large Non-Perfect
+  Input: x = 100
+  Output: 10
+  ✓ 10² = 100
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Binary Search ✓ RECOMMENDED
+----------------------------------------
+Search for largest num where num² ≤ x.
+
+Pros:
+  - O(log x) time, O(1) space
+  - No floating point issues
+  - Guaranteed correct
+  - Easy to understand
+
+Cons:
+  - Requires binary search knowledge
+
+Approach 2: Newton's Method
+----------------------------
+Iterative convergence to √x.
+
+Pros:
+  - Very fast convergence
+  - Elegant mathematical approach
+  - O(log x) time
+
+Cons:
+  - Uses floating point arithmetic
+  - Requires understanding calculus
+  - Convergence threshold needed
+
+Approach 3: Built-in (Not Allowed)
+-----------------------------------
+Use int(x ** 0.5) or int(math.sqrt(x)).
+
+Pros:
+  - One-liner
+  - Very simple
+
+Cons:
+  - Not allowed by problem
+  - Defeats purpose of problem
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Using Built-in Functions
+   ❌ Using ** or math.sqrt()
+   ✓ Implement from scratch
+
+2. Integer Overflow
+   ❌ mid * mid might overflow in other languages
+   ✓ Python handles big integers automatically
+
+3. Wrong Return Value
+   ❌ Returning left instead of right
+   ✓ Return right (largest valid value)
+
+4. Not Handling Edge Cases
+   ❌ Not checking x < 2
+   ✓ Handle 0 and 1 separately
+
+5. Floating Point Precision
+   ❌ Relying on exact floating point comparison
+   ✓ Use integer arithmetic or proper threshold
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Binary search works for finding square root
+2. Search for largest num where num² ≤ x
+3. Can optimize search space to [1, x/2] for x >= 2
+4. Newton's method provides fast convergence
+5. Integer arithmetic avoids floating point issues
+6. Return `right` pointer after binary search
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Valid Perfect Square (Easy) - Check if perfect square
+- Pow(x, n) (Medium) - Power calculation
+- Search Insert Position (Easy) - Similar binary search
+- Guess Number Higher or Lower (Easy) - Binary search variant
+- Find Peak Element (Medium) - Binary search application
+- Kth Smallest Element in a Sorted Matrix (Medium) - Binary search
+
+
+================================================================================

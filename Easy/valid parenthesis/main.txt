@@ -1,0 +1,332 @@
+================================================================================
+VALID PARENTHESES - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', 
+determine if the input string is valid.
+
+An input string is valid if:
+1. Open brackets must be closed by the same type of brackets.
+2. Open brackets must be closed in the correct order.
+3. Every close bracket has a corresponding open bracket of the same type.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: s = "()"
+  Output: true
+
+Example 2:
+  Input: s = "()[]{}"
+  Output: true
+
+Example 3:
+  Input: s = "(]"
+  Output: false
+
+Example 4:
+  Input: s = "([)]"
+  Output: false
+
+Example 5:
+  Input: s = "{[]}"
+  Output: true
+
+CONSTRAINTS:
+------------
+- 1 <= s.length <= 10^4
+- s consists of parentheses only '()[]{}'
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Matching opening and closing brackets correctly
+2. Ensuring correct nesting order
+3. Handling mismatched or extra brackets
+4. Efficient bracket matching
+
+ALGORITHM STEPS:
+----------------
+Using Stack Data Structure:
+1. Create empty stack
+2. Create mapping of opening to closing brackets
+3. For each character in string:
+   a. If opening bracket: push to stack
+   b. If closing bracket:
+      - If stack is empty: return false (no matching opening)
+      - Pop from stack and check if it matches
+      - If doesn't match: return false
+4. After loop, return true if stack is empty, false otherwise
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Why Stack Works:
+----------------
+Stack follows Last-In-First-Out (LIFO) principle, which perfectly matches
+the nesting behavior of parentheses. The most recent opening bracket should
+be closed first.
+
+Example: "{[]}"
+  - '{' opens → must be closed last
+  - '[' opens → must be closed before '}'
+  - ']' closes '[' ✓
+  - '}' closes '{' ✓
+
+Stack Walkthrough: s = "()[]{}"
+-----------------------------------
+pairs = {'(': ')', '{': '}', '[': ']'}
+
+i=0: '(' → opening bracket, push to stack
+  stack = ['(']
+
+i=1: ')' → closing bracket
+  - stack not empty
+  - pop '(' from stack
+  - pairs['('] = ')' matches current ')' ✓
+  stack = []
+
+i=2: '[' → opening bracket, push to stack
+  stack = ['[']
+
+i=3: ']' → closing bracket
+  - pop '[' from stack
+  - pairs['['] = ']' matches ✓
+  stack = []
+
+i=4: '{' → opening bracket
+  stack = ['{']
+
+i=5: '}' → closing bracket
+  - pop '{' from stack
+  - pairs['{'] = '}' matches ✓
+  stack = []
+
+Final: stack is empty → return true
+
+
+Invalid Example: s = "([)]"
+----------------------------
+i=0: '(' → push, stack = ['(']
+i=1: '[' → push, stack = ['(', '[']
+i=2: ')' → closing bracket
+  - pop '[' from stack
+  - pairs['['] = ']' but current is ')' ✗
+  - return false
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Stack with Dictionary
+def isValid(s):
+    # Early return for odd length
+    if len(s) % 2 != 0:
+        return False
+    
+    stack = []
+    pairs = {'(': ')', '{': '}', '[': ']'}
+    
+    for bracket in s:
+        if bracket in pairs.keys():  # Opening bracket
+            stack.append(bracket)
+        else:  # Closing bracket
+            if not stack:  # No matching opening bracket
+                return False
+            if pairs[stack.pop()] != bracket:
+                return False
+    
+    return stack == []  # Stack should be empty
+
+
+# Approach 2: Stack with Reverse Mapping
+def isValid_v2(s):
+    if len(s) % 2 != 0:
+        return False
+    
+    stack = []
+    closing_to_opening = {')': '(', '}': '{', ']': '['}
+    
+    for char in s:
+        if char in closing_to_opening:  # Closing bracket
+            if not stack or stack.pop() != closing_to_opening[char]:
+                return False
+        else:  # Opening bracket
+            stack.append(char)
+    
+    return len(stack) == 0
+
+
+# LeetCode Solution Class Format
+class Solution:
+    def isValid(self, s: str) -> bool:
+        if len(s) % 2 != 0:
+            return False
+        
+        stack = []
+        pairs = {'(': ')', '{': '}', '[': ']'}
+        
+        for bracket in s:
+            if bracket in pairs:
+                stack.append(bracket)
+            else:
+                if not stack or pairs[stack.pop()] != bracket:
+                    return False
+        
+        return len(stack) == 0
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Time Complexity: O(n)
+  - Single pass through string: O(n)
+  - Each push/pop operation: O(1)
+  - Dictionary lookup: O(1)
+  - Total: O(n)
+
+Space Complexity: O(n)
+  - Stack can hold up to n/2 opening brackets
+  - Worst case: all opening brackets "((((("
+  - Total: O(n)
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Simple Valid
+  Input: s = "()"
+  Output: true
+  ✓ Single pair matches
+
+Test Case 2: Multiple Valid
+  Input: s = "()[]{}"
+  Output: true
+  ✓ Multiple pairs in sequence
+
+Test Case 3: Nested Valid
+  Input: s = "{[]}"
+  Output: true
+  ✓ Properly nested brackets
+
+Test Case 4: Wrong Type
+  Input: s = "(]"
+  Output: false
+  ✓ Mismatched bracket types
+
+Test Case 5: Wrong Order
+  Input: s = "([)]"
+  Output: false
+  ✓ Incorrect nesting order
+
+Test Case 6: Extra Closing
+  Input: s = "())"
+  Output: false
+  ✓ Extra closing bracket
+
+Test Case 7: Extra Opening
+  Input: s = "(()"
+  Output: false
+  ✓ Extra opening bracket
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Stack with Opening→Closing Map ✓ RECOMMENDED
+----------------------------------------------------------
+Map opening brackets to their closing counterparts.
+
+Pros:
+  - Clear and intuitive
+  - Easy to understand
+  - Efficient O(n) time
+
+Cons:
+  - Requires O(n) extra space for stack
+
+Approach 2: Stack with Closing→Opening Map
+-------------------------------------------
+Map closing brackets to their opening counterparts.
+
+Pros:
+  - Slightly cleaner logic
+  - Same efficiency as approach 1
+
+Cons:
+  - Less intuitive for some people
+
+Approach 3: Replace Pairs (Not Recommended)
+--------------------------------------------
+Repeatedly replace "()", "[]", "{}" with empty string.
+
+Pros:
+  - No explicit stack needed
+
+Cons:
+  - O(n²) time complexity
+  - Very inefficient
+  - Not acceptable for interviews
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Not Checking Empty Stack
+   ❌ Popping from empty stack causes error
+   ✓ Check if stack is empty before popping
+
+2. Forgetting Odd Length Check
+   ❌ Processing odd-length strings unnecessarily
+   ✓ Return false immediately for odd lengths
+
+3. Not Checking Final Stack
+   ❌ Returning true even if stack has leftover brackets
+   ✓ Return stack == [] or len(stack) == 0
+
+4. Wrong Dictionary Lookup
+   ❌ Checking closing bracket in opening bracket map
+   ✓ Use correct mapping direction
+
+5. Logic Error in Condition
+   ❌ if stack == [] and bracket != pairs[stack.pop()]
+   ✓ if not stack or pairs[stack.pop()] != bracket
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Stack is perfect for matching nested structures (LIFO)
+2. Dictionary provides O(1) bracket type matching
+3. Must check for empty stack before popping
+4. Odd-length strings are always invalid
+5. Final stack must be empty for valid parentheses
+6. Time complexity is O(n), space is O(n) for stack
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Generate Parentheses (Medium) - Generate valid combinations
+- Longest Valid Parentheses (Hard) - Find longest valid substring
+- Remove Invalid Parentheses (Hard) - Remove minimum to make valid
+- Minimum Add to Make Parentheses Valid (Medium) - Count additions needed
+- Minimum Remove to Make Valid Parentheses (Medium) - Remove to make valid
+- Check If Word Is Valid After Substitutions (Medium) - Similar validation
+
+
+================================================================================

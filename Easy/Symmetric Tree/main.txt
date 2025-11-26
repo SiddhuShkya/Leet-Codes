@@ -1,0 +1,309 @@
+================================================================================
+SYMMETRIC TREE - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given the root of a binary tree, check whether it is a mirror of itself (i.e., 
+symmetric around its center).
+
+EXAMPLES:
+---------
+Example 1:
+  Input: root = [1,2,2,3,4,4,3]
+  Output: true
+
+Example 2:
+  Input: root = [1,2,2,null,3,null,3]
+  Output: false
+
+CONSTRAINTS:
+------------
+- The number of nodes in the tree is in the range [1, 1000]
+- -100 <= Node.val <= 100
+
+Follow-up: Could you solve it both recursively and iteratively?
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Comparing left and right subtrees as mirrors
+2. Handling null nodes correctly
+3. Recursive vs iterative implementation
+4. Understanding mirror symmetry
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Recursive
+1. Helper function to check if two trees are mirrors
+2. Base case: both null → true
+3. If one null or values different → false
+4. Recursively check:
+   - left.left mirrors right.right
+   - left.right mirrors right.left
+
+Approach 2: Iterative (BFS)
+1. Use queue with pairs of nodes to compare
+2. For each pair, check if they're mirrors
+3. Add children in mirror order to queue
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Mirror Symmetry:
+----------------
+A tree is symmetric if left subtree is mirror of right subtree.
+
+For two trees to be mirrors:
+- Roots have same value
+- Left subtree of first mirrors right subtree of second
+- Right subtree of first mirrors left subtree of second
+
+Example: Symmetric Tree
+        1
+       / \
+      2   2
+     / \ / \
+    3  4 4  3
+
+Left subtree (2,3,4) mirrors right subtree (2,4,3):
+- Root values: 2 == 2 ✓
+- Left's left (3) == Right's right (3) ✓
+- Left's right (4) == Right's left (4) ✓
+
+Example: Not Symmetric
+        1
+       / \
+      2   2
+       \   \
+        3   3
+
+Left subtree has right child, right subtree has right child
+- Not mirror images ✗
+
+Recursive Approach:
+-------------------
+Compare left and right subtrees of root.
+
+Helper function isMirror(left, right):
+- If both null: true
+- If one null: false
+- If values different: false
+- Return: isMirror(left.left, right.right) AND 
+          isMirror(left.right, right.left)
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Recursive ✓ RECOMMENDED
+class Solution(object):
+    def isSymmetric(self, root):
+        def isMirror(left, right):
+            # Both null
+            if not left and not right:
+                return True
+            
+            # One null or values different
+            if not left or not right:
+                return False
+            
+            # Check values and recurse
+            return (left.val == right.val and 
+                    isMirror(left.left, right.right) and 
+                    isMirror(left.right, right.left))
+        
+        return isMirror(root.left, root.right)
+
+
+# From original code (similar logic)
+def isSymmetric_original(root):
+    def dfs(left, right):
+        if not left and not right:
+            return True
+        if not left or not right:
+            return False
+        if (left.val == right.val and 
+            dfs(left.left, right.right) and 
+            dfs(left.right, right.left)):
+            return True
+        return False
+    
+    return dfs(root.left, root.right)
+
+
+# Approach 2: Iterative (BFS)
+from collections import deque
+
+def isSymmetric_iterative(root):
+    if not root:
+        return True
+    
+    queue = deque([(root.left, root.right)])
+    
+    while queue:
+        left, right = queue.popleft()
+        
+        # Both null
+        if not left and not right:
+            continue
+        
+        # One null or values different
+        if not left or not right or left.val != right.val:
+            return False
+        
+        # Add children in mirror order
+        queue.append((left.left, right.right))
+        queue.append((left.right, right.left))
+    
+    return True
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: Recursive
+----------------------
+Time Complexity: O(n)
+  - Visit each node once
+  - n = number of nodes
+  - Total: O(n)
+
+Space Complexity: O(h)
+  - h = height of tree
+  - Recursion stack depth
+  - Worst case (skewed): O(n)
+  - Best case (balanced): O(log n)
+
+Approach 2: Iterative
+---------------------
+Time Complexity: O(n)
+  - Visit each node once
+  - Total: O(n)
+
+Space Complexity: O(w)
+  - w = maximum width of tree
+  - Queue stores nodes at same level
+  - Worst case: O(n)
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Symmetric Tree
+  Input: root = [1,2,2,3,4,4,3]
+  Output: true
+  ✓ Perfect mirror symmetry
+
+Test Case 2: Not Symmetric
+  Input: root = [1,2,2,null,3,null,3]
+  Output: false
+  ✓ Different structure
+
+Test Case 3: Single Node
+  Input: root = [1]
+  Output: true
+  ✓ Single node is symmetric
+
+Test Case 4: Two Levels
+  Input: root = [1,2,2]
+  Output: true
+  ✓ Simple symmetric case
+
+Test Case 5: Asymmetric Values
+  Input: root = [1,2,3]
+  Output: false
+  ✓ Different values
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Recursive ✓ RECOMMENDED
+------------------------------------
+Natural recursive solution.
+
+Pros:
+  - Clean and elegant
+  - Easy to understand
+  - Concise code
+  - Natural for tree problems
+
+Cons:
+  - Uses recursion stack
+  - Stack overflow for very deep trees
+
+Approach 2: Iterative
+---------------------
+Use queue for level-order traversal.
+
+Pros:
+  - No recursion
+  - Meets follow-up requirement
+  - Can handle very deep trees
+
+Cons:
+  - More code
+  - Less intuitive
+  - Uses queue space
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Comparing Wrong Subtrees
+   ❌ Comparing left.left with right.left
+   ✓ Compare left.left with right.right (mirror)
+
+2. Not Handling Null Nodes
+   ❌ Not checking for null before accessing
+   ✓ Check both null, one null cases
+
+3. Wrong Logical Operator
+   ❌ Using OR instead of AND
+   ✓ All conditions must be true (AND)
+
+4. Forgetting Root Check
+   ❌ Not handling single node case
+   ✓ Compare root.left with root.right
+
+5. Not Checking Values
+   ❌ Only checking structure
+   ✓ Check both structure and values
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Symmetric means left subtree mirrors right subtree
+2. Mirror comparison: left.left ↔ right.right, left.right ↔ right.left
+3. Recursive solution is most natural
+4. Must check both structure and values
+5. Time complexity is O(n)
+6. Classic tree traversal problem
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Same Tree (Easy) - Tree comparison
+- Invert Binary Tree (Easy) - Tree transformation
+- Maximum Depth of Binary Tree (Easy) - Tree traversal
+- Balanced Binary Tree (Easy) - Tree properties
+- Binary Tree Level Order Traversal (Medium) - BFS
+- Mirror Reflection (Medium) - Symmetry concept
+
+
+================================================================================

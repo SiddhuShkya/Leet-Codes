@@ -1,0 +1,317 @@
+================================================================================
+LENGTH OF LAST WORD - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given a string s consisting of words and spaces, return the length of the last 
+word in the string.
+
+A word is a maximal substring consisting of non-space characters only.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: s = "Hello World"
+  Output: 5
+  Explanation: The last word is "World" with length 5.
+
+Example 2:
+  Input: s = "   fly me   to   the moon  "
+  Output: 4
+  Explanation: The last word is "moon" with length 4.
+
+Example 3:
+  Input: s = "luffy is still joyboy"
+  Output: 6
+  Explanation: The last word is "joyboy" with length 6.
+
+CONSTRAINTS:
+------------
+- 1 <= s.length <= 10^4
+- s consists of only English letters and spaces ' '
+- There will be at least one word in s
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Handling trailing spaces
+2. Finding last word efficiently
+3. Counting only non-space characters
+4. Avoiding unnecessary string operations
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Iterate from End
+1. Start from end of string
+2. Skip trailing spaces
+3. Count characters until space or beginning
+4. Return count
+
+Approach 2: Split and Get Last
+1. Split string by spaces
+2. Get last non-empty word
+3. Return its length
+
+Approach 3: Strip and Split
+1. Strip trailing/leading spaces
+2. Split by spaces
+3. Return length of last element
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Iterate from End Approach:
+--------------------------
+Most efficient - avoids creating new strings/arrays.
+
+Steps:
+1. Start from last character
+2. Skip any trailing spaces
+3. Count characters until we hit a space or reach beginning
+4. Return count
+
+Example: s = "   fly me   to   the moon  "
+------------------------------------------
+Start from end, skip spaces: "...moon  "
+                                      ^
+Count backwards: m-o-o-n = 4 characters
+
+Why Iterate from End:
+---------------------
+- Don't need to process entire string
+- Stop as soon as we find last word
+- O(n) worst case, but often much faster
+- No extra space needed
+
+Split Approach:
+---------------
+Simpler but less efficient.
+
+Example: s = "Hello World"
+Split: ["Hello", "World"]
+Last element: "World"
+Length: 5
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Iterate from End ✓ OPTIMAL
+def lengthOfLastWord(s):
+    length = 0
+    # Start from end, skip trailing spaces
+    i = len(s) - 1
+    
+    # Skip trailing spaces
+    while i >= 0 and s[i] == ' ':
+        i -= 1
+    
+    # Count characters of last word
+    while i >= 0 and s[i] != ' ':
+        length += 1
+        i -= 1
+    
+    return length
+
+
+# Alternative: More concise
+def lengthOfLastWord_v2(s):
+    count = 0
+    for i in range(len(s) - 1, -1, -1):
+        if s[i] != ' ':
+            count += 1
+        elif count > 0:  # Found space after word started
+            break
+    return count
+
+
+# Approach 2: Split and Get Last
+def lengthOfLastWord_split(s):
+    words = s.split()
+    return len(words[-1]) if words else 0
+
+
+# Approach 3: Strip and Split (Most Pythonic)
+def lengthOfLastWord_pythonic(s):
+    return len(s.strip().split()[-1])
+
+
+# From original code (reverse iteration)
+def lengthOfLastWord_original(s):
+    count = 1
+    for i in range(1, len(s)):
+        if s[-i] == ' ':
+            continue
+        if s[-(i+1)] != ' ':
+            count += 1
+        else:
+            break
+    return count
+
+
+# LeetCode Solution Class Format
+class Solution:
+    def lengthOfLastWord(self, s: str) -> int:
+        length = 0
+        i = len(s) - 1
+        
+        # Skip trailing spaces
+        while i >= 0 and s[i] == ' ':
+            i -= 1
+        
+        # Count last word
+        while i >= 0 and s[i] != ' ':
+            length += 1
+            i -= 1
+        
+        return length
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: Iterate from End
+-----------------------------
+Time Complexity: O(n)
+  - Worst case: scan entire string
+  - Best case: O(1) if last word is at end
+  - Average: O(k) where k = length of last word + trailing spaces
+  - Total: O(n)
+
+Space Complexity: O(1)
+  - Only using counter and index variables
+  - Total: O(1) ✓ OPTIMAL
+
+Approach 2: Split
+-----------------
+Time Complexity: O(n)
+  - split() scans entire string: O(n)
+  - Creates array of words: O(n)
+  - Total: O(n)
+
+Space Complexity: O(n)
+  - Array of words: O(n)
+  - Total: O(n)
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Simple Case
+  Input: s = "Hello World"
+  Output: 5
+  ✓ Last word is "World"
+
+Test Case 2: Trailing Spaces
+  Input: s = "   fly me   to   the moon  "
+  Output: 4
+  ✓ Last word is "moon", trailing spaces ignored
+
+Test Case 3: No Spaces
+  Input: s = "joyboy"
+  Output: 6
+  ✓ Entire string is one word
+
+Test Case 4: Single Character
+  Input: s = "a"
+  Output: 1
+  ✓ Single character word
+
+Test Case 5: Multiple Spaces
+  Input: s = "a   "
+  Output: 1
+  ✓ Handles multiple trailing spaces
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Iterate from End ✓ RECOMMENDED
+-------------------------------------------
+Scan from end, count last word.
+
+Pros:
+  - O(n) time, O(1) space
+  - Most efficient
+  - Early termination possible
+  - No extra memory
+
+Cons:
+  - Slightly more code
+  - Need to handle trailing spaces
+
+Approach 2: Split
+-----------------
+Split string and get last element.
+
+Pros:
+  - Very simple and readable
+  - One-liner possible
+  - Pythonic
+
+Cons:
+  - O(n) space for word array
+  - Processes entire string
+  - Less efficient
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Not Handling Trailing Spaces
+   ❌ Counting spaces as part of word
+   ✓ Skip trailing spaces first
+
+2. Using split() Without strip()
+   ❌ split() might have empty strings
+   ✓ Use strip() or filter empty strings
+
+3. Off-by-One Errors
+   ❌ Wrong loop bounds
+   ✓ Carefully handle indices
+
+4. Not Checking Empty String
+   ❌ Assuming string has content
+   ✓ Handle edge cases
+
+5. Inefficient String Operations
+   ❌ Creating many substring copies
+   ✓ Use index-based iteration
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Iterating from end is most efficient for this problem
+2. Must handle trailing spaces correctly
+3. split() is simple but uses O(n) extra space
+4. Early termination saves time in average case
+5. Python's strip() and split() make this trivial
+6. Index-based iteration avoids extra memory
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Reverse Words in a String (Medium) - Word manipulation
+- Valid Palindrome (Easy) - String processing
+- Longest Common Prefix (Easy) - String comparison
+- Reverse String (Easy) - String reversal
+- String to Integer (atoi) (Medium) - String parsing
+- Implement strStr() (Easy) - String searching
+
+
+================================================================================

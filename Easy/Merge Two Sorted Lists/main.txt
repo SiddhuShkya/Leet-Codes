@@ -1,0 +1,342 @@
+================================================================================
+MERGE TWO SORTED LISTS - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+You are given the heads of two sorted linked lists list1 and list2.
+
+Merge the two lists into one sorted list. The list should be made by splicing 
+together the nodes of the first two lists.
+
+Return the head of the merged linked list.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: list1 = [1,2,4], list2 = [1,3,4]
+  Output: [1,1,2,3,4,4]
+
+Example 2:
+  Input: list1 = [], list2 = []
+  Output: []
+
+Example 3:
+  Input: list1 = [], list2 = [0]
+  Output: [0]
+
+CONSTRAINTS:
+------------
+- The number of nodes in both lists is in the range [0, 50]
+- -100 <= Node.val <= 100
+- Both list1 and list2 are sorted in non-decreasing order
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Handling linked list pointers correctly
+2. Comparing values from two lists simultaneously
+3. Handling lists of different lengths
+4. Managing edge cases (empty lists)
+5. Maintaining sorted order in merged list
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Iterative with Dummy Node
+1. Create a dummy node to simplify edge cases
+2. Use a current pointer starting at dummy
+3. While both lists have nodes:
+   a. Compare values of list1 and list2
+   b. Attach smaller node to current
+   c. Move pointer of list with smaller value
+   d. Move current pointer forward
+4. Attach remaining nodes from non-empty list
+5. Return dummy.next (skip dummy node)
+
+Approach 2: Recursive
+1. Base cases: if list1 is None, return list2; if list2 is None, return list1
+2. Compare list1.val and list2.val
+3. Recursively merge remaining nodes
+4. Return the merged list
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Why Use a Dummy Node:
+---------------------
+A dummy node simplifies the code by eliminating special cases for the head.
+Without it, we'd need to handle the first node separately.
+
+With dummy:
+  - Always have a node to attach to (dummy initially)
+  - Return dummy.next at the end
+  - No special case for empty result
+
+Iterative Approach Walkthrough:
+--------------------------------
+list1 = [1,2,4], list2 = [1,3,4]
+
+Initial: dummy -> None, current = dummy
+  list1: 1 -> 2 -> 4
+  list2: 1 -> 3 -> 4
+
+Step 1: Compare 1 vs 1, attach list1's 1
+  dummy -> 1(from list1)
+  list1: 2 -> 4
+  list2: 1 -> 3 -> 4
+
+Step 2: Compare 2 vs 1, attach list2's 1
+  dummy -> 1 -> 1(from list2)
+  list1: 2 -> 4
+  list2: 3 -> 4
+
+Step 3: Compare 2 vs 3, attach list1's 2
+  dummy -> 1 -> 1 -> 2
+  list1: 4
+  list2: 3 -> 4
+
+Step 4: Compare 4 vs 3, attach list2's 3
+  dummy -> 1 -> 1 -> 2 -> 3
+  list1: 4
+  list2: 4
+
+Step 5: Compare 4 vs 4, attach list1's 4
+  dummy -> 1 -> 1 -> 2 -> 3 -> 4
+  list1: None
+  list2: 4
+
+Step 6: list1 is None, attach remaining list2
+  dummy -> 1 -> 1 -> 2 -> 3 -> 4 -> 4
+
+Return dummy.next: 1 -> 1 -> 2 -> 3 -> 4 -> 4
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Definition for singly-linked list
+class ListNode(object):
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+    
+    def insert(self, val):
+        if self.next is None:
+            self.next = ListNode(val)
+        else:
+            self.next.insert(val)
+    
+    def display(self):
+        elems = []
+        cur_node = self
+        while cur_node is not None:
+            elems.append(cur_node.val)
+            cur_node = cur_node.next
+        return elems
+
+
+# Approach 1: Iterative with Dummy Node ✓ RECOMMENDED
+class Solution(object):
+    def mergeTwoLists(self, list1, list2):
+        # Create dummy node to simplify edge cases
+        dummy = ListNode()
+        current = dummy
+        
+        # Merge while both lists have nodes
+        while list1 is not None and list2 is not None:
+            if list1.val <= list2.val:
+                current.next = list1
+                list1 = list1.next
+            else:
+                current.next = list2
+                list2 = list2.next
+            current = current.next
+        
+        # Attach remaining nodes
+        if list1 is not None:
+            current.next = list1
+        elif list2 is not None:
+            current.next = list2
+        
+        return dummy.next
+
+
+# Approach 2: Recursive
+class Solution_Recursive:
+    def mergeTwoLists(self, list1, list2):
+        # Base cases
+        if list1 is None:
+            return list2
+        if list2 is None:
+            return list1
+        
+        # Recursive case
+        if list1.val <= list2.val:
+            list1.next = self.mergeTwoLists(list1.next, list2)
+            return list1
+        else:
+            list2.next = self.mergeTwoLists(list1, list2.next)
+            return list2
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: Iterative
+----------------------
+Time Complexity: O(n + m)
+  - n = length of list1
+  - m = length of list2
+  - We visit each node exactly once
+  - Total: O(n + m)
+
+Space Complexity: O(1)
+  - Only using a few pointers (dummy, current)
+  - No additional data structures
+  - Reusing existing nodes
+  - Total: O(1)
+
+Approach 2: Recursive
+---------------------
+Time Complexity: O(n + m)
+  - Same as iterative, visit each node once
+  - Total: O(n + m)
+
+Space Complexity: O(n + m)
+  - Recursion stack depth = n + m
+  - Each recursive call adds to stack
+  - Total: O(n + m)
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Both Lists Non-Empty
+  Input: list1 = [1,2,4], list2 = [1,3,4]
+  Output: [1,1,2,3,4,4]
+  ✓ Correctly merges and maintains order
+
+Test Case 2: Both Lists Empty
+  Input: list1 = [], list2 = []
+  Output: []
+  ✓ Handles empty lists
+
+Test Case 3: One List Empty
+  Input: list1 = [], list2 = [0]
+  Output: [0]
+  ✓ Returns non-empty list
+
+Test Case 4: Different Lengths
+  Input: list1 = [1,2,3], list2 = [4,5,6,7,8]
+  Output: [1,2,3,4,5,6,7,8]
+  ✓ Handles different lengths
+
+Test Case 5: All Same Values
+  Input: list1 = [1,1,1], list2 = [1,1,1]
+  Output: [1,1,1,1,1,1]
+  ✓ Handles duplicates
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Iterative with Dummy Node ✓ RECOMMENDED
+----------------------------------------------------
+Use dummy node and iterate through both lists.
+
+Pros:
+  - O(1) space complexity
+  - Easy to understand
+  - No recursion overhead
+  - Efficient
+
+Cons:
+  - Slightly more code than recursive
+  - Need to manage pointers carefully
+
+Approach 2: Recursive
+---------------------
+Recursively merge lists by comparing heads.
+
+Pros:
+  - Very clean and elegant code
+  - Easy to understand conceptually
+  - Natural for linked list problems
+
+Cons:
+  - O(n + m) space due to recursion stack
+  - Stack overflow risk for very long lists
+  - Recursion overhead
+
+Approach 3: Create New List (Not Recommended)
+----------------------------------------------
+Create entirely new nodes instead of reusing.
+
+Pros:
+  - Original lists remain unchanged
+
+Cons:
+  - O(n + m) extra space for new nodes
+  - Unnecessary copying
+  - Less efficient
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Not Using Dummy Node
+   ❌ Special casing the first node
+   ✓ Use dummy node to simplify logic
+
+2. Forgetting to Attach Remaining Nodes
+   ❌ Only merging while both lists have nodes
+   ✓ Attach remaining nodes from non-empty list
+
+3. Incorrect Pointer Updates
+   ❌ Not moving list1/list2 pointers forward
+   ✓ Always update pointers after attaching nodes
+
+4. Not Handling Empty Lists
+   ❌ Assuming both lists are non-empty
+   ✓ Check for None/null cases
+
+5. Creating New Nodes Unnecessarily
+   ❌ Creating new ListNode for each value
+   ✓ Reuse existing nodes by updating pointers
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Dummy nodes simplify linked list problems by eliminating edge cases
+2. Iterative approach is more space-efficient than recursive
+3. Always handle empty list cases
+4. Reuse existing nodes instead of creating new ones
+5. Two-pointer technique works well for merging sorted sequences
+6. Time complexity is O(n + m) - must visit all nodes
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Merge k Sorted Lists (Hard) - Extension to k lists
+- Merge Sorted Array (Easy) - Array version of this problem
+- Add Two Numbers (Medium) - Linked list arithmetic
+- Remove Duplicates from Sorted List (Easy) - Sorted list manipulation
+- Intersection of Two Linked Lists (Easy) - Two list problem
+- Sort List (Medium) - Sorting linked lists
+
+
+================================================================================

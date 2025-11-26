@@ -1,0 +1,340 @@
+================================================================================
+PLUS ONE - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+You are given a large integer represented as an integer array digits, where each 
+digits[i] is the ith digit of the integer. The digits are ordered from most 
+significant to least significant in left-to-right order. The large integer does 
+not contain any leading 0's.
+
+Increment the large integer by one and return the resulting array of digits.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: digits = [1,2,3]
+  Output: [1,2,4]
+  Explanation: The array represents the integer 123. Incrementing by one gives 
+  123 + 1 = 124. Thus, the result should be [1,2,4].
+
+Example 2:
+  Input: digits = [4,3,2,1]
+  Output: [4,3,2,2]
+  Explanation: The array represents the integer 4321. Incrementing by one gives 
+  4321 + 1 = 4322.
+
+Example 3:
+  Input: digits = [9]
+  Output: [1,0]
+  Explanation: The array represents the integer 9. Incrementing by one gives 
+  9 + 1 = 10. Thus, the result should be [1,0].
+
+CONSTRAINTS:
+------------
+- 1 <= digits.length <= 100
+- 0 <= digits[i] <= 9
+- digits does not contain any leading 0's except the number 0 itself
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Handling carry propagation
+2. Dealing with all 9's (e.g., 999 → 1000)
+3. Working with array representation of number
+4. Avoiding integer overflow for very large numbers
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Iterate from Right with Carry
+1. Start from rightmost digit (least significant)
+2. Add 1 to last digit
+3. If digit becomes 10:
+   - Set digit to 0
+   - Carry 1 to next position
+4. Continue until no carry or reach beginning
+5. If carry remains after loop, prepend 1
+
+Approach 2: String Conversion (Not Optimal)
+1. Convert array to string
+2. Convert string to integer
+3. Add 1
+4. Convert back to array
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Carry Propagation:
+------------------
+When adding 1 to a digit:
+- If digit < 9: increment and done
+- If digit = 9: becomes 0, carry 1 to next position
+
+Example: [1,2,9]
+  - Start at index 2: 9 + 1 = 10
+  - Set digits[2] = 0, carry = 1
+  - Move to index 1: 2 + 1 = 3
+  - Set digits[1] = 3, carry = 0
+  - Done! Result: [1,3,0]
+
+All 9's Case:
+-------------
+Example: [9,9,9]
+  - Index 2: 9 + 1 = 10 → 0, carry = 1
+  - Index 1: 9 + 1 = 10 → 0, carry = 1
+  - Index 0: 9 + 1 = 10 → 0, carry = 1
+  - Carry still 1, prepend to array
+  - Result: [1,0,0,0]
+
+Walkthrough: digits = [1,2,9]
+------------------------------
+i = 2 (rightmost):
+  digits[2] = 9
+  9 + 1 = 10
+  digits[2] = 0
+  carry = 1
+
+i = 1:
+  digits[1] = 2
+  2 + carry(1) = 3
+  digits[1] = 3
+  carry = 0
+  No more carry, done!
+
+Result: [1,3,0]
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Iterate from Right ✓ OPTIMAL
+def plusOne(digits):
+    n = len(digits)
+    
+    # Start from rightmost digit
+    for i in range(n - 1, -1, -1):
+        # If digit is less than 9, just increment and return
+        if digits[i] < 9:
+            digits[i] += 1
+            return digits
+        
+        # If digit is 9, set to 0 and continue (carry)
+        digits[i] = 0
+    
+    # If we're here, all digits were 9
+    # Need to prepend 1
+    return [1] + digits
+
+
+# Alternative: Explicit carry variable
+def plusOne_v2(digits):
+    carry = 1
+    
+    for i in range(len(digits) - 1, -1, -1):
+        total = digits[i] + carry
+        digits[i] = total % 10
+        carry = total // 10
+        
+        if carry == 0:
+            break
+    
+    if carry == 1:
+        digits.insert(0, 1)
+    
+    return digits
+
+
+# Approach 2: String Conversion (From original - not optimal)
+def plusOne_string(digits):
+    newStr = ''
+    result = []
+    
+    # Convert array to string
+    for i in range(len(digits)):
+        newStr += str(digits[i])
+    
+    # Add 1 and convert back
+    resultStr = str(int(newStr) + 1)
+    
+    # Convert string to array
+    for j in range(len(resultStr)):
+        result.append(int(resultStr[j]))
+    
+    return result
+
+
+# Most Pythonic version
+def plusOne_pythonic(digits):
+    for i in range(len(digits) - 1, -1, -1):
+        if digits[i] < 9:
+            digits[i] += 1
+            return digits
+        digits[i] = 0
+    return [1] + digits
+
+
+# LeetCode Solution Class Format
+class Solution:
+    def plusOne(self, digits: List[int]) -> List[int]:
+        for i in range(len(digits) - 1, -1, -1):
+            if digits[i] < 9:
+                digits[i] += 1
+                return digits
+            digits[i] = 0
+        return [1] + digits
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: Iterate from Right
+-------------------------------
+Time Complexity: O(n)
+  - Worst case: all 9's, iterate through all digits
+  - Best case: O(1) if last digit < 9
+  - Average: O(n)
+
+Space Complexity: O(1)
+  - Modify array in-place
+  - Only extra space if all 9's: O(n) for new array
+  - Amortized: O(1)
+
+Approach 2: String Conversion
+------------------------------
+Time Complexity: O(n)
+  - Converting to string: O(n)
+  - Integer addition: O(1)
+  - Converting back: O(n)
+  - Total: O(n)
+
+Space Complexity: O(n)
+  - String storage: O(n)
+  - Result array: O(n)
+  - Total: O(n)
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: No Carry
+  Input: digits = [1,2,3]
+  Output: [1,2,4]
+  ✓ Simple increment, no carry
+
+Test Case 2: Carry in Middle
+  Input: digits = [1,2,9]
+  Output: [1,3,0]
+  ✓ Carry propagates one position
+
+Test Case 3: All 9's
+  Input: digits = [9,9,9]
+  Output: [1,0,0,0]
+  ✓ Carry propagates through all digits
+
+Test Case 4: Single Digit
+  Input: digits = [9]
+  Output: [1,0]
+  ✓ Single 9 becomes [1,0]
+
+Test Case 5: No 9's
+  Input: digits = [4,3,2,1]
+  Output: [4,3,2,2]
+  ✓ Last digit incremented
+
+Test Case 6: Multiple 9's at End
+  Input: digits = [1,9,9]
+  Output: [2,0,0]
+  ✓ Carry propagates through consecutive 9's
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Iterate from Right ✓ RECOMMENDED
+---------------------------------------------
+Process digits from right to left with carry.
+
+Pros:
+  - O(n) time, O(1) space (amortized)
+  - Handles all cases elegantly
+  - No integer overflow issues
+  - Works for arbitrarily large numbers
+
+Cons:
+  - Need to handle prepending for all 9's case
+
+Approach 2: String Conversion
+------------------------------
+Convert to integer, add 1, convert back.
+
+Pros:
+  - Simple and intuitive
+  - Easy to implement
+
+Cons:
+  - O(n) extra space
+  - Integer overflow for very large numbers
+  - Not efficient
+  - Defeats purpose of array representation
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Integer Overflow
+   ❌ Converting to int (fails for 100-digit numbers)
+   ✓ Process digit by digit
+
+2. Forgetting All 9's Case
+   ❌ Not handling [9,9,9] → [1,0,0,0]
+   ✓ Prepend 1 if carry remains
+
+3. Wrong Loop Direction
+   ❌ Iterating from left to right
+   ✓ Iterate from right to left (least significant first)
+
+4. Not Handling Carry Properly
+   ❌ Only adding 1 to last digit
+   ✓ Propagate carry through all affected digits
+
+5. Creating New Array Unnecessarily
+   ❌ Always creating new array
+   ✓ Modify in-place when possible
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Process from right to left (least significant digit first)
+2. Carry propagation is key concept
+3. All 9's case requires prepending 1
+4. Array representation avoids integer overflow
+5. In-place modification is more efficient
+6. Early return optimization when no carry
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Add Binary (Easy) - Similar carry propagation
+- Add Two Numbers (Medium) - Linked list version
+- Add Strings (Easy) - String addition
+- Multiply Strings (Medium) - String multiplication
+- Add to Array-Form of Integer (Easy) - Similar concept
+- Plus One Linked List (Medium) - Linked list version
+
+
+================================================================================
