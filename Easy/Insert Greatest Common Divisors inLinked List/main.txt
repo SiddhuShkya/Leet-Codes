@@ -1,0 +1,222 @@
+================================================================================
+INSERT GREATEST COMMON DIVISORS IN LINKED LIST - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given the head of a linked list head, in which each node contains an integer value.
+
+Between every pair of adjacent nodes, insert a new node with a value equal to the 
+greatest common divisor (GCD) of them.
+
+Return the linked list after insertion.
+
+The greatest common divisor of two numbers is the largest positive integer that 
+evenly divides both numbers.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: head = [18,6,10,3]
+  Output: [18,6,6,2,10,1,3]
+  Explanation: 
+  - GCD(18, 6) = 6. Insert 6 between 18 and 6. List: 18 -> 6 -> 6 -> 10 -> 3.
+  - GCD(6, 10) = 2. Insert 2 between 6 and 10. List: 18 -> 6 -> 6 -> 2 -> 10 -> 3.
+  - GCD(10, 3) = 1. Insert 1 between 10 and 3. List: 18 -> 6 -> 6 -> 2 -> 10 -> 1 -> 3.
+
+Example 2:
+  Input: head = [7]
+  Output: [7]
+  Explanation: No pairs, no insertion.
+
+CONSTRAINTS:
+------------
+- The number of nodes in the list is in the range [1, 5000].
+- 1 <= Node.val <= 1000
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Traversing linked list while modifying it
+2. Calculating GCD efficiently
+3. Managing pointers correctly
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Iterative Traversal (O(n)) ✓ OPTIMAL
+1. Initialize `curr = head`.
+2. While `curr` and `curr.next` exist:
+   - Calculate `gcd_val = GCD(curr.val, curr.next.val)`.
+   - Create `new_node = ListNode(gcd_val)`.
+   - Insert `new_node` between `curr` and `curr.next`:
+     - `new_node.next = curr.next`
+     - `curr.next = new_node`
+   - Move `curr` to `curr.next.next` (skip the newly inserted node).
+3. Return `head`.
+
+GCD Algorithm (Euclidean):
+--------------------------
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
+
+DETAILED EXPLANATION:
+---------------------
+
+List: 18 -> 6 -> 10
+
+1. Curr = 18. Next = 6.
+   - GCD(18, 6) = 6.
+   - New Node (6).
+   - Link: 18 -> 6(new) -> 6(old).
+   - Move Curr to 6(old).
+
+2. Curr = 6. Next = 10.
+   - GCD(6, 10) = 2.
+   - New Node (2).
+   - Link: 6 -> 2(new) -> 10.
+   - Move Curr to 10.
+
+3. Curr = 10. Next = None. Stop.
+
+Result: 18 -> 6 -> 6 -> 2 -> 10.
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Iterative (Optimal) ✓ RECOMMENDED
+import math
+
+class Solution:
+    def insertGreatestCommonDivisors(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        curr = head
+        
+        while curr and curr.next:
+            val1 = curr.val
+            val2 = curr.next.val
+            
+            # Calculate GCD
+            gcd_val = math.gcd(val1, val2)
+            
+            # Create new node
+            new_node = ListNode(gcd_val)
+            
+            # Insert logic
+            new_node.next = curr.next
+            curr.next = new_node
+            
+            # Advance (skip the new node)
+            curr = new_node.next
+            
+        return head
+
+
+# Helper for GCD if math.gcd not allowed/available
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Time Complexity: O(n * log(min(a, b)))
+  - Traverse n nodes.
+  - GCD calculation takes log(min(val)) time.
+  - Total: O(n).
+
+Space Complexity: O(1)
+  - Creating nodes in-place. No extra data structures.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Standard
+  Input: [18,6,10,3]
+  Output: [18,6,6,2,10,1,3]
+  ✓ Correct insertions
+
+Test Case 2: Single Node
+  Input: [7]
+  Output: [7]
+  ✓ Loop condition curr.next fails immediately. Correct.
+
+Test Case 3: Coprime
+  Input: [2,3]
+  Output: [2,1,3]
+  ✓ GCD(2,3)=1.
+
+Test Case 4: Same Values
+  Input: [4,4]
+  Output: [4,4,4]
+  ✓ GCD(4,4)=4.
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Iterative ✓ RECOMMENDED
+-----------------------------------
+Pros:
+  - Simple, efficient.
+  - O(1) space.
+
+Cons:
+  - None.
+
+Approach 2: Recursive
+---------------------
+Process head, recurse on head.next, then insert.
+Pros: Elegant.
+Cons: O(n) stack space.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Pointer Management
+   ❌ curr = curr.next (lands on new node)
+   ✓ curr = curr.next.next (or new_node.next) to skip new node
+
+2. Infinite Loop
+   ❌ Not advancing pointer correctly
+   ✓ Ensure loop terminates
+
+3. GCD Implementation
+   ✓ Use math.gcd or Euclidean algorithm
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Linked List Insertion: `new.next = curr.next`, `curr.next = new`.
+2. GCD is a standard operation.
+3. Be careful with loop advancement when modifying the list.
+4. Time O(n), Space O(1).
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Delete Node in a Linked List (Medium)
+- Merge In Between Linked Lists (Medium)
+- Greatest Common Divisor of Strings (Easy)
+
+
+================================================================================

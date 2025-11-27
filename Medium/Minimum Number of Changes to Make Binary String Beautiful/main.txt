@@ -1,0 +1,214 @@
+================================================================================
+MINIMUM NUMBER OF CHANGES TO MAKE BINARY STRING BEAUTIFUL - LEETCODE MEDIUM
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+You are given a 0-indexed binary string s having an even length.
+
+A string is beautiful if it's possible to partition it into one or more 
+substrings such that:
+1. Each substring has an even length.
+2. Each substring contains only 1's or only 0's.
+
+You can change any character in s to 0 or 1.
+
+Return the minimum number of changes required to make the string s beautiful.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: s = "1001"
+  Output: 2
+  Explanation: We change s[1] to 1 and s[3] to 0 to get string "1100".
+  It can be seen that the string "1100" is beautiful because we can partition it 
+  into "11|00".
+  Another way is to change s[1] to 1 and s[2] to 1 to get "1111".
+  "1111" is beautiful because we can partition it into "1111".
+
+Example 2:
+  Input: s = "10"
+  Output: 1
+  Explanation: We change s[1] to 1 to get "11". "11" is beautiful.
+
+Example 3:
+  Input: s = "0000"
+  Output: 0
+  Explanation: We don't need to make any changes.
+
+CONSTRAINTS:
+------------
+- 2 <= s.length <= 10^5
+- s has an even length.
+- s[i] is either '0' or '1'.
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Understanding "Beautiful" condition
+2. Realizing the simplest partition strategy
+3. Greedy approach validity
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Greedy Pairs (O(n)) ✓ OPTIMAL
+1. The problem requires substrings of even length with same characters.
+2. The smallest even length is 2.
+3. If we ensure every pair `(s[0], s[1])`, `(s[2], s[3])`, etc., consists of 
+   identical characters (either "00" or "11"), then the whole string is beautiful.
+   - Why? Because any larger even block (like "0000") is just composed of "00" pairs.
+4. Iterate through the string with step 2.
+5. If `s[i] != s[i+1]`, we MUST change one of them. Cost + 1.
+6. Return total cost.
+
+Why Greedy Works?
+-----------------
+We need to partition into even length blocks.
+Suppose we have `10`. To make it valid, we must change it to `00` or `11`. Cost is 1.
+If we have `1001`.
+- Pair 1: `10` -> Change to `11` (Cost 1).
+- Pair 2: `01` -> Change to `00` (Cost 1).
+- Result `1100`. Total Cost 2.
+Could we do better?
+Maybe `1111`?
+- `10` -> `11` (Cost 1).
+- `01` -> `11` (Cost 1).
+- Total Cost 2.
+Since every pair is independent in the minimal requirement (length 2), optimizing 
+locally optimizes globally.
+
+
+DETAILED EXPLANATION:
+---------------------
+
+String: "1001"
+i=0: Pair "10". Different. Change needed. Count = 1.
+i=2: Pair "01". Different. Change needed. Count = 2.
+Result: 2.
+
+String: "0000"
+i=0: Pair "00". Same. Count = 0.
+i=2: Pair "00". Same. Count = 0.
+Result: 0.
+
+String: "1100"
+i=0: Pair "11". Same.
+i=2: Pair "00". Same.
+Result: 0.
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Greedy Pairs (Optimal) ✓ RECOMMENDED
+class Solution:
+    def minChanges(self, s: str) -> int:
+        count = 0
+        # Iterate with step 2: 0, 2, 4...
+        for i in range(0, len(s), 2):
+            # Check current pair (i, i+1)
+            if s[i] != s[i+1]:
+                count += 1
+        return count
+
+
+# Note on provided "main.py" logic:
+# The provided code in main.py seems to be trying to track runs but is overly complex 
+# or possibly incorrect for this specific problem statement.
+# The simple greedy pair check is the standard solution for this LeetCode problem (2914).
+# Let's verify the provided code logic:
+# It iterates r. If s[l] != s[r], it checks if r is odd (meaning length of run was even?).
+# This looks like it's trying to count changes but might be buggy.
+# The simple loop `range(0, n, 2)` is definitely correct and simpler.
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Time Complexity: O(n)
+  - Single pass through string.
+
+Space Complexity: O(1)
+  - Only counter variable.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: "1001"
+  Pairs: "10", "01" -> Both need change -> 2.
+  ✓ Correct
+
+Test Case 2: "10"
+  Pairs: "10" -> Needs change -> 1.
+  ✓ Correct
+
+Test Case 3: "0000"
+  Pairs: "00", "00" -> No change -> 0.
+  ✓ Correct
+
+Test Case 4: "1111"
+  Pairs: "11", "11" -> No change -> 0.
+  ✓ Correct
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Greedy Pairs ✓ RECOMMENDED
+--------------------------------------
+Pros:
+  - Simple, O(n).
+  - Easy to prove correctness.
+
+Cons:
+  - None.
+
+Approach 2: Dynamic Programming
+-------------------------------
+Overkill. State would be (index, current_char, current_run_length).
+Not needed since local greedy choice works.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Overthinking Partitions
+   ❌ Trying to make the whole string one char
+   ✓ Problem allows *multiple* substrings. "1100" is valid.
+
+2. Checking Overlaps
+   ❌ Checking s[1] vs s[2]
+   ✓ We partition into disjoint pairs (0,1), (2,3). No need to check boundary between 1 and 2.
+
+3. Complex Logic
+   ✓ The condition "substrings of even length" implies we can just break it all down to length 2.
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. "Beautiful" string problems often have a simple greedy structure.
+2. Even length constraint -> Look at pairs.
+3. Time O(n), Space O(1).
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Minimum Changes to Make Alternating Binary String (Easy)
+- Check if Binary String Has at Most One Segment of Ones (Easy)
+
+
+================================================================================

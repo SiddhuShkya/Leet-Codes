@@ -1,0 +1,193 @@
+================================================================================
+CONTAINER WITH MOST WATER - LEETCODE MEDIUM
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+You are given an integer array height of length n. There are n vertical lines 
+drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]).
+
+Find two lines that together with the x-axis form a container, such that the 
+container contains the most water.
+
+Return the maximum amount of water a container can store.
+
+Notice that you may not slant the container.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: height = [1,8,6,2,5,4,8,3,7]
+  Output: 49
+  Explanation: The above vertical lines are represented by array 
+  [1,8,6,2,5,4,8,3,7]. In this case, the max area of water (blue section) the 
+  container can contain is 49.
+
+Example 2:
+  Input: height = [1,1]
+  Output: 1
+
+CONSTRAINTS:
+------------
+- n == height.length
+- 2 <= n <= 10^5
+- 0 <= height[i] <= 10^4
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Maximizing Area = Width * Height
+2. Width decreases as we narrow the search
+3. Height is limited by the shorter line
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Two Pointers (Greedy) (O(N)) ✓ OPTIMAL
+1. Initialize `left` at 0, `right` at n-1.
+2. Calculate `area = (right - left) * min(height[left], height[right])`.
+3. Update `max_area`.
+4. Move the pointer pointing to the shorter line inward.
+   - Why? Because the area is limited by the shorter line. If we move the 
+     taller line, the width decreases, and the height can't increase (limited 
+     by the shorter line we kept). So we must move the shorter line in hopes 
+     of finding a taller line to compensate for the width reduction.
+5. Repeat until `left >= right`.
+
+Approach 2: Brute Force (O(N^2))
+1. Check all pairs `(i, j)`.
+2. `area = (j - i) * min(height[i], height[j])`.
+3. Return max.
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Input: [1, 8, 6, 2, 5, 4, 8, 3, 7]
+
+1. L=0 (1), R=8 (7). Width=8. MinHeight=1. Area=8.
+   - Move L (1 < 7).
+
+2. L=1 (8), R=8 (7). Width=7. MinHeight=7. Area=49.
+   - Move R (7 < 8).
+
+3. L=1 (8), R=7 (3). Width=6. MinHeight=3. Area=18.
+   - Move R.
+
+... and so on.
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Two Pointers (Optimal) ✓ RECOMMENDED
+class Solution:
+    def maxArea(self, height: List[int]) -> int:
+        l, r = 0, len(height) - 1
+        res = 0
+        
+        while l < r:
+            area = (r - l) * min(height[l], height[r])
+            res = max(res, area)
+            
+            if height[l] < height[r]:
+                l += 1
+            else:
+                r -= 1
+                
+        return res
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Time Complexity: O(N)
+  - Single pass with two pointers.
+
+Space Complexity: O(1)
+  - Only variables.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Standard
+  Input: [1,8,6,2,5,4,8,3,7]
+  Output: 49
+  ✓ Correct
+
+Test Case 2: Small
+  Input: [1,1]
+  Output: 1
+  ✓ Correct
+
+Test Case 3: Decreasing
+  Input: [5,4,3,2,1]
+  Output: 6 (Lines 5 and 2 at dist 3 -> 2*3=6? No. 5 and 3 at dist 2 -> 6. 4 and 2 at dist 2 -> 4. 5 and 1 at dist 4 -> 4. Wait.
+  Let's trace:
+  L=0(5), R=4(1). Area=4*1=4. Move R.
+  L=0(5), R=3(2). Area=3*2=6. Move R.
+  L=0(5), R=2(3). Area=2*3=6. Move R.
+  L=0(5), R=1(4). Area=1*4=4. Move R.
+  Max is 6. Correct.
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Two Pointers ✓ RECOMMENDED
+--------------------------------------
+Pros:
+  - O(N) is optimal.
+  - Simple logic.
+
+Cons:
+  - None.
+
+Approach 2: Brute Force
+-----------------------
+Pros:
+  - Trivial.
+
+Cons:
+  - O(N^2) TLE.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Moving the Wrong Pointer
+   ❌ Moving the taller line
+   ✓ Always move the shorter line. If equal, moving either (or both) is fine (usually both to save time).
+
+2. Width Calculation
+   ❌ `right - left + 1`
+   ✓ `right - left` (distance between indices).
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. "Container" area depends on shorter side.
+2. Greedy choice: Eliminate the limiting factor (shorter side).
+3. Time O(N), Space O(1).
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Trapping Rain Water (Hard)
+- Largest Rectangle in Histogram (Hard)
+
+
+================================================================================

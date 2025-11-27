@@ -1,0 +1,277 @@
+================================================================================
+IMPLEMENT STACK USING QUEUES - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Implement a last-in-first-out (LIFO) stack using only two queues. The 
+implemented stack should support all the functions of a normal stack (push, 
+top, pop, and empty).
+
+Implement the MyStack class:
+- void push(int x) Pushes element x to the top of the stack.
+- int pop() Removes the element on the top of the stack and returns it.
+- int top() Returns the element on the top of the stack.
+- boolean empty() Returns true if the stack is empty, false otherwise.
+
+Notes:
+- You must use only standard operations of a queue, which means only push to 
+  back, peek/pop from front, size and is empty operations are valid.
+- Depending on your language, the queue may not be supported natively. You may 
+  simulate a queue using a list or deque (double-ended queue) as long as you 
+  use only a queue's standard operations.
+
+EXAMPLES:
+---------
+Example 1:
+  Input
+  ["MyStack", "push", "push", "top", "pop", "empty"]
+  [[], [1], [2], [], [], []]
+  Output
+  [null, null, null, 2, 2, false]
+
+  Explanation
+  MyStack myStack = new MyStack();
+  myStack.push(1);
+  myStack.push(2);
+  myStack.top(); // return 2
+  myStack.pop(); // return 2
+  myStack.empty(); // return False
+
+CONSTRAINTS:
+------------
+- 1 <= x <= 9
+- At most 100 calls will be made to push, pop, top, and empty.
+- All the calls to pop and top are valid.
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Simulating LIFO (Stack) using FIFO (Queue)
+2. Choosing which operation to make costly (Push vs Pop)
+3. Using only standard queue operations
+
+ALGORITHM STEPS:
+----------------
+Approach 1: One Queue (Push O(n), Pop O(1)) ✓ OPTIMAL
+1. Use a single queue `q`.
+2. Push(x):
+   - Add x to `q`.
+   - Rotate `q` (dequeue and enqueue) `size-1` times.
+   - This moves the new element (x) to the front.
+3. Pop(): Dequeue from `q`.
+4. Top(): Peek at front of `q`.
+
+Approach 2: Two Queues (Push O(1), Pop O(n))
+1. Use `q1` (data) and `q2` (helper).
+2. Push(x): Enqueue to `q1`.
+3. Pop():
+   - Move all elements except last from `q1` to `q2`.
+   - Dequeue last element from `q1` (result).
+   - Swap `q1` and `q2` names.
+
+
+DETAILED EXPLANATION:
+---------------------
+
+One Queue Approach (Push O(n)):
+-------------------------------
+Queue: Front -> [ ... ] -> Back
+
+Push 1:
+  Q: [1]
+
+Push 2:
+  Q: [1, 2] (2 is at back)
+  Rotate (size-1 = 1 time):
+  Pop 1, Push 1 -> Q: [2, 1]
+  Now 2 is at front (Top of stack).
+
+Push 3:
+  Q: [2, 1, 3]
+  Rotate (size-1 = 2 times):
+  Pop 2, Push 2 -> Q: [1, 3, 2]
+  Pop 1, Push 1 -> Q: [3, 2, 1]
+  Now 3 is at front.
+
+Pop:
+  Remove front (3). Q: [2, 1]. Correct.
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: One Queue (Push O(n)) ✓ RECOMMENDED
+from collections import deque
+
+class MyStack:
+
+    def __init__(self):
+        self.q = deque()
+
+    def push(self, x: int) -> None:
+        self.q.append(x)
+        # Rotate size-1 times to bring new element to front
+        for _ in range(len(self.q) - 1):
+            self.q.append(self.q.popleft())
+
+    def pop(self) -> int:
+        return self.q.popleft()
+
+    def top(self) -> int:
+        return self.q[0]
+
+    def empty(self) -> bool:
+        return len(self.q) == 0
+
+
+# Approach 2: Two Queues (Push O(1), Pop O(n))
+class MyStackTwoQueues:
+
+    def __init__(self):
+        self.q1 = deque()
+        self.q2 = deque()
+
+    def push(self, x: int) -> None:
+        self.q1.append(x)
+
+    def pop(self) -> int:
+        # Move n-1 elements to q2
+        while len(self.q1) > 1:
+            self.q2.append(self.q1.popleft())
+        
+        # Pop last element
+        res = self.q1.popleft()
+        
+        # Swap queues
+        self.q1, self.q2 = self.q2, self.q1
+        return res
+
+    def top(self) -> int:
+        while len(self.q1) > 1:
+            self.q2.append(self.q1.popleft())
+        
+        res = self.q1[0] # Peek
+        self.q2.append(self.q1.popleft())
+        self.q1, self.q2 = self.q2, self.q1
+        return res
+
+    def empty(self) -> bool:
+        return len(self.q1) == 0
+
+
+# Note: The provided solution in main.py uses a List as a Stack directly.
+# While valid Python, it defeats the purpose of the algorithmic challenge.
+# The solutions above are the expected interview answers.
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: One Queue
+---------------------
+Time Complexity:
+  - Push: O(n) (rotation)
+  - Pop: O(1)
+  - Top: O(1)
+  - Empty: O(1)
+
+Space Complexity: O(n)
+  - Store elements in queue.
+
+Approach 2: Two Queues
+----------------------
+Time Complexity:
+  - Push: O(1)
+  - Pop: O(n) (moving elements)
+  - Top: O(n)
+  - Empty: O(1)
+
+Space Complexity: O(n)
+  - Store elements.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Standard Ops
+  Push 1, Push 2, Top -> 2, Pop -> 2, Empty -> False
+  ✓ Correct LIFO behavior
+
+Test Case 2: Multiple Pushes
+  Push 1, 2, 3. Pop -> 3, Pop -> 2, Pop -> 1
+  ✓ Correct order
+
+Test Case 3: Empty Check
+  Pop all -> Empty -> True
+  ✓ Correct
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: One Queue ✓ RECOMMENDED
+-----------------------------------
+Pros:
+  - O(1) Pop.
+  - Simpler implementation than two queues.
+  - Uses only one queue.
+
+Cons:
+  - O(n) Push.
+
+Approach 2: Two Queues
+----------------------
+Pros:
+  - O(1) Push.
+
+Cons:
+  - O(n) Pop.
+  - More complex logic.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Using List as Stack
+   ❌ self.stack.pop() (This is cheating the problem constraints)
+   ✓ Use deque and only append/popleft
+
+2. Incorrect Rotation
+   ❌ Rotating len(q) times
+   ✓ Rotate len(q)-1 times (keep new element at front)
+
+3. Empty Queue Access
+   ❌ Pop from empty
+   ✓ Constraints say calls are valid, but good to check
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Queue is FIFO, Stack is LIFO.
+2. To invert order, we must rotate elements or move them.
+3. One queue with rotation on push is the most elegant solution.
+4. Trade-off: O(n) Push vs O(n) Pop.
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Implement Queue using Stacks (Easy) - The reverse problem
+- Min Stack (Medium) - Stack with O(1) min
+- Design Circular Queue (Medium)
+
+
+================================================================================

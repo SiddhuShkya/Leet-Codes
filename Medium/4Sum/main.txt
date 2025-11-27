@@ -1,0 +1,219 @@
+================================================================================
+4SUM - LEETCODE MEDIUM
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given an array nums of n integers, return an array of all the unique quadruplets 
+[nums[a], nums[b], nums[c], nums[d]] such that:
+- 0 <= a, b, c, d < n
+- a, b, c, and d are distinct.
+- nums[a] + nums[b] + nums[c] + nums[d] == target
+
+You may return the answer in any order.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: nums = [1,0,-1,0,-2,2], target = 0
+  Output: [[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]]
+
+Example 2:
+  Input: nums = [2,2,2,2,2], target = 8
+  Output: [[2,2,2,2]]
+
+CONSTRAINTS:
+------------
+- 1 <= nums.length <= 200
+- -10^9 <= nums[i] <= 10^9
+- -10^9 <= target <= 10^9
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Avoiding duplicates in the result
+2. Reducing complexity from O(n^4)
+3. Handling large numbers (overflow in some languages, though Python handles it)
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Sorting + Two Pointers (O(n^3)) ✓ OPTIMAL
+1. Sort the array.
+2. Iterate `i` from 0 to n-4.
+   - If `i > 0` and `nums[i] == nums[i-1]`, skip (duplicate).
+3. Iterate `j` from `i+1` to n-3.
+   - If `j > i+1` and `nums[j] == nums[j-1]`, skip (duplicate).
+4. Use Two Pointers `left = j+1` and `right = n-1`.
+5. Calculate `sum = nums[i] + nums[j] + nums[left] + nums[right]`.
+6. If `sum == target`:
+   - Add to result.
+   - Move `left` forward and `right` backward.
+   - Skip duplicates for `left` and `right`.
+7. If `sum < target`, `left++`.
+8. If `sum > target`, `right--`.
+
+General k-Sum Approach:
+-----------------------
+This problem is an extension of 3Sum, which is an extension of 2Sum.
+We can reduce k-Sum to (k-1)-Sum until we reach 2-Sum.
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Input: [1, 0, -1, 0, -2, 2], Target = 0
+Sorted: [-2, -1, 0, 0, 1, 2]
+
+1. i = 0 (Val -2).
+   2. j = 1 (Val -1).
+      - Left = 2 (Val 0), Right = 5 (Val 2).
+      - Sum = -2 + -1 + 0 + 2 = -1 < 0. Left++.
+      - Left = 3 (Val 0).
+      - Sum = -2 + -1 + 0 + 2 = -1 < 0. Left++.
+      - Left = 4 (Val 1).
+      - Sum = -2 + -1 + 1 + 2 = 0 == 0. Found [-2, -1, 1, 2].
+      - Move Left/Right.
+
+   3. j = 2 (Val 0).
+      - Left = 3 (Val 0), Right = 5 (Val 2).
+      - Sum = -2 + 0 + 0 + 2 = 0 == 0. Found [-2, 0, 0, 2].
+
+... and so on.
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Sorting + Two Pointers (Optimal) ✓ RECOMMENDED
+class Solution:
+    def fourSum(self, nums: List[int], target: int) -> List[List[int]]:
+        nums.sort()
+        n = len(nums)
+        res = []
+        
+        for i in range(n - 3):
+            # Skip duplicates for first number
+            if i > 0 and nums[i] == nums[i-1]:
+                continue
+                
+            for j in range(i + 1, n - 2):
+                # Skip duplicates for second number
+                if j > i + 1 and nums[j] == nums[j-1]:
+                    continue
+                    
+                # Two Pointers
+                left, right = j + 1, n - 1
+                while left < right:
+                    total = nums[i] + nums[j] + nums[left] + nums[right]
+                    
+                    if total == target:
+                        res.append([nums[i], nums[j], nums[left], nums[right]])
+                        
+                        # Skip duplicates for 3rd and 4th numbers
+                        while left < right and nums[left] == nums[left+1]:
+                            left += 1
+                        while left < right and nums[right] == nums[right-1]:
+                            right -= 1
+                            
+                        left += 1
+                        right -= 1
+                        
+                    elif total < target:
+                        left += 1
+                    else:
+                        right -= 1
+                        
+        return res
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Time Complexity: O(n^3)
+  - Two nested loops + Two Pointers (O(n)).
+
+Space Complexity: O(1) or O(log n)
+  - Sorting space. Result list not counted.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Standard
+  Input: [1,0,-1,0,-2,2], target=0
+  Output: [[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]]
+  ✓ Correct
+
+Test Case 2: All Same
+  Input: [2,2,2,2,2], target=8
+  Output: [[2,2,2,2]]
+  ✓ Duplicates handled
+
+Test Case 3: No Solution
+  Input: [1,2,3,4], target=100
+  Output: []
+  ✓ Correct
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Sorting + Two Pointers ✓ RECOMMENDED
+------------------------------------------------
+Pros:
+  - O(n^3) is best possible for general case.
+  - No extra space.
+
+Cons:
+  - Nested loops can be tricky to index.
+
+Approach 2: Hash Set (for 2Sum part)
+------------------------------------
+Reduce to 3Sum, then use Hash Set for 2Sum.
+Pros: O(n^3) time.
+Cons: O(n) space.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Duplicate Skipping
+   ❌ Skipping `nums[j] == nums[j-1]` without checking `j > i+1`
+   ✓ Must ensure we don't skip the first valid instance of a number in the current position.
+
+2. Range Limits
+   ✓ `range(n-3)` ensures we have at least 4 elements.
+
+3. Overflow
+   ✓ Python handles large integers automatically. In C++/Java, use `long`.
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. k-Sum problems are solved by reducing to (k-1)-Sum.
+2. Sorting allows efficient duplicate avoidance and two-pointer search.
+3. Time O(n^(k-1)), Space O(1).
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Two Sum (Easy)
+- 3Sum (Medium)
+- 3Sum Closest (Medium)
+- 4Sum II (Medium) - Different problem (4 arrays)
+
+
+================================================================================

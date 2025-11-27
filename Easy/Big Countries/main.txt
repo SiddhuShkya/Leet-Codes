@@ -1,0 +1,214 @@
+================================================================================
+BIG COUNTRIES - LEETCODE EASY (PANDAS)
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Table: World
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| name        | varchar |
+| continent   | varchar |
+| area        | int     |
+| population  | int     |
+| gdp         | bigint  |
++-------------+---------+
+name is the primary key column for this table.
+Each row of this table gives information about the name of a country, the 
+continent to which it belongs, its area, the population, and its GDP value.
+
+A country is big if:
+- it has an area of at least three million (i.e., 3000000 km2), or
+- it has a population of at least twenty-five million (i.e., 25000000).
+
+Write a solution to find the name, population, and area of the big countries.
+
+Return the result table in any order.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: 
+  World table:
+  +-------------+-----------+---------+------------+--------------+
+  | name        | continent | area    | population | gdp          |
+  +-------------+-----------+---------+------------+--------------+
+  | Afghanistan | Asia      | 652230  | 25500100   | 20343000000  |
+  | Albania     | Europe    | 28748   | 2831741    | 12960000000  |
+  | Algeria     | Africa    | 2381741 | 37100000   | 188681000000 |
+  | Andorra     | Europe    | 468     | 78115      | 3712000000   |
+  | Angola      | Africa    | 1246700 | 20609294   | 100990000000 |
+  +-------------+-----------+---------+------------+--------------+
+  Output: 
+  +-------------+------------+---------+
+  | name        | population | area    |
+  +-------------+------------+---------+
+  | Afghanistan | 25500100   | 652230  |
+  | Algeria     | 37100000   | 2381741 |
+  +-------------+------------+---------+
+  Explanation: 
+  - Afghanistan has population > 25 million.
+  - Algeria has area < 3 million but population > 25 million.
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Filtering based on multiple conditions (OR logic)
+2. Selecting specific columns
+3. Handling large datasets (Pandas efficiency)
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Pandas Boolean Indexing ✓ OPTIMAL
+1. Create a boolean mask where `area >= 3000000` OR `population >= 25000000`.
+2. Apply mask to DataFrame.
+3. Select columns `['name', 'population', 'area']`.
+
+Approach 2: SQL Query (if using SQL)
+1. `SELECT name, population, area FROM World WHERE area >= 3000000 OR population >= 25000000`
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Pandas Logic:
+-------------
+`df['area'] >= 3000000` creates a Series of True/False.
+`df['population'] >= 25000000` creates another Series.
+`|` operator performs element-wise OR.
+
+Example Row: Afghanistan
+Area: 652230 >= 3000000 -> False
+Pop: 25500100 >= 25000000 -> True
+False | True -> True. Keep row.
+
+Example Row: Albania
+Area: False
+Pop: False
+False | False -> False. Drop row.
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Pandas (Optimal) ✓ RECOMMENDED
+import pandas as pd
+
+def big_countries(world: pd.DataFrame) -> pd.DataFrame:
+    # Filter rows based on conditions
+    filtered_df = world[
+        (world['area'] >= 3000000) | 
+        (world['population'] >= 25000000)
+    ]
+    
+    # Select specific columns
+    return filtered_df[['name', 'population', 'area']]
+
+
+# Approach 2: Query Method (Cleaner Syntax)
+def big_countries_query(world: pd.DataFrame) -> pd.DataFrame:
+    return world.query(
+        'area >= 3000000 or population >= 25000000'
+    )[['name', 'population', 'area']]
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Time Complexity: O(n)
+  - Scan all rows to check conditions.
+
+Space Complexity: O(n)
+  - Create new DataFrame for result.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Both Conditions Met
+  Input: Area=4M, Pop=30M
+  Output: Included
+  ✓
+
+Test Case 2: Only Area Met
+  Input: Area=4M, Pop=1M
+  Output: Included
+  ✓
+
+Test Case 3: Only Pop Met
+  Input: Area=1M, Pop=30M
+  Output: Included
+  ✓
+
+Test Case 4: Neither Met
+  Input: Area=1M, Pop=1M
+  Output: Excluded
+  ✓
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Boolean Indexing ✓ RECOMMENDED
+------------------------------------------
+Pros:
+  - Standard Pandas usage.
+  - Fast (vectorized).
+
+Cons:
+  - None.
+
+Approach 2: .query()
+--------------------
+Pros:
+  - Readable string syntax.
+
+Cons:
+  - Slightly slower overhead for parsing string.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Operator Precedence
+   ❌ df['area'] >= 3M | df['pop'] >= 25M
+   ✓ (df['area'] >= 3M) | (df['pop'] >= 25M) (Parentheses required)
+
+2. Using 'or' instead of '|'
+   ❌ condition1 or condition2
+   ✓ condition1 | condition2 (Bitwise OR for Series)
+
+3. Column Order
+   ✓ Return `['name', 'population', 'area']` as requested (though "any order" usually applies to rows, column order might matter for graders).
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Use `|` for OR, `&` for AND in Pandas.
+2. Always wrap conditions in parentheses.
+3. Vectorized operations are preferred over loops.
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Recyclable and Low Fat Products (Easy)
+- Customers Who Never Order (Easy)
+- Article Views I (Easy)
+
+
+================================================================================

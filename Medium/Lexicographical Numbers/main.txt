@@ -1,0 +1,219 @@
+================================================================================
+LEXICOGRAPHICAL NUMBERS - LEETCODE MEDIUM
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given an integer n, return all the numbers in the range [1, n] sorted in 
+lexicographical order.
+
+You must write an algorithm that runs in O(n) time and uses O(1) extra space. 
+
+EXAMPLES:
+---------
+Example 1:
+  Input: n = 13
+  Output: [1,10,11,12,13,2,3,4,5,6,7,8,9]
+
+Example 2:
+  Input: n = 2
+  Output: [1,2]
+
+CONSTRAINTS:
+------------
+- 1 <= n <= 5 * 10^4
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Generating numbers in dictionary order
+2. Avoiding O(n log n) sorting
+3. O(1) extra space (excluding result)
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Sorting (O(n log n))
+1. Generate list 1 to n.
+2. Convert to strings and sort.
+3. Convert back (or just sort integers with string key).
+
+Approach 2: DFS / Recursion (O(n)) ✓ OPTIMAL
+1. Lexicographical order is essentially a pre-order traversal of a denary (10-ary) tree.
+   - Root (virtual) -> 1, 2, 3, ..., 9
+   - Node 1 -> 10, 11, ..., 19
+   - Node 10 -> 100, 101...
+2. Start with `curr = 1`.
+3. Add `curr` to result.
+4. Try to go deeper (multiply by 10):
+   - If `curr * 10 <= n`, then `curr = curr * 10`.
+5. If cannot go deeper, go to next sibling (add 1):
+   - If `curr >= n` or `curr % 10 == 9` (end of decade), we must go up.
+   - `curr = curr // 10` (backtrack up).
+   - `curr += 1` (next sibling).
+   - Repeat backtracking if we hit end of decade (e.g., 19 -> 1 -> 2).
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Tree Structure:
+---------------
+      (Root)
+     /      \
+    1        2 ... 9
+   / \
+  10 11 ... 19
+ /
+100...
+
+Traversal (n=13):
+1. Start 1. Add 1.
+2. 1 * 10 = 10 <= 13. Move to 10. Add 10.
+3. 10 * 10 = 100 > 13. Cannot go deep.
+4. Try next: 10 + 1 = 11 <= 13. Add 11.
+5. 11 * 10 > 13.
+6. Try next: 11 + 1 = 12 <= 13. Add 12.
+7. Try next: 12 + 1 = 13 <= 13. Add 13.
+8. Try next: 13 + 1 = 14 > 13.
+9. Backtrack: 13 // 10 = 1.
+10. Next sibling of 1 is 2. Add 2.
+... and so on.
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: DFS / Iterative (Optimal) ✓ RECOMMENDED
+class Solution:
+    def lexicalOrder(self, n: int) -> List[int]:
+        res = []
+        curr = 1
+        
+        for _ in range(n):
+            res.append(curr)
+            
+            if curr * 10 <= n:
+                # Go deeper (1 -> 10)
+                curr *= 10
+            else:
+                # Go to next sibling (10 -> 11)
+                # If we exceed n or hit end of decade (9, 19, 29...), go up
+                while curr % 10 == 9 or curr + 1 > n:
+                    curr //= 10
+                curr += 1
+                
+        return res
+
+
+# Approach 2: Sorting (Simple but O(n log n))
+class SolutionSort:
+    def lexicalOrder(self, n: int) -> List[int]:
+        return sorted(range(1, n + 1), key=str)
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: DFS
+---------------
+Time Complexity: O(n)
+  - We visit every number 1 to n exactly once.
+  - The backtracking steps amortize to constant time.
+
+Space Complexity: O(1)
+  - Excluding the output list, we only use `curr` variable.
+  - (Recursive DFS would take O(log10 n) stack space).
+
+Approach 2: Sorting
+-------------------
+Time Complexity: O(n log n)
+  - Sorting dominates.
+
+Space Complexity: O(n) or O(log n)
+  - Sorting overhead.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: n = 13
+  Output: [1,10,11,12,13,2,3,4,5,6,7,8,9]
+  ✓ Correct order
+
+Test Case 2: n = 2
+  Output: [1,2]
+  ✓ Correct
+
+Test Case 3: n = 20
+  Output: [1,10...19,2,20]
+  ✓ Correct
+
+Test Case 4: n = 100
+  Output: [1,10,100,11...99]
+  ✓ Correct
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Iterative DFS ✓ RECOMMENDED
+---------------------------------------
+Pros:
+  - O(n) time, O(1) space.
+  - Meets all constraints.
+
+Cons:
+  - Logic for backtracking (while % 10 == 9) is slightly tricky.
+
+Approach 2: Recursive DFS
+-------------------------
+Pros:
+  - Easier to write.
+
+Cons:
+  - Stack space.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Infinite Loop
+   ❌ Not handling `curr + 1 > n` inside the while loop
+   ✓ Must backtrack if incrementing exceeds n
+
+2. Decade Boundary
+   ❌ Incrementing 19 to 20 directly in the sibling check
+   ✓ 19 is end of decade, next lexicographical is 2 (sibling of 1), not 20.
+   ✓ Logic `while curr % 10 == 9: curr //= 10` handles this.
+
+3. Sorting
+   ✓ Sorting is fine for small n, but fails the "O(n) time" constraint strictly speaking.
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Lexicographical order of numbers = Pre-order traversal of 10-ary tree.
+2. Operations: Multiply by 10 (Child), Add 1 (Sibling), Divide by 10 (Parent).
+3. Time O(n), Space O(1).
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- K-th Smallest in Lexicographical Order (Hard)
+- Count Numbers with Unique Digits (Medium)
+
+
+================================================================================

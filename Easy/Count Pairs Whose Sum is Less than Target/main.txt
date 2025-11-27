@@ -1,0 +1,247 @@
+================================================================================
+COUNT PAIRS WHOSE SUM IS LESS THAN TARGET - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given a 0-indexed integer array nums of length n and an integer target, return 
+the number of pairs (i, j) where 0 <= i < j < n and nums[i] + nums[j] < target.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: nums = [-1,1,2,3,1], target = 2
+  Output: 3
+  Explanation: There are 3 pairs of indices that satisfy the conditions:
+  - (0, 1) since 0 < 1 and nums[0] + nums[1] = 0 < target
+  - (0, 2) since 0 < 2 and nums[0] + nums[2] = 1 < target
+  - (0, 4) since 0 < 4 and nums[0] + nums[4] = 0 < target
+  Note that (0, 3) is not valid since nums[0] + nums[3] = 2 = target.
+
+Example 2:
+  Input: nums = [-6,2,5,-2,-7,-1,3], target = -2
+  Output: 10
+  Explanation: There are 10 pairs of indices that satisfy the conditions.
+
+CONSTRAINTS:
+------------
+- 1 <= nums.length <= 50
+- -50 <= nums[i] <= 50
+- -50 <= target <= 50
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Finding pairs efficiently
+2. Handling negative numbers
+3. Optimizing beyond O(n^2)
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Brute Force (O(n^2))
+1. Iterate i from 0 to n-1.
+2. Iterate j from i+1 to n-1.
+3. If nums[i] + nums[j] < target, count++.
+
+Approach 2: Sorting + Two Pointers (O(n log n)) ✓ OPTIMAL
+1. Sort the array.
+   - Note: Sorting changes indices, but problem asks for *number* of pairs, 
+     not indices themselves. So order doesn't matter for the count.
+2. Initialize `left = 0`, `right = n - 1`.
+3. While `left < right`:
+   - Calculate `sum = nums[left] + nums[right]`.
+   - If `sum < target`:
+     - All pairs (left, right), (left, right-1), ..., (left, left+1) are valid.
+     - Why? Because array is sorted. If nums[left] + nums[right] < target, 
+       then nums[left] + (anything smaller than nums[right]) is definitely < target.
+     - Count += (right - left).
+     - Move `left` forward to try larger sum.
+   - Else (`sum >= target`):
+     - We need smaller sum.
+     - Move `right` backward.
+4. Return count.
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Example: [-1, 1, 2, 3, 1], Target = 2
+-------------------------------------
+Sorted: [-1, 1, 1, 2, 3]
+
+1. L=0 (-1), R=4 (3)
+   - Sum = 2. Not < 2.
+   - R-- -> 3.
+
+2. L=0 (-1), R=3 (2)
+   - Sum = 1. < 2.
+   - All pairs with L=0 and R in (1,2,3) are valid.
+   - Pairs: (-1, 1), (-1, 1), (-1, 2).
+   - Count += (3 - 0) = 3.
+   - L++ -> 1.
+
+3. L=1 (1), R=3 (2)
+   - Sum = 3. Not < 2.
+   - R-- -> 2.
+
+4. L=1 (1), R=2 (1)
+   - Sum = 2. Not < 2.
+   - R-- -> 1.
+
+5. L=1, R=1. Loop ends.
+
+Result: 3.
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Brute Force (Simple)
+class SolutionBrute:
+    def countPairs(self, nums: List[int], target: int) -> int:
+        count = 0
+        n = len(nums)
+        for i in range(n):
+            for j in range(i + 1, n):
+                if nums[i] + nums[j] < target:
+                    count += 1
+        return count
+
+
+# Approach 2: Sorting + Two Pointers (Optimal) ✓ RECOMMENDED
+class Solution:
+    def countPairs(self, nums: List[int], target: int) -> int:
+        nums.sort()
+        left, right = 0, len(nums) - 1
+        count = 0
+        
+        while left < right:
+            if nums[left] + nums[right] < target:
+                # If sum is less than target, then nums[left] paired with 
+                # any element from left+1 to right is also less than target
+                count += (right - left)
+                left += 1
+            else:
+                # Sum is too large, decrease right to reduce sum
+                right -= 1
+                
+        return count
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: Brute Force
+-----------------------
+Time Complexity: O(n^2)
+  - Nested loops.
+
+Space Complexity: O(1)
+  - Only variables.
+
+Approach 2: Sorting + Two Pointers
+----------------------------------
+Time Complexity: O(n log n)
+  - Sorting takes O(n log n).
+  - Two pointers traversal takes O(n).
+
+Space Complexity: O(1) or O(log n)
+  - Sorting space.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Standard
+  Input: [-1,1,2,3,1], target = 2
+  Output: 3
+  ✓ Correct
+
+Test Case 2: All Valid
+  Input: [1,2,3], target = 10
+  Output: 3
+  ✓ (1,2), (1,3), (2,3)
+
+Test Case 3: None Valid
+  Input: [5,6,7], target = 5
+  Output: 0
+  ✓ Min sum 11 > 5
+
+Test Case 4: Negative Numbers
+  Input: [-5,-2,-1], target = -2
+  Output: 2
+  ✓ (-5,-2)=-7, (-5,-1)=-6. (-2,-1)=-3 < -2 is True. Wait.
+  -2 + -1 = -3 < -2. Yes.
+  Sorted: [-5, -2, -1]
+  L=0 (-5), R=2 (-1). Sum -6 < -2. Count += 2. L=1.
+  L=1 (-2), R=2 (-1). Sum -3 < -2. Count += 1. L=2.
+  Total 3.
+  Pairs: (-5,-2), (-5,-1), (-2,-1). All < -2. Correct.
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Brute Force
+-----------------------
+Pros:
+  - Trivial.
+  - Fine for N=50.
+
+Cons:
+  - O(n^2).
+
+Approach 2: Sorting + Two Pointers ✓ RECOMMENDED
+------------------------------------------------
+Pros:
+  - Scalable to larger N.
+  - O(n log n).
+
+Cons:
+  - Modifies array order (if that matters, make copy).
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Preserving Indices
+   ✓ Problem asks for *number* of pairs, not indices. Sorting is safe.
+   ❌ If problem asked for indices, sorting would require tracking original indices.
+
+2. Counting Logic
+   ❌ count += 1 in two pointers
+   ✓ count += (right - left) (batch counting)
+
+3. Comparison Operator
+   ❌ <= target
+   ✓ < target (strictly less)
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. "Number of pairs with condition" often solvable by Sorting + Two Pointers.
+2. If sum < target, all elements between left and right pair with left.
+3. Time O(n log n), Space O(1).
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Two Sum (Easy)
+- 3Sum Smaller (Medium) - Very similar
+- Valid Triangle Number (Medium)
+
+
+================================================================================

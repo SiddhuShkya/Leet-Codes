@@ -1,0 +1,219 @@
+================================================================================
+MAXIMUM VALUE AT A GIVEN INDEX IN A BOUNDED ARRAY - LEETCODE MEDIUM
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+You are given three positive integers: n, index, and maxSum. You want to 
+construct an array nums (0-indexed) that satisfies the following conditions:
+
+1. nums.length == n
+2. nums[i] is a positive integer where 0 <= i < n.
+3. abs(nums[i] - nums[i+1]) <= 1 where 0 <= i < n-1.
+4. The sum of all the elements of nums does not exceed maxSum.
+5. nums[index] is maximized.
+
+Return nums[index] of the constructed array.
+
+Note that abs(x) equals x if x >= 0, and -x otherwise.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: n = 4, index = 2, maxSum = 6
+  Output: 2
+  Explanation: nums = [1, 2, 2, 1] is one array that satisfies all the 
+  conditions.
+  There are no arrays that satisfy all the conditions and have nums[2] == 3, so 
+  2 is the maximum nums[2].
+
+Example 2:
+  Input: n = 6, index = 1, maxSum = 10
+  Output: 3
+
+CONSTRAINTS:
+------------
+- 1 <= n <= maxSum <= 10^9
+- 0 <= index < n
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Maximizing a single value under sum constraint
+2. The "adjacent difference <= 1" constraint implies a pyramid shape
+3. Efficiently calculating the sum of such a pyramid
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Binary Search on Answer (O(log(maxSum))) ✓ OPTIMAL
+1. The possible values for `nums[index]` range from 1 to `maxSum`.
+2. This range is monotonic: if a value `x` is valid, any value `< x` is also valid.
+3. Use Binary Search to find the maximum valid `x`.
+4. `check(x)` function:
+   - Assume `nums[index] = x`.
+   - To minimize sum while keeping `nums[index] = x`, neighbors should decrease by 1.
+   - Left side: `x-1, x-2, ...` until 1, then all 1s.
+   - Right side: `x-1, x-2, ...` until 1, then all 1s.
+   - Calculate total sum using Arithmetic Progression formulas.
+   - Return `total_sum <= maxSum`.
+
+Calculation Details:
+--------------------
+Sum of sequence `x, x-1, ... 1` is `x*(x+1)/2`.
+If we have fewer elements than x, say `len`, sum is `(x + (x-len+1)) * len / 2`.
+If we have more elements than x, the tail is filled with 1s.
+
+DETAILED EXPLANATION:
+---------------------
+
+Example: n=4, index=2, maxSum=6.
+Try x=3.
+Array: [?, ?, 3, ?]
+Left (indices 0, 1): Length 2. Sequence `2, 1`.
+Right (index 3): Length 1. Sequence `2`.
+Total Array: [1, 2, 3, 2].
+Sum: 1+2+3+2 = 8.
+8 > 6. Too big. x=3 invalid.
+
+Try x=2.
+Array: [?, ?, 2, ?]
+Left: Length 2. Sequence `1, 1` (decreases to 1 then stays).
+Right: Length 1. Sequence `1`.
+Total Array: [1, 1, 2, 1].
+Sum: 5.
+5 <= 6. Valid.
+
+Try higher? Binary search handles optimization.
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Binary Search (Optimal) ✓ RECOMMENDED
+class Solution:
+    def maxValue(self, n: int, index: int, maxSum: int) -> int:
+        def getSum(len_side, val):
+            # Calculate sum of decreasing sequence starting from val-1 with length len_side
+            # Sequence: val-1, val-2, ... 
+            count = 0
+            if len_side >= val:
+                # We go down to 1, and have (len_side - (val - 1)) ones left
+                # Sum of 1 to val-1 is val*(val-1)/2
+                # Plus extra 1s
+                count = val * (val - 1) // 2 + (len_side - (val - 1))
+            else:
+                # We don't reach 1. Smallest term is val - len_side.
+                # Sum of arithmetic progression
+                smallest = val - len_side
+                count = (val - 1 + smallest) * len_side // 2
+            return count
+
+        def check(x):
+            # Sum = x (peak) + left_sum + right_sum
+            left_len = index
+            right_len = n - 1 - index
+            return x + getSum(left_len, x) + getSum(right_len, x) <= maxSum
+
+        left, right = 1, maxSum
+        ans = 1
+        
+        while left <= right:
+            mid = (left + right) // 2
+            if check(mid):
+                ans = mid
+                left = mid + 1
+            else:
+                right = mid - 1
+                
+        return ans
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Time Complexity: O(log(maxSum))
+  - Binary search range is 1 to maxSum.
+  - Check function is O(1) using math formulas.
+
+Space Complexity: O(1)
+  - Only variables.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: n=4, index=2, maxSum=6
+  Output: 2
+  ✓ Correct
+
+Test Case 2: n=6, index=1, maxSum=10
+  Output: 3
+  ✓ Correct
+
+Test Case 3: Large Constraints
+  Input: n=10^9, index=0, maxSum=10^9
+  Output: 1 (Array of all 1s sums to 10^9)
+  ✓ Correct
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Binary Search ✓ RECOMMENDED
+---------------------------------------
+Pros:
+  - Efficient O(log M).
+  - Handles large N (10^9) because check is O(1).
+
+Cons:
+  - Math for arithmetic sum can be tricky (off-by-one errors).
+
+Approach 2: Simulation
+----------------------
+Start with all 1s. Increment peak and expand neighbors.
+Pros: Intuitive.
+Cons: O(maxSum) or O(N), too slow for 10^9.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Arithmetic Sum Formula
+   ✓ Sum 1..k = k(k+1)/2.
+   ✓ Be careful when sequence doesn't reach 1 (stops at k > 1).
+
+2. Ones Padding
+   ✓ If `len > val`, the sequence goes `val-1...1, 1, 1...`. Don't forget the trailing 1s.
+
+3. Binary Search Bounds
+   ✓ `left = 1`, `right = maxSum`.
+   ✓ `ans` stores valid mid.
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. "Maximize X subject to Sum <= Y" -> Binary Search on Answer.
+2. "Adjacent diff <= 1" creates a pyramid/mountain shape.
+3. Use O(1) math formulas for sums, not loops.
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Koko Eating Bananas (Medium) - Binary Search on Answer
+- Minimum Number of Days to Make m Bouquets (Medium)
+
+
+================================================================================

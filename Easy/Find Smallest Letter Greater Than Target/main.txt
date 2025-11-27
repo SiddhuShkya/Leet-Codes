@@ -1,0 +1,245 @@
+================================================================================
+FIND SMALLEST LETTER GREATER THAN TARGET - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+You are given an array of characters letters that is sorted in non-decreasing 
+order, and a character target. There are at least two different characters in 
+letters.
+
+Return the smallest character in letters that is lexicographically greater 
+than target. If such a character does not exist, return the first character 
+in letters.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: letters = ["c","f","j"], target = "a"
+  Output: "c"
+  Explanation: The smallest character that is lexicographically greater than 'a' in letters is 'c'.
+
+Example 2:
+  Input: letters = ["c","f","j"], target = "c"
+  Output: "f"
+  Explanation: The smallest character that is lexicographically greater than 'c' in letters is 'f'.
+
+Example 3:
+  Input: letters = ["x","x","y","y"], target = "z"
+  Output: "x"
+  Explanation: There are no characters in letters that is lexicographically greater than 'z', so we return letters[0].
+
+CONSTRAINTS:
+------------
+- 2 <= letters.length <= 10^4
+- letters[i] is a lowercase English letter.
+- letters is sorted in non-decreasing order.
+- letters contains at least two different characters.
+- target is a lowercase English letter.
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Handling wrap-around (circular) condition
+2. Finding "strictly greater" element
+3. Optimizing for sorted input
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Linear Scan (O(n))
+1. Iterate through letters.
+2. If letter > target, return it immediately.
+3. If loop finishes without return, return letters[0] (wrap around).
+
+Approach 2: Binary Search (O(log n)) ✓ OPTIMAL
+1. Initialize left = 0, right = len(letters) - 1.
+2. While left <= right:
+   - mid = (left + right) // 2.
+   - If letters[mid] <= target:
+     - We need larger, so left = mid + 1.
+   - Else (letters[mid] > target):
+     - This could be the answer, but we want smallest.
+     - Store mid (or just keep narrowing), right = mid - 1.
+3. After loop, `left` will point to the smallest element > target.
+4. If `left` is out of bounds (== len), return letters[0].
+   - Or simply return letters[left % len].
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Binary Search Logic:
+--------------------
+Letters: ["c", "f", "j"], Target: "c"
+
+1. L=0, R=2, Mid=1 ("f")
+   - "f" > "c"? Yes.
+   - Potential answer. Try left side.
+   - R = 0.
+
+2. L=0, R=0, Mid=0 ("c")
+   - "c" <= "c"? Yes.
+   - Need larger.
+   - L = 1.
+
+3. L=1, R=0. Loop ends.
+   - Return letters[L] = letters[1] = "f".
+
+Wrap Around Case:
+-----------------
+Letters: ["c", "f", "j"], Target: "z"
+
+1. L=0, R=2, Mid=1 ("f") <= "z". L=2.
+2. L=2, R=2, Mid=2 ("j") <= "z". L=3.
+3. L=3, R=2. Loop ends.
+   - L=3 is out of bounds.
+   - Return letters[L % 3] = letters[0] = "c".
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Linear Scan (Simple)
+class SolutionLinear:
+    def nextGreatestLetter(self, letters: List[str], target: str) -> str:
+        for letter in letters:
+            if letter > target:
+                return letter
+        return letters[0]
+
+
+# Approach 2: Binary Search (Optimal) ✓ RECOMMENDED
+class Solution:
+    def nextGreatestLetter(self, letters: List[str], target: str) -> str:
+        left, right = 0, len(letters) - 1
+        
+        while left <= right:
+            mid = (left + right) // 2
+            if letters[mid] <= target:
+                left = mid + 1
+            else:
+                right = mid - 1
+                
+        # If left == len(letters), it means no element > target found
+        # In that case, wrap around to index 0
+        return letters[left % len(letters)]
+
+
+# Approach 3: Bisect Module (Python Built-in)
+import bisect
+class SolutionBisect:
+    def nextGreatestLetter(self, letters: List[str], target: str) -> str:
+        idx = bisect.bisect_right(letters, target)
+        return letters[idx % len(letters)]
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: Linear Scan
+-----------------------
+Time Complexity: O(n)
+  - Visit each element.
+
+Space Complexity: O(1)
+  - Only variables.
+
+Approach 2: Binary Search
+-------------------------
+Time Complexity: O(log n)
+  - Standard binary search.
+
+Space Complexity: O(1)
+  - Only pointers.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Middle Element
+  Input: ["c","f","j"], target = "c"
+  Output: "f"
+  ✓ "f" is next greater
+
+Test Case 2: First Element
+  Input: ["c","f","j"], target = "a"
+  Output: "c"
+  ✓ "c" > "a"
+
+Test Case 3: Wrap Around
+  Input: ["c","f","j"], target = "j"
+  Output: "c"
+  ✓ No element > "j", wrap to start
+
+Test Case 4: Duplicates
+  Input: ["x","x","y","y"], target = "x"
+  Output: "y"
+  ✓ Skips duplicates of target
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Linear Scan
+-----------------------
+Pros:
+  - Trivial to implement.
+  - Fast for small N.
+
+Cons:
+  - O(n) time.
+
+Approach 2: Binary Search ✓ RECOMMENDED
+---------------------------------------
+Pros:
+  - O(log n) time.
+  - Scalable.
+
+Cons:
+  - Slightly more code.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Wrong Comparison
+   ❌ if letters[mid] < target
+   ✓ Must use <= target to skip duplicates and the target itself
+
+2. Wrap Around Logic
+   ❌ Returning None or -1
+   ✓ Problem requires returning first element if no greater element found
+
+3. Index Out of Bounds
+   ✓ Use modulo operator `left % len` to handle wrap around safely
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Sorted array search -> Binary Search.
+2. "Smallest element greater than target" is `upper_bound` or `bisect_right`.
+3. Wrap around condition is handled by modulo or explicit check.
+4. Time O(log n), Space O(1).
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- First Bad Version (Easy)
+- Search Insert Position (Easy)
+- Find First and Last Position of Element in Sorted Array (Medium)
+
+
+================================================================================

@@ -1,0 +1,236 @@
+================================================================================
+REVERSE LINKED LIST II - LEETCODE MEDIUM
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given the head of a singly linked list and two integers left and right where 
+left <= right, reverse the nodes of the list from position left to position 
+right, and return the reversed list.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: head = [1,2,3,4,5], left = 2, right = 4
+  Output: [1,4,3,2,5]
+
+Example 2:
+  Input: head = [5], left = 1, right = 1
+  Output: [5]
+
+CONSTRAINTS:
+------------
+- The number of nodes in the list is n.
+- 1 <= n <= 500
+- -500 <= Node.val <= 500
+- 1 <= left <= right <= n
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Reversing a sub-segment in-place
+2. Reconnecting the reversed segment to the rest of the list
+3. Handling edge cases (left=1, left=right)
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Iterative In-Place (O(n)) ✓ OPTIMAL
+1. Use a dummy node pointing to head (handles left=1).
+2. Move `prev` pointer to the node just before `left`.
+3. `curr` points to the node at `left`.
+4. Reverse the sub-list from `left` to `right`.
+   - We need to perform `right - left` swaps.
+   - In each step, move the `next_node` to the front of the sub-list (after `prev`).
+   - Logic:
+     - `next_node = curr.next`
+     - `curr.next = next_node.next` (Remove next_node)
+     - `next_node.next = prev.next` (Insert next_node at front)
+     - `prev.next = next_node` (Update front)
+5. Return `dummy.next`.
+
+Approach 2: Convert to List (O(n) Space)
+1. Convert LL to array.
+2. Reverse subarray.
+3. Rebuild LL.
+(This is what the provided main.py does, but it's not optimal for space).
+
+
+DETAILED EXPLANATION:
+---------------------
+
+In-Place Reversal Logic:
+------------------------
+List: 1 -> 2 -> 3 -> 4 -> 5, Left=2, Right=4
+Dummy -> 1 -> 2 -> 3 -> 4 -> 5
+Prev points to 1. Curr points to 2.
+
+Iteration 1 (Reverse 3):
+- Next = 3.
+- 2 -> 4 (Curr skips Next)
+- 3 -> 2 (Next points to Prev.next)
+- 1 -> 3 (Prev points to Next)
+State: 1 -> 3 -> 2 -> 4 -> 5
+
+Iteration 2 (Reverse 4):
+- Next = 4.
+- 2 -> 5 (Curr skips Next)
+- 4 -> 3 (Next points to Prev.next)
+- 1 -> 4 (Prev points to Next)
+State: 1 -> 4 -> 3 -> 2 -> 5
+
+Done.
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Iterative In-Place (Optimal) ✓ RECOMMENDED
+class Solution:
+    def reverseBetween(self, head: Optional[ListNode], left: int, right: int) -> Optional[ListNode]:
+        if not head or left == right:
+            return head
+            
+        dummy = ListNode(0, head)
+        prev = dummy
+        
+        # Move prev to node before left
+        for _ in range(left - 1):
+            prev = prev.next
+            
+        # Curr is the first node to be reversed
+        curr = prev.next
+        
+        # Reverse logic: Move curr.next to the front of the sublist
+        for _ in range(right - left):
+            next_node = curr.next
+            curr.next = next_node.next
+            next_node.next = prev.next
+            prev.next = next_node
+            
+        return dummy.next
+
+
+# Approach 2: List Conversion (Sub-optimal Space)
+# (Similar to provided main.py but cleaner)
+class SolutionList:
+    def reverseBetween(self, head: Optional[ListNode], left: int, right: int) -> Optional[ListNode]:
+        vals = []
+        curr = head
+        while curr:
+            vals.append(curr.val)
+            curr = curr.next
+            
+        # Reverse slice
+        vals[left-1:right] = vals[left-1:right][::-1]
+        
+        # Rebuild
+        dummy = ListNode(0)
+        curr = dummy
+        for v in vals:
+            curr.next = ListNode(v)
+            curr = curr.next
+        return dummy.next
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: In-Place
+--------------------
+Time Complexity: O(n)
+  - Single pass.
+
+Space Complexity: O(1)
+  - Only pointers.
+
+Approach 2: List Conversion
+---------------------------
+Time Complexity: O(n)
+Space Complexity: O(n)
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Middle Reverse
+  Input: [1,2,3,4,5], 2, 4
+  Output: [1,4,3,2,5]
+  ✓ Correct
+
+Test Case 2: Head Reverse
+  Input: [1,2,3], 1, 2
+  Output: [2,1,3]
+  ✓ Dummy node handles prev correctly
+
+Test Case 3: Single Node
+  Input: [5], 1, 1
+  Output: [5]
+  ✓ Loop range(0) -> No op. Correct.
+
+Test Case 4: Full Reverse
+  Input: [1,2], 1, 2
+  Output: [2,1]
+  ✓ Correct
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: In-Place ✓ RECOMMENDED
+----------------------------------
+Pros:
+  - O(1) space.
+  - Standard interview solution.
+
+Cons:
+  - Pointer manipulation is tricky.
+
+Approach 2: Recursion
+---------------------
+Can reverse first N nodes, then combine.
+Pros: Elegant.
+Cons: O(n) stack.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Off-by-one
+   ✓ `range(right - left)` is the number of swaps needed.
+
+2. Breaking the List
+   ❌ Forgetting to reconnect the tail
+   ✓ The logic `curr.next = next_node.next` maintains the tail connection automatically.
+
+3. Left = 1
+   ✓ Dummy node is essential here so `prev` exists.
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Use Dummy Node for generic handling.
+2. "Reverse Sublist" pattern: repeatedly move `curr.next` to `prev.next`.
+3. Time O(n), Space O(1).
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Reverse Linked List (Easy)
+- Reverse Nodes in k-Group (Hard)
+- Palindrome Linked List (Easy)
+
+
+================================================================================

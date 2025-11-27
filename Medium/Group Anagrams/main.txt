@@ -1,0 +1,224 @@
+================================================================================
+LEETCODE PROBLEM: GROUP ANAGRAMS
+================================================================================
+Difficulty: Medium
+Topics: Array, Hash Table, String, Sorting
+
+================================================================================
+PROBLEM STATEMENT
+================================================================================
+Given an array of strings strs, group the anagrams together. You can return 
+the answer in any order.
+
+An Anagram is a word or phrase formed by rearranging the letters of a 
+different word or phrase, typically using all the original letters exactly 
+once.
+
+Example 1:
+Input: strs = ["eat","tea","tan","ate","nat","bat"]
+Output: [["bat"],["nat","tan"],["ate","eat","tea"]]
+
+Example 2:
+Input: strs = [""]
+Output: [[""]]
+
+Example 3:
+Input: strs = ["a"]
+Output: [["a"]]
+
+Constraints:
+• 1 <= strs.length <= 10^4
+• 0 <= strs[i].length <= 100
+• strs[i] consists of lowercase English letters.
+
+================================================================================
+SOLUTION APPROACHES
+================================================================================
+
+APPROACH 1: Hash Map with Sorted String Keys (Optimal)
+-------------------------------------------------------
+Strategy:
+- Use a hash map where the key is the sorted version of each string
+- All anagrams will have the same sorted representation
+- Group strings with the same sorted key together
+
+Algorithm:
+1. Create a hash map (defaultdict) to store anagram groups
+2. For each string in the input array:
+   a. Sort the characters of the string
+   b. Use the sorted string as a key in the hash map
+   c. Append the original string to the list for that key
+3. Return all values from the hash map as the result
+
+Time Complexity: O(n * k log k)
+- n = number of strings
+- k = maximum length of a string
+- Sorting each string takes O(k log k)
+
+Space Complexity: O(n * k)
+- Storing all strings in the hash map
+
+Implementation (main2.py):
+```python
+from collections import defaultdict
+
+class Solution(object):
+    def groupAnagrams(self, strs):
+        anagrams = defaultdict(list)
+        for s in strs:
+            # Sort each string and use it as a key
+            sorted_str = ''.join(sorted(s))
+            anagrams[sorted_str].append(s)
+        
+        # Return all the values in the hash map
+        return list(anagrams.values())
+```
+
+APPROACH 2: Character Count as Key (Alternative)
+-------------------------------------------------
+Strategy:
+- Instead of sorting, use character frequency count as the key
+- Create a tuple of character counts (26 elements for a-z)
+- This can be more efficient for very long strings
+
+Time Complexity: O(n * k)
+- Better than sorting approach for long strings
+
+Space Complexity: O(n * k)
+
+Example:
+For "eat": count = (1,0,0,0,1,0,...,1,0,...) for [a,b,c,d,e,...,t,...]
+
+APPROACH 3: Brute Force (Inefficient - main.py)
+------------------------------------------------
+Strategy:
+- Compare each string with every other string
+- Check if they are anagrams by sorting both
+
+Time Complexity: O(n^2 * k log k)
+- Very inefficient for large inputs
+
+Space Complexity: O(n * k)
+
+Note: This approach is not recommended for production use.
+
+================================================================================
+DETAILED WALKTHROUGH - OPTIMAL SOLUTION
+================================================================================
+
+Example: strs = ["eat","tea","tan","ate","nat","bat"]
+
+Step-by-Step Execution:
+-----------------------
+
+Initial State:
+anagrams = {}
+
+Iteration 1: s = "eat"
+- sorted_str = "aet"
+- anagrams = {"aet": ["eat"]}
+
+Iteration 2: s = "tea"
+- sorted_str = "aet"
+- anagrams = {"aet": ["eat", "tea"]}
+
+Iteration 3: s = "tan"
+- sorted_str = "ant"
+- anagrams = {"aet": ["eat", "tea"], "ant": ["tan"]}
+
+Iteration 4: s = "ate"
+- sorted_str = "aet"
+- anagrams = {"aet": ["eat", "tea", "ate"], "ant": ["tan"]}
+
+Iteration 5: s = "nat"
+- sorted_str = "ant"
+- anagrams = {"aet": ["eat", "tea", "ate"], "ant": ["tan", "nat"]}
+
+Iteration 6: s = "bat"
+- sorted_str = "abt"
+- anagrams = {"aet": ["eat", "tea", "ate"], "ant": ["tan", "nat"], "abt": ["bat"]}
+
+Final Result:
+[["eat", "tea", "ate"], ["tan", "nat"], ["bat"]]
+
+================================================================================
+KEY INSIGHTS
+================================================================================
+
+1. Anagram Property:
+   - Two strings are anagrams if they have the same characters with the same 
+     frequencies
+   - Sorting both strings produces identical results
+
+2. Hash Map Efficiency:
+   - Using sorted string as key allows O(1) lookup and grouping
+   - defaultdict automatically creates empty lists for new keys
+
+3. Alternative Key Representations:
+   - Sorted string: Simple but requires O(k log k) sorting
+   - Character count tuple: O(k) but more complex implementation
+   - Prime number product: Unique but risk of overflow
+
+4. Order Independence:
+   - The problem allows returning groups in any order
+   - Within each group, order also doesn't matter
+
+================================================================================
+EDGE CASES
+================================================================================
+
+1. Empty String:
+   Input: [""]
+   Output: [[""]]
+   - Empty strings are anagrams of themselves
+
+2. Single String:
+   Input: ["a"]
+   Output: [["a"]]
+   - Single element forms its own group
+
+3. No Anagrams:
+   Input: ["abc", "def", "ghi"]
+   Output: [["abc"], ["def"], ["ghi"]]
+   - Each string forms its own group
+
+4. All Anagrams:
+   Input: ["abc", "bca", "cab"]
+   Output: [["abc", "bca", "cab"]]
+   - All strings in one group
+
+5. Duplicate Strings:
+   Input: ["a", "a", "a"]
+   Output: [["a", "a", "a"]]
+   - Duplicates are valid anagrams
+
+================================================================================
+OPTIMIZATION NOTES
+================================================================================
+
+1. For Very Long Strings:
+   - Character count approach is better than sorting
+   - Avoids O(k log k) sorting overhead
+
+2. For Many Short Strings:
+   - Sorting approach is simpler and sufficient
+   - Overhead of creating count arrays not worth it
+
+3. Memory Optimization:
+   - Can use tuple of counts as key (immutable, hashable)
+   - Avoid creating intermediate sorted strings
+
+4. Python-Specific:
+   - defaultdict eliminates need for key existence checks
+   - ''.join(sorted(s)) is idiomatic Python
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+• Valid Anagram (Easy) - Check if two strings are anagrams
+• Find All Anagrams in a String (Medium) - Find anagram substrings
+• Group Shifted Strings (Medium) - Similar grouping concept
+• Sort Characters By Frequency (Medium) - Character frequency analysis
+
+================================================================================

@@ -1,0 +1,252 @@
+================================================================================
+LONGEST PALINDROME - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given a string s which consists of lowercase or uppercase letters, return the 
+length of the longest palindrome that can be built with those letters.
+
+Letters are case sensitive, for example, "Aa" is not considered a palindrome 
+here.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: s = "abccccdd"
+  Output: 7
+  Explanation: One longest palindrome that can be built is "dccaccd", whose 
+  length is 7.
+
+Example 2:
+  Input: s = "a"
+  Output: 1
+
+Example 3:
+  Input: s = "bb"
+  Output: 2
+
+CONSTRAINTS:
+------------
+- 1 <= s.length <= 2000
+- s consists of lowercase and/or uppercase English letters.
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Understanding palindrome construction
+2. Handling odd vs even counts
+3. Case sensitivity
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Greedy with Hash Map (O(n)) ✓ OPTIMAL
+1. Count frequency of each character.
+2. For each character count `v`:
+   - If `v` is even, we can use all `v` characters (v // 2 on left, v // 2 on right).
+   - If `v` is odd, we can use `v - 1` characters (making it even).
+3. Sum up all the even parts.
+4. If there was ANY odd count, we can place exactly one central character.
+   - Add 1 to the result if `sum < len(s)` (or track a boolean flag).
+
+Simplified Logic:
+-----------------
+Length = 0
+HasOdd = False
+For count in frequencies:
+    Length += (count // 2) * 2
+    If count % 2 == 1:
+        HasOdd = True
+If HasOdd:
+    Length += 1
+Return Length
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Example: "abccccdd"
+-------------------
+Counts:
+  a: 1
+  b: 1
+  c: 4
+  d: 2
+
+Processing:
+- 'a' (1): 1 // 2 = 0 pairs. Remainder 1. (HasOdd = True)
+- 'b' (1): 1 // 2 = 0 pairs. Remainder 1. (HasOdd = True)
+- 'c' (4): 4 // 2 = 2 pairs. Add 4 to length.
+- 'd' (2): 2 // 2 = 1 pair. Add 2 to length.
+
+Total Even Length = 4 + 2 = 6.
+HasOdd is True (we have 'a' or 'b' left over).
+We can put one of them in the middle.
+Total Length = 6 + 1 = 7.
+
+Palindrome could be: "dccaccd" or "dccbccd".
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Greedy with Counter (Optimal) ✓ RECOMMENDED
+from collections import Counter
+
+class Solution:
+    def longestPalindrome(self, s: str) -> int:
+        counts = Counter(s)
+        length = 0
+        has_odd = False
+        
+        for count in counts.values():
+            # Add the largest even part
+            length += (count // 2) * 2
+            
+            # Check if there's a remainder
+            if count % 2 == 1:
+                has_odd = True
+                
+        # If we have any odd counts, we can add one center character
+        if has_odd:
+            length += 1
+            
+        return length
+
+
+# Approach 2: Set (One Pass)
+class SolutionSet:
+    def longestPalindrome(self, s: str) -> int:
+        seen = set()
+        pairs = 0
+        
+        for char in s:
+            if char in seen:
+                seen.remove(char)
+                pairs += 1
+            else:
+                seen.add(char)
+        
+        # pairs * 2 gives length of paired characters
+        # If set is not empty, we have leftovers, take 1 for center
+        if seen:
+            return pairs * 2 + 1
+        else:
+            return pairs * 2
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: Counter
+-------------------
+Time Complexity: O(n)
+  - Count chars: O(n).
+  - Iterate counts: O(1) (max 52 unique chars).
+
+Space Complexity: O(1)
+  - Max 52 entries in map/counter.
+
+Approach 2: Set
+---------------
+Time Complexity: O(n)
+  - Iterate string once.
+
+Space Complexity: O(1)
+  - Max 52 entries in set.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Mixed
+  Input: "abccccdd"
+  Output: 7
+  ✓ 4c + 2d + 1(a or b) = 7
+
+Test Case 2: Single Char
+  Input: "a"
+  Output: 1
+  ✓ 1
+
+Test Case 3: All Even
+  Input: "bb"
+  Output: 2
+  ✓ 2
+
+Test Case 4: All Unique
+  Input: "abc"
+  Output: 1
+  ✓ 0 pairs + 1 center = 1
+
+Test Case 5: Case Sensitive
+  Input: "Aa"
+  Output: 1
+  ✓ 'A' and 'a' are distinct. 0 pairs + 1 center.
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Greedy Counter ✓ RECOMMENDED
+----------------------------------------
+Pros:
+  - Very clear logic.
+  - O(n) time.
+
+Cons:
+  - None.
+
+Approach 2: Set
+---------------
+Pros:
+  - Single pass (no separate counting phase).
+
+Cons:
+  - Slightly less intuitive than "counting evens".
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Summing All Counts
+   ❌ Returning len(s)
+   ✓ We can only use characters that form pairs (plus one center)
+
+2. Ignoring Case
+   ❌ Treating 'A' and 'a' as same
+   ✓ Problem says case sensitive
+
+3. Adding All Odd Remainders
+   ❌ Adding 1 for EACH odd count
+   ✓ Can only have ONE center character total
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Palindromes consist of pairs of characters and at most one center character.
+2. Length = Sum(count // 2 * 2) + (1 if any odd count exists).
+3. Time O(n), Space O(1) (bounded by alphabet size).
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Palindrome Permutation (Easy) - Can string form a palindrome?
+- Longest Palindromic Substring (Medium) - Contiguous substring
+- Valid Palindrome (Easy) - Check if string is palindrome
+
+
+================================================================================
