@@ -1,0 +1,338 @@
+Integer to Roman
+================================================================================
+Problem Name: Integer to Roman
+Difficulty: Medium
+Topics: Hash Table, Math, String
+
+================================================================================
+PROBLEM STATEMENT
+================================================================================
+Seven different symbols represent Roman numerals with the following values:
+
+Symbol       Value
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+
+Roman numerals are formed by appending the conversions of decimal place values 
+from highest to lowest. Converting a decimal place value into a Roman numeral 
+has the following rules:
+- If the value does not start with 4 or 9, select the symbol of the maximal 
+  value that can be subtracted from the input, append that symbol to the 
+  result, subtract its value, and convert the remainder to a Roman numeral.
+- If the value starts with 4 or 9 use the subtractive form representing 
+  one symbol subtracted from the following symbol, for example, 4 is 1 (I) 
+  less than 5 (V): IV and 9 is 1 (I) less than 10 (X): IX. Only the 
+  following subtractive forms are used: 4 (IV), 9 (IX), 40 (XL), 90 (XC), 
+  400 (CD) and 900 (CM).
+- Only powers of 10 (I, X, C, M) can be appended consecutively at most 3 
+  times to represent multiples of 10. You cannot append 5 (V), 50 (L), or 
+  500 (D) multiple times. If you need to append a symbol 4 times use the 
+  subtractive form.
+
+Given an integer, convert it to a roman numeral.
+
+Examples:
+1. Input: num = 3749
+   Output: "MMMDCCXLIX"
+   Explanation:
+   3000 = MMM as 1000 (M) + 1000 (M) + 1000 (M)
+    700 = DCC as 500 (D) + 100 (C) + 100 (C)
+     40 = XL as 10 (X) less than 50 (L)
+      9 = IX as 1 (I) less than 10 (X)
+   Note: 49 is not 1 (I) less than 50 (L) because the conversion is based 
+   on decimal places
+
+2. Input: num = 58
+   Output: "LVIII"
+   Explanation:
+   50 = L
+    8 = VIII
+
+3. Input: num = 1994
+   Output: "MCMXCIV"
+   Explanation:
+   1000 = M
+    900 = CM
+     90 = XC
+      4 = IV
+
+Constraints:
+- 1 <= num <= 3999
+
+================================================================================
+SOLUTION APPROACHES
+================================================================================
+Approach 1: Greedy with Subtraction
+--------------------------------------------------------------------------------
+The most intuitive way to solve this problem is to use a greedy approach. We 
+want to subtract the largest possible Roman numeral value from `num` as many 
+times as possible, then move to the next largest value.
+
+Because of the subtractive forms (IV, IX, etc.), we can treat them as distinct 
+symbols with their own values. This simplifies the logic significantly.
+
+We define a list of (value, symbol) pairs sorted in descending order:
+(1000, "M"), (900, "CM"), (500, "D"), (400, "CD"), ... (1, "I")
+
+Algorithm:
+1. Initialize an empty result string.
+2. Iterate through the (value, symbol) pairs.
+3. While `num` is greater than or equal to the current `value`:
+    - Append `symbol` to the result.
+    - Subtract `value` from `num`.
+4. Return the result string.
+
+Time Complexity: O(1)
+- The input `num` is bounded (<= 3999). The loop runs a constant number of 
+  times because the number of Roman numeral symbols is fixed (13), and the 
+  maximum number of times any symbol can be repeated is small (e.g., 'M' can 
+  appear at most 3 times). Thus, the operations are constant relative to the 
+  input size constraints. Strictly speaking, it's O(log N) if N were unbounded, 
+  but with the constraint, it's O(1).
+
+Space Complexity: O(1)
+- We use a fixed amount of extra space for the `values` and `symbols` arrays. 
+  The result string size is also bounded.
+
+Python Code:
+```python
+class Solution:
+    def intToRoman(self, num: int) -> str:
+        values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+        symbols = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"]
+        res = []
+        for i in range(len(values)):
+            while num >= values[i]:
+                num -= values[i]
+                res.append(symbols[i])
+        return "".join(res)
+```
+
+Approach 2: Greedy with Division (Optimal)
+--------------------------------------------------------------------------------
+This is a slight optimization of Approach 1. Instead of subtracting the value 
+repeatedly in a `while` loop, we can use division to find out exactly how many 
+times the current symbol fits into `num`.
+
+Algorithm:
+1. Initialize an empty result string.
+2. Iterate through the (value, symbol) pairs.
+3. If `num` is 0, break.
+4. Calculate `count = num // value` and update `num = num % value`.
+5. Append `symbol` repeated `count` times to the result.
+6. Return the result string.
+
+Time Complexity: O(1)
+- Same reasoning as Approach 1. We iterate through the fixed list of 13 symbols 
+  exactly once.
+
+Space Complexity: O(1)
+- Fixed space for the lookup table.
+
+Python Code:
+```python
+class Solution:
+    def intToRoman(self, num: int) -> str:
+        value_symbols = [
+            (1000, 'M'), (900, 'CM'), (500, 'D'), (400, 'CD'),
+            (100, 'C'), (90, 'XC'), (50, 'L'), (40, 'XL'),
+            (10, 'X'), (9, 'IX'), (5, 'V'), (4, 'IV'),
+            (1, 'I')
+        ]
+        res = []
+        for value, symbol in value_symbols:
+            if num == 0: break
+            count, num = divmod(num, value)
+            res.append(symbol * count)
+        return "".join(res)
+```
+
+Approach 3: Hardcoded Digits
+--------------------------------------------------------------------------------
+Since the input is limited to 3999, we can precompute the Roman representation 
+for every digit in every position (thousands, hundreds, tens, ones).
+
+Thousands: ["", "M", "MM", "MMM"]
+Hundreds:  ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"]
+Tens:      ["", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"]
+Ones:      ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
+
+Algorithm:
+1. Extract thousands digit: `num // 1000`
+2. Extract hundreds digit: `(num % 1000) // 100`
+3. Extract tens digit: `(num % 100) // 10`
+4. Extract ones digit: `num % 10`
+5. Look up the corresponding string for each digit and concatenate.
+
+Time Complexity: O(1)
+- Just basic arithmetic and array lookups.
+
+Space Complexity: O(1)
+- Fixed size arrays for the digits.
+
+Python Code:
+```python
+class Solution:
+    def intToRoman(self, num: int) -> str:
+        M = ["", "M", "MM", "MMM"]
+        C = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"]
+        X = ["", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"]
+        I = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
+        return M[num // 1000] + C[(num % 1000) // 100] + X[(num % 100) // 10] + I[num % 10]
+```
+
+================================================================================
+DETAILED WALKTHROUGH
+================================================================================
+Let's trace Approach 2 (Greedy with Division) with `num = 1994`.
+
+Value-Symbol Table:
+[(1000, 'M'), (900, 'CM'), (500, 'D'), (400, 'CD'), (100, 'C'), (90, 'XC'), 
+ (50, 'L'), (40, 'XL'), (10, 'X'), (9, 'IX'), (5, 'V'), (4, 'IV'), (1, 'I')]
+
+Initial State:
+num = 1994
+res = []
+
+Iteration 1:
+- value = 1000, symbol = 'M'
+- count = 1994 // 1000 = 1
+- num = 1994 % 1000 = 994
+- res.append('M' * 1) -> res = ['M']
+
+Iteration 2:
+- value = 900, symbol = 'CM'
+- count = 994 // 900 = 1
+- num = 994 % 900 = 94
+- res.append('CM' * 1) -> res = ['M', 'CM']
+
+Iteration 3:
+- value = 500, symbol = 'D'
+- count = 94 // 500 = 0
+- num = 94 (unchanged)
+- res unchanged
+
+Iteration 4:
+- value = 400, symbol = 'CD'
+- count = 0
+- res unchanged
+
+Iteration 5:
+- value = 100, symbol = 'C'
+- count = 0
+- res unchanged
+
+Iteration 6:
+- value = 90, symbol = 'XC'
+- count = 94 // 90 = 1
+- num = 94 % 90 = 4
+- res.append('XC' * 1) -> res = ['M', 'CM', 'XC']
+
+Iteration 7-11:
+- values 50, 40, 10, 9, 5 all yield count = 0
+- num remains 4
+
+Iteration 12:
+- value = 4, symbol = 'IV'
+- count = 4 // 4 = 1
+- num = 4 % 4 = 0
+- res.append('IV' * 1) -> res = ['M', 'CM', 'XC', 'IV']
+
+Iteration 13:
+- num is 0, break loop (or continue with count=0)
+
+Final Result:
+"".join(res) -> "MCMXCIV"
+
+================================================================================
+KEY INSIGHTS
+================================================================================
+1.  **Treat Subtractive Forms as Symbols**: The problem becomes much simpler if 
+    you treat "IV", "IX", "XL", etc., as first-class symbols just like "V" or 
+    "X". This unifies the logic into a single greedy pass.
+
+2.  **Greedy Property**: Roman numerals are constructed by appending the 
+    largest possible symbols first. This structure naturally lends itself to a 
+    greedy algorithm where we try to fit the largest values first.
+
+3.  **Bounded Input**: The constraint `num <= 3999` is key. It means we don't 
+    need to handle arbitrarily large numbers (like 4000 which requires special 
+    notation). It also implies O(1) complexity for all approaches.
+
+4.  **Divmod**: Using `divmod` (integer division and modulo) is cleaner and 
+    slightly faster than repeated subtraction, especially for larger inputs if 
+    the constraints were higher.
+
+================================================================================
+EDGE CASES
+================================================================================
+1.  **Minimum Value (1)**
+    - Input: 1
+    - Output: "I"
+    - Logic: Matches the smallest symbol directly.
+
+2.  **Maximum Value (3999)**
+    - Input: 3999
+    - Output: "MMMCMXCIX"
+    - Logic: Tests the upper bound and multiple subtractive forms (CM, XC, IX).
+
+3.  **Subtractive Forms Only (e.g., 4, 9, 40, 900)**
+    - Input: 49
+    - Output: "XLIX"
+    - Logic: 40 (XL) + 9 (IX). Note it is NOT IL (49).
+
+4.  **Standard Forms Only (e.g., 8, 80, 800)**
+    - Input: 888
+    - Output: "DCCCLXXXVIII"
+    - Logic: Tests accumulation of standard symbols (D + CCC + L + XXX + V + III).
+
+5.  **Zero Handling**
+    - Input: 0
+    - Output: "" (Empty string)
+    - Note: The problem constraints say 1 <= num, but good to know the code 
+      handles 0 gracefully (returns empty string).
+
+6.  **Powers of 10 (10, 100, 1000)**
+    - Input: 100
+    - Output: "C"
+    - Logic: Exact match for a symbol.
+
+================================================================================
+OPTIMIZATION NOTES
+================================================================================
+-   **Hardcoding**: Approach 3 (Hardcoded Digits) is technically the fastest 
+    because it avoids loops and division entirely, relying only on array 
+    indexing and string concatenation. However, it is less extensible if the 
+    rules or constraints changed.
+
+-   **String Building**: In Python, creating a list of strings and using 
+    `"".join()` is generally more efficient than repeated string concatenation 
+    (`+=`) because strings are immutable.
+
+-   **Memory Usage**: All approaches use minimal memory. The hardcoded approach 
+    uses slightly more static memory for the arrays but saves on stack/heap 
+    allocations during execution compared to creating tuples in the loop.
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+1.  **Roman to Integer** (Easy)
+    - The reverse of this problem. Requires parsing the string and handling the 
+      subtractive logic in reverse.
+
+2.  **Integer to English Words** (Hard)
+    - Convert a non-negative integer to its English words representation. 
+      More complex rules and grouping by thousands.
+
+3.  **Text Justification** (Hard)
+    - String manipulation and formatting, shares the "greedy fitting" theme 
+      but for words in a line.
+
+4.  **Excel Sheet Column Title** (Easy)
+    - Convert a number to a column title (A, B, ... Z, AA, AB). Similar to 
+      base conversion but 1-indexed.
