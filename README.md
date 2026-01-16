@@ -2,19 +2,38 @@
 
 This repo is dedicated to storing the LeetCode problems I have solved, along with detailed documentation. Each problem includes Python solutions and in-depth explanations covering multiple approaches, complexity analysis, and edge cases.
 
-##  Repository Structure
+## 📊 Progress Summary
+
+<!-- PROGRESS_TABLE_START -->
+| Category | Easy | Medium | Hard | Total |
+| :--- | :---: | :---: | :---: | :---: |
+| Algorithms | 63 | 56 | 2 | **121** |
+| Database | 2 | 0 | 0 | **2** |
+| **Total** | **65** | **56** | **2** | **123** |
+<!-- PROGRESS_TABLE_END -->
+
+## 📂 Repository Structure
 
 ```
 Leet-Codes/
-├── Easy/
-│   ├── Two Sum/
-│   │   ├── main.py          # Python solution
-│   │   └── main.txt         # Comprehensive documentation
-│   └── ... 
-├── Medium/
-│   └── ... 
-└── Hard/
-    └── ... 
+├── Algorithms/
+│   ├── Easy/
+│   │   ├── Two Sum/
+│   │   │   ├── main.py          # Solution implementation
+│   │   │   └── main.txt         # Detailed documentation
+│   │   └── ...
+│   ├── Medium/
+│   │   └── ...
+│   └── Hard/
+│       └── ...
+├── Database/
+│   ├── Easy/
+│   │   └── ...
+│   ├── Medium/
+│   │   └── ...
+│   └── Hard/
+│       └── ...
+└── README.md
 ```
 
 ## 📝 What's Inside
