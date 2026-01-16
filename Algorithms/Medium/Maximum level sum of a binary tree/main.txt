@@ -1,0 +1,247 @@
+================================================================================
+MAXIMUM LEVEL SUM OF A BINARY TREE - LEETCODE MEDIUM
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given the root of a binary tree, the level of its root is 1, the level of its 
+children is 2, and so on.
+
+Return the smallest level x such that the sum of all the values of nodes at 
+level x is maximal.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: root = [1,7,0,7,-8,null,null]
+  Output: 2
+  Explanation:
+  Level 1 sum = 1.
+  Level 2 sum = 7 + 0 = 7.
+  Level 3 sum = 7 + -8 = -1.
+  Max sum is 7 at level 2.
+
+Example 2:
+  Input: root = [989,null,10250,98693,-89388,null,null,null,-32127]
+  Output: 2
+
+CONSTRAINTS:
+------------
+- The number of nodes in the tree is in the range [1, 10^4].
+- -10^5 <= Node.val <= 10^5
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Traversing tree level by level
+2. Calculating sum for each level
+3. Tracking maximum sum and corresponding level
+
+ALGORITHM STEPS:
+----------------
+Approach 1: BFS (Breadth-First Search) ✓ OPTIMAL
+1. Use a queue for level-order traversal.
+2. Initialize `max_sum = -infinity`, `max_level = 1`, `curr_level = 1`.
+3. While queue is not empty:
+   - Calculate `level_sum = 0`.
+   - Iterate through all nodes currently in queue (snapshot of current level).
+   - Add node value to `level_sum`.
+   - Add children to queue.
+   - If `level_sum > max_sum`:
+     - `max_sum = level_sum`
+     - `max_level = curr_level`
+   - `curr_level++`.
+4. Return `max_level`.
+
+Approach 2: DFS (Depth-First Search)
+1. Maintain a hash map or list `level_sums`.
+2. Traverse tree with DFS(node, level).
+3. `level_sums[level] += node.val`.
+4. After traversal, find level with max sum.
+
+
+DETAILED EXPLANATION:
+---------------------
+
+BFS Logic:
+----------
+Queue: [Root(1)]
+Level 1:
+- Pop 1. Sum = 1.
+- Push 7, 0.
+- Max Sum = 1. Max Level = 1.
+
+Queue: [7, 0]
+Level 2:
+- Pop 7. Sum = 7. Push 7, -8.
+- Pop 0. Sum = 7+0=7. Push (none).
+- Sum 7 > 1. Max Sum = 7. Max Level = 2.
+
+Queue: [7, -8]
+Level 3:
+- Pop 7. Sum = 7.
+- Pop -8. Sum = 7-8 = -1.
+- Sum -1 < 7. No update.
+
+Result: 2.
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: BFS (Optimal & Intuitive) ✓ RECOMMENDED
+from collections import deque
+
+class Solution:
+    def maxLevelSum(self, root: Optional[TreeNode]) -> int:
+        if not root:
+            return 0
+            
+        max_sum = float('-inf')
+        max_level = 0
+        curr_level = 1
+        
+        queue = deque([root])
+        
+        while queue:
+            level_sum = 0
+            # Process all nodes at current level
+            for _ in range(len(queue)):
+                node = queue.popleft()
+                level_sum += node.val
+                
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+            
+            # Update max
+            if level_sum > max_sum:
+                max_sum = level_sum
+                max_level = curr_level
+                
+            curr_level += 1
+            
+        return max_level
+
+
+# Approach 2: DFS (As implemented in main.py)
+class SolutionDFS:
+    def maxLevelSum(self, root: Optional[TreeNode]) -> int:
+        level_sums = {}
+        
+        def dfs(node, level):
+            if not node:
+                return
+            level_sums[level] = level_sums.get(level, 0) + node.val
+            dfs(node.left, level + 1)
+            dfs(node.right, level + 1)
+            
+        dfs(root, 1)
+        
+        # Find max level
+        max_sum = float('-inf')
+        ans_level = 1
+        # Iterate sorted keys to ensure smallest level is returned for ties
+        for level in sorted(level_sums.keys()):
+            if level_sums[level] > max_sum:
+                max_sum = level_sums[level]
+                ans_level = level
+                
+        return ans_level
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Time Complexity: O(N)
+  - Visit every node once.
+
+Space Complexity: O(W) (BFS) or O(H) (DFS)
+  - W = Max width of tree (queue size).
+  - H = Height of tree (recursion stack).
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Standard
+  Input: [1,7,0,7,-8]
+  Output: 2
+  ✓ Correct
+
+Test Case 2: Negative Values
+  Input: [-100, -200, -300, -20, -5]
+  Output: 3 (Level 3 sum -25 > Level 2 sum -500)
+  ✓ Correct handling of negative max
+
+Test Case 3: Tie
+  Input: [1, 1, 0] (Level 1=1, Level 2=1)
+  Output: 1
+  ✓ "Smallest level x" requirement met by strict `>` check (not `>=`).
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: BFS ✓ RECOMMENDED
+-----------------------------
+Pros:
+  - Natural fit for "level" problems.
+  - No recursion depth issues.
+
+Cons:
+  - None.
+
+Approach 2: DFS
+---------------
+Pros:
+  - Simple recursion.
+
+Cons:
+  - Requires extra storage (map) for sums.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Initialization
+   ❌ max_sum = 0
+   ✓ max_sum = float('-inf') (Sums can be negative)
+
+2. Tie Breaking
+   ❌ if level_sum >= max_sum
+   ✓ if level_sum > max_sum (We want smallest level for ties, and we traverse 1..N)
+
+3. Empty Tree
+   ✓ Handle root is None.
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Level-order traversal = BFS.
+2. Use `for _ in range(len(queue))` to process level by level.
+3. Time O(N), Space O(W).
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Binary Tree Level Order Traversal (Medium)
+- Average of Levels in Binary Tree (Easy)
+- Deepest Leaves Sum (Medium)
+
+
+================================================================================

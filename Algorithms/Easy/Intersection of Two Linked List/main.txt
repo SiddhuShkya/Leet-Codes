@@ -1,0 +1,303 @@
+================================================================================
+INTERSECTION OF TWO LINKED LISTS - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given the heads of two singly linked-lists headA and headB, return the node at 
+which the two lists intersect. If the two linked lists have no intersection at 
+all, return null.
+
+For example, the following two linked lists begin to intersect at node c1:
+A:       a1 → a2
+                ↘
+                 c1 → c2 → c3
+                ↗
+B:  b1 → b2 → b3
+
+The test cases are generated such that there are no cycles anywhere in the 
+entire linked structure.
+
+Note that the linked lists must retain their original structure after the 
+function returns.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: intersectVal = 8, listA = [4,1,8,4,5], listB = [5,6,1,8,4,5], 
+         skipA = 2, skipB = 3
+  Output: Intersected at '8'
+  Explanation: The intersected node's value is 8 (note that this must not be 
+  0 if the two lists intersect).
+
+Example 2:
+  Input: intersectVal = 0, listA = [2,6,4], listB = [1,5], skipA = 3, skipB = 2
+  Output: No intersection
+  Explanation: From the head of A, it reads as [2,6,4]. From the head of B, 
+  it reads as [1,5]. Since the two lists do not intersect, intersectVal must 
+  be 0, while skipA and skipB can be arbitrary values.
+
+CONSTRAINTS:
+------------
+- The number of nodes of listA is in the m.
+- The number of nodes of listB is in the n.
+- 1 <= m, n <= 3 * 10^4
+- 1 <= Node.val <= 10^5
+- 0 <= skipA < m
+- 0 <= skipB < n
+- intersectVal is 0 if listA and listB do not intersect.
+- intersectVal == listA[skipA] == listB[skipB] if listA and listB intersect.
+
+Follow up: Could you write a solution that runs in O(m + n) time and use only 
+O(1) memory?
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Lists may have different lengths
+2. Finding intersection in O(1) space
+3. Handling no intersection case
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Hash Set (O(n) space)
+1. Store all nodes of list A in a set.
+2. Traverse list B.
+3. If a node from B is in the set, that's the intersection.
+
+Approach 2: Length Difference (O(1) space)
+1. Calculate length of list A (lenA) and list B (lenB).
+2. Calculate difference d = |lenA - lenB|.
+3. Move pointer of longer list forward by d steps.
+4. Move both pointers forward until they meet or reach null.
+
+Approach 3: Two Pointers Trick (O(1) space) ✓ OPTIMAL
+1. Initialize pA = headA, pB = headB.
+2. Traverse lists.
+3. When pA reaches end, redirect to headB.
+4. When pB reaches end, redirect to headA.
+5. If they intersect, they will meet at the intersection node.
+6. If no intersection, they will both reach null at the same time (after 2nd pass).
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Why Two Pointers Trick Works?
+-----------------------------
+Let lenA = a + c (a = non-shared part, c = shared part)
+Let lenB = b + c (b = non-shared part)
+
+Pointer A travels: a + c + b + c ...
+Pointer B travels: b + c + a + c ...
+
+In the first iteration:
+- pA travels 'a' nodes, then 'c' nodes, then switches to headB.
+- pB travels 'b' nodes, then 'c' nodes, then switches to headA.
+
+Total distance to intersection:
+- pA: a + c + b
+- pB: b + c + a
+
+Since a + c + b = b + c + a, they traverse exactly the same number of nodes 
+to reach the intersection point in the second pass.
+
+Example:
+A: [4,1,8,4,5] (len 5)
+B: [5,6,1,8,4,5] (len 6)
+Intersection at 8.
+
+pA path: 4->1->8->4->5 -> (switch to B) -> 5->6->1->8
+pB path: 5->6->1->8->4->5 -> (switch to A) -> 4->1->8
+
+They meet at 8.
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Length Difference (Explicit)
+class SolutionLength:
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:
+        def get_len(node):
+            length = 0
+            while node:
+                length += 1
+                node = node.next
+            return length
+        
+        lenA = get_len(headA)
+        lenB = get_len(headB)
+        
+        currA, currB = headA, headB
+        
+        # Advance longer list
+        if lenA > lenB:
+            for _ in range(lenA - lenB):
+                currA = currA.next
+        else:
+            for _ in range(lenB - lenA):
+                currB = currB.next
+        
+        # Move together
+        while currA and currB:
+            if currA == currB:
+                return currA
+            currA = currA.next
+            currB = currB.next
+            
+        return None
+
+
+# Approach 2: Two Pointers (Elegant) ✓ RECOMMENDED
+class Solution:
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:
+        if not headA or not headB:
+            return None
+        
+        pA = headA
+        pB = headB
+        
+        # Loop until they meet (at intersection or at None)
+        while pA != pB:
+            # If pA reaches end, switch to headB
+            pA = pA.next if pA else headB
+            
+            # If pB reaches end, switch to headA
+            pB = pB.next if pB else headA
+            
+        return pA
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: Length Difference
+-----------------------------
+Time Complexity: O(m + n)
+  - Calculate lengths: O(m) + O(n)
+  - Align pointers: O(|m-n|)
+  - Traverse together: O(min(m, n))
+  - Total: O(m + n)
+
+Space Complexity: O(1)
+  - Only pointers used.
+
+Approach 2: Two Pointers
+------------------------
+Time Complexity: O(m + n)
+  - In worst case (no intersection), each pointer traverses both lists.
+  - Total steps: m + n.
+
+Space Complexity: O(1)
+  - Only two pointers.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Intersecting Lists
+  Input: A=[4,1,8,4,5], B=[5,6,1,8,4,5], intersect at 8
+  Output: Node 8
+  ✓ Correct intersection
+
+Test Case 2: No Intersection
+  Input: A=[2,6,4], B=[1,5]
+  Output: null
+  ✓ Returns None
+
+Test Case 3: Same List
+  Input: A=[1,2], B=[1,2] (same objects)
+  Output: Node 1
+  ✓ Returns head
+
+Test Case 4: Intersection at End
+  Input: A=[1,2,3], B=[4,3], intersect at 3
+  Output: Node 3
+  ✓ Correct
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Hash Set
+--------------------
+Pros:
+  - Easy to understand.
+  - O(m+n) time.
+
+Cons:
+  - O(m) or O(n) space.
+
+Approach 2: Length Difference
+-----------------------------
+Pros:
+  - O(1) space.
+  - Intuitive logic.
+
+Cons:
+  - Requires two passes (length calc + traversal).
+  - More code than two-pointer trick.
+
+Approach 3: Two Pointers Trick ✓ RECOMMENDED
+--------------------------------------------
+Pros:
+  - Concise code.
+  - O(1) space.
+  - O(m+n) time.
+
+Cons:
+  - Logic is slightly tricky to grasp initially.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Comparing Values Instead of Nodes
+   ❌ if pA.val == pB.val
+   ✓ if pA == pB (reference equality)
+
+2. Infinite Loop
+   ❌ Not handling None correctly in switch
+   ✓ pA = pA.next if pA else headB (allows reaching None eventually)
+
+3. Modifying Lists
+   ❌ Reversing lists to find intersection
+   ✓ Problem requires retaining structure
+
+4. Not Handling Different Lengths
+   ❌ Just traversing both from start
+   ✓ Must align or use switch trick
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Intersection is based on reference equality, not value.
+2. Two pointers traversing (A+B) and (B+A) cover same distance.
+3. They meet exactly at intersection point.
+4. If no intersection, they meet at None.
+5. Time O(m+n), Space O(1).
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Linked List Cycle II (Medium) - Find cycle start
+- Minimum Index Sum of Two Lists (Easy) - String list intersection
+- Remove Nth Node From End of List (Medium) - Two pointers
+- Palindrome Linked List (Easy) - Two pointers
+
+
+================================================================================

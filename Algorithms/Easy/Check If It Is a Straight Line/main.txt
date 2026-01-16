@@ -1,0 +1,211 @@
+================================================================================
+CHECK IF IT IS A STRAIGHT LINE - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+You are given an array coordinates, coordinates[i] = [x, y], where [x, y] 
+represents the coordinate of a point. Check if these points make a straight 
+line in the XY plane.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: coordinates = [[1,2],[2,3],[3,4],[4,5],[5,6],[6,7]]
+  Output: true
+  Explanation: The points lie on the line y = x + 1.
+
+Example 2:
+  Input: coordinates = [[1,1],[2,2],[3,4],[4,5],[5,6],[7,7]]
+  Output: false
+
+CONSTRAINTS:
+------------
+- 2 <= coordinates.length <= 1000
+- coordinates[i].length == 2
+- -10^4 <= coordinates[i][0], coordinates[i][1] <= 10^4
+- coordinates contains no duplicate point.
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Calculating slope correctly
+2. Handling division by zero (vertical lines)
+3. Floating point precision issues
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Slope Calculation (O(n)) ✓ OPTIMAL
+1. Get first two points (x0, y0) and (x1, y1).
+2. Calculate slope `dy = y1 - y0`, `dx = x1 - x0`.
+3. For every subsequent point (x, y):
+   - Calculate its slope relative to (x0, y0) or (x1, y1).
+   - `dy_curr = y - y0`, `dx_curr = x - x0`.
+   - Check if slopes are equal: `dy / dx == dy_curr / dx_curr`.
+   - To avoid division by zero, use cross multiplication:
+     `dy * dx_curr == dy_curr * dx`
+
+DETAILED EXPLANATION:
+---------------------
+
+Slope Formula:
+--------------
+Slope m = (y1 - y0) / (x1 - x0)
+For three points (x0,y0), (x1,y1), (x,y) to be collinear:
+(y1 - y0) / (x1 - x0) = (y - y0) / (x - x0)
+
+Cross Multiplication:
+---------------------
+(y1 - y0) * (x - x0) = (y - y0) * (x1 - x0)
+
+This avoids division by zero when x1 - x0 = 0 (vertical line).
+
+Example: [[1,2],[2,3],[3,4]]
+----------------------------
+(x0,y0) = (1,2)
+(x1,y1) = (2,3)
+dy = 3-2 = 1, dx = 2-1 = 1
+
+Point (3,4):
+dy_curr = 4-2 = 2
+dx_curr = 3-1 = 2
+Check: 1 * 2 == 2 * 1 -> 2 == 2. True.
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Cross Product (Optimal) ✓ RECOMMENDED
+class Solution:
+    def checkStraightLine(self, coordinates: List[List[int]]) -> bool:
+        if len(coordinates) <= 2:
+            return True
+            
+        x0, y0 = coordinates[0]
+        x1, y1 = coordinates[1]
+        
+        # Delta for first segment
+        dy = y1 - y0
+        dx = x1 - x0
+        
+        for i in range(2, len(coordinates)):
+            x, y = coordinates[i]
+            
+            # Delta for current point relative to first point
+            curr_dy = y - y0
+            curr_dx = x - x0
+            
+            # Cross product check: dy/dx == curr_dy/curr_dx
+            # => dy * curr_dx == curr_dy * dx
+            if dy * curr_dx != curr_dy * dx:
+                return False
+                
+        return True
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Time Complexity: O(n)
+  - Iterate through all points once.
+
+Space Complexity: O(1)
+  - Only variables used.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Straight Line
+  Input: [[1,2],[2,3],[3,4]]
+  Output: true
+  ✓ Slope 1
+
+Test Case 2: Broken Line
+  Input: [[1,1],[2,2],[3,4]]
+  Output: false
+  ✓ Slope changes from 1 to 2
+
+Test Case 3: Vertical Line
+  Input: [[0,0],[0,1],[0,2]]
+  Output: true
+  ✓ dx=0 handled by cross product (0 == 0)
+
+Test Case 4: Horizontal Line
+  Input: [[0,0],[1,0],[2,0]]
+  Output: true
+  ✓ dy=0 handled (0 == 0)
+
+Test Case 5: Two Points
+  Input: [[1,1],[2,2]]
+  Output: true
+  ✓ Always straight
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Cross Product ✓ RECOMMENDED
+---------------------------------------
+Pros:
+  - Handles vertical lines.
+  - No floating point errors.
+  - O(n) time.
+
+Cons:
+  - None.
+
+Approach 2: Division (Slope)
+----------------------------
+Pros:
+  - Intuitive formula.
+
+Cons:
+  - Fails on vertical lines (division by zero).
+  - Floating point precision issues.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Division by Zero
+   ❌ Using (y1-y0)/(x1-x0) directly
+   ✓ Use cross multiplication
+
+2. Floating Point Precision
+   ❌ Using float division
+   ✓ Use integer multiplication
+
+3. Checking Adjacent Points Only
+   ❌ Checking slope(i, i-1) == slope(i-1, i-2)
+   ✓ This works too, but checking against fixed (x0,y0) is slightly cleaner/faster (fewer lookups)
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Three points are collinear if slopes between them are equal.
+2. Cross product avoids division by zero and precision errors.
+3. Time O(n), Space O(1).
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Max Points on a Line (Hard)
+- Valid Square (Medium)
+- Minimum Time Visiting All Points (Easy)
+
+
+================================================================================

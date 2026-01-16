@@ -1,0 +1,317 @@
+================================================================================
+LEETCODE PROBLEM: MINIMUM SIZE SUBARRAY SUM
+================================================================================
+Difficulty: Medium
+Topics: Array, Binary Search, Sliding Window, Prefix Sum
+
+================================================================================
+PROBLEM STATEMENT
+================================================================================
+Given an array of positive integers nums and a positive integer target, return 
+the minimal length of a subarray whose sum is greater than or equal to target. 
+If there is no such subarray, return 0 instead.
+
+Example 1:
+Input: target = 7, nums = [2,3,1,2,4,3]
+Output: 2
+Explanation: The subarray [4,3] has the minimal length under the problem 
+constraint.
+
+Example 2:
+Input: target = 4, nums = [1,4,4]
+Output: 1
+
+Example 3:
+Input: target = 11, nums = [1,1,1,1,1,1,1,1]
+Output: 0
+Explanation: No subarray can sum to 11 or more.
+
+Constraints:
+• 1 <= target <= 10^9
+• 1 <= nums.length <= 10^5
+• 1 <= nums[i] <= 10^4
+
+Follow-up: If you have figured out the O(n) solution, try coding another 
+solution of which the time complexity is O(n log(n)).
+
+================================================================================
+SOLUTION APPROACHES
+================================================================================
+
+APPROACH 1: Sliding Window (Optimal)
+-------------------------------------
+Strategy:
+Use two pointers to maintain a dynamic window. Expand the window by moving the 
+right pointer and contract it by moving the left pointer when the sum meets or 
+exceeds the target.
+
+Algorithm:
+1. Initialize start = 0, currentSum = 0, minLen = infinity
+2. For each end position from 0 to n-1:
+   a. Add nums[end] to currentSum
+   b. While currentSum >= target:
+      - Update minLen = min(minLen, end - start + 1)
+      - Subtract nums[start] from currentSum
+      - Increment start
+3. Return minLen if found, otherwise 0
+
+Time Complexity: O(n)
+- Each element is visited at most twice (once by end, once by start)
+
+Space Complexity: O(1)
+- Only using a few variables
+
+Implementation (main.py):
+```python
+def minSubArrayLen(target, nums):  
+    minLen = float('inf') 
+    currentSum = 0
+    start = 0
+    
+    for end in range(len(nums)):
+        currentSum += nums[end]
+        
+        while currentSum >= target:
+            minLen = min(minLen, end - start + 1)
+            currentSum -= nums[start]
+            start += 1
+            
+    return minLen if minLen != float('inf') else 0
+```
+
+APPROACH 2: Brute Force (Inefficient)
+--------------------------------------
+Strategy:
+Check all possible subarrays and find the minimum length that meets the target.
+
+Algorithm:
+1. For each starting position i:
+   a. For each ending position j from i onwards:
+      - Calculate sum of subarray[i:j+1]
+      - If sum >= target, update minLen and break
+2. Return minLen
+
+Time Complexity: O(n²)
+- Nested loops checking all subarrays
+
+Space Complexity: O(1)
+
+Implementation (bruteforce.py):
+```python
+def minSubArrayLen(target, nums):
+    minLen = len(nums)
+    if sum(nums) < target:
+        return 0
+    
+    for i in range(len(nums)):
+        temp = []
+        for j in range(i, len(nums)):
+            temp.append(nums[j])
+            if sum(temp) >= target:
+                minLen = min(minLen, len(temp))
+                break
+                
+    return minLen
+```
+
+APPROACH 3: Binary Search + Prefix Sum (O(n log n))
+----------------------------------------------------
+Strategy:
+Build a prefix sum array and use binary search to find the minimum length 
+subarray for each starting position.
+
+Algorithm:
+1. Build prefix sum array
+2. For each starting position:
+   a. Use binary search to find the smallest ending position where 
+      prefixSum[end] - prefixSum[start] >= target
+   b. Update minLen
+3. Return minLen
+
+Time Complexity: O(n log n)
+Space Complexity: O(n)
+
+Note: This approach is mentioned in the follow-up but the sliding window 
+approach is more efficient.
+
+================================================================================
+DETAILED WALKTHROUGH
+================================================================================
+
+Example: target = 7, nums = [2,3,1,2,4,3]
+
+Initial State:
+--------------
+start = 0, currentSum = 0, minLen = inf
+
+Iteration 1: end = 0, nums[0] = 2
+- currentSum = 0 + 2 = 2
+- 2 < 7, no contraction
+- Window: [2]
+
+Iteration 2: end = 1, nums[1] = 3
+- currentSum = 2 + 3 = 5
+- 5 < 7, no contraction
+- Window: [2,3]
+
+Iteration 3: end = 2, nums[2] = 1
+- currentSum = 5 + 1 = 6
+- 6 < 7, no contraction
+- Window: [2,3,1]
+
+Iteration 4: end = 3, nums[3] = 2
+- currentSum = 6 + 2 = 8
+- 8 >= 7, contract window:
+  
+  While loop iteration 1:
+  - minLen = min(inf, 3 - 0 + 1) = 4
+  - currentSum = 8 - 2 = 6
+  - start = 1
+  - 6 < 7, exit while loop
+  
+- Window: [3,1,2]
+
+Iteration 5: end = 4, nums[4] = 4
+- currentSum = 6 + 4 = 10
+- 10 >= 7, contract window:
+  
+  While loop iteration 1:
+  - minLen = min(4, 4 - 1 + 1) = 4
+  - currentSum = 10 - 3 = 7
+  - start = 2
+  - 7 >= 7, continue
+  
+  While loop iteration 2:
+  - minLen = min(4, 4 - 2 + 1) = 3
+  - currentSum = 7 - 1 = 6
+  - start = 3
+  - 6 < 7, exit while loop
+  
+- Window: [2,4]
+
+Iteration 6: end = 5, nums[5] = 3
+- currentSum = 6 + 3 = 9
+- 9 >= 7, contract window:
+  
+  While loop iteration 1:
+  - minLen = min(3, 5 - 3 + 1) = 3
+  - currentSum = 9 - 2 = 7
+  - start = 4
+  - 7 >= 7, continue
+  
+  While loop iteration 2:
+  - minLen = min(3, 5 - 4 + 1) = 2
+  - currentSum = 7 - 4 = 3
+  - start = 5
+  - 3 < 7, exit while loop
+  
+- Window: [3]
+
+Final Result: minLen = 2
+The subarray [4,3] has length 2 and sum = 7
+
+================================================================================
+KEY INSIGHTS
+================================================================================
+
+1. Sliding Window Pattern:
+   - This is a classic sliding window problem with variable window size
+   - Expand when sum is insufficient, contract when sum meets target
+   - Each element is processed at most twice (O(n) total)
+
+2. Greedy Approach:
+   - Always try to minimize the window size when condition is met
+   - No need to explore all possibilities due to monotonic property
+
+3. Why It Works:
+   - All numbers are positive, so adding elements increases sum
+   - Removing elements decreases sum
+   - This monotonic property allows greedy contraction
+
+4. Two-Pointer Technique:
+   - Start and end pointers move in the same direction
+   - Never need to backtrack
+   - Ensures linear time complexity
+
+5. Edge Case Handling:
+   - Using float('inf') allows easy comparison
+   - Return 0 when no valid subarray exists
+
+================================================================================
+EDGE CASES
+================================================================================
+
+1. No Valid Subarray:
+   Input: target = 11, nums = [1,1,1,1,1,1,1,1]
+   Output: 0
+   Explanation: Total sum is 8, less than target
+
+2. Single Element Sufficient:
+   Input: target = 4, nums = [1,4,4]
+   Output: 1
+   Explanation: Single element 4 meets the target
+
+3. Entire Array Needed:
+   Input: target = 15, nums = [1,2,3,4,5]
+   Output: 5
+   Explanation: Need all elements (sum = 15)
+
+4. First Element Sufficient:
+   Input: target = 5, nums = [10,2,3]
+   Output: 1
+   Explanation: First element alone exceeds target
+
+5. Last Two Elements:
+   Input: target = 10, nums = [1,2,3,4,6,5]
+   Output: 2
+   Explanation: [6,5] has sum 11 >= 10
+
+6. All Elements Same:
+   Input: target = 6, nums = [2,2,2,2,2]
+   Output: 3
+   Explanation: Need 3 elements (sum = 6)
+
+7. Large Target:
+   Input: target = 100, nums = [1,2,3,4,5]
+   Output: 0
+   Explanation: Sum of all elements is only 15
+
+================================================================================
+OPTIMIZATION NOTES
+================================================================================
+
+1. Sliding Window vs Brute Force:
+   - Sliding window: O(n) time, O(1) space
+   - Brute force: O(n²) time, O(1) space
+   - For large arrays, sliding window is significantly faster
+
+2. Early Termination:
+   - Could check if sum(nums) < target at the start
+   - Saves unnecessary computation
+   - Trade-off: O(n) preprocessing vs potential early exit
+
+3. Integer Overflow:
+   - With constraints given, no overflow in Python
+   - In languages like C++/Java, use long long or long
+
+4. Space Optimization:
+   - Already optimal at O(1) space
+   - No additional data structures needed
+
+5. Binary Search Approach:
+   - O(n log n) time, O(n) space
+   - Less efficient than sliding window
+   - Useful if prefix sums are already computed for other purposes
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+• Maximum Size Subarray Sum Equals k (Medium) - Similar sliding window concept
+• Subarray Sum Equals K (Medium) - Uses hash map instead of two pointers
+• Minimum Window Substring (Hard) - Advanced sliding window with character map
+• Longest Substring Without Repeating Characters (Medium) - Variable window size
+• Maximum Average Subarray I (Easy) - Fixed window size variant
+• Shortest Subarray with Sum at Least K (Hard) - Allows negative numbers
+
+================================================================================

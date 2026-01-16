@@ -1,0 +1,216 @@
+================================================================================
+3SUM - LEETCODE MEDIUM
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] 
+such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0.
+
+Notice that the solution set must not contain duplicate triplets.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: nums = [-1,0,1,2,-1,-4]
+  Output: [[-1,-1,2],[-1,0,1]]
+  Explanation: 
+  nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0.
+  nums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0.
+  nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0.
+  The distinct triplets are [-1,0,1] and [-1,-1,2].
+
+Example 2:
+  Input: nums = [0,1,1]
+  Output: []
+  Explanation: The only possible triplet sums to 2.
+
+Example 3:
+  Input: nums = [0,0,0]
+  Output: [[0,0,0]]
+
+CONSTRAINTS:
+------------
+- 3 <= nums.length <= 3000
+- -10^5 <= nums[i] <= 10^5
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Avoiding duplicate triplets
+2. Achieving better than O(N^3) time complexity
+3. Handling multiple occurrences of the same number
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Sorting + Two Pointers (O(N^2)) ✓ OPTIMAL
+1. Sort the array.
+2. Iterate `i` from 0 to n-3.
+   - If `nums[i] > 0`, break (sum can't be 0 since array is sorted).
+   - If `i > 0` and `nums[i] == nums[i-1]`, skip (avoid duplicates for 1st element).
+3. Set `left = i + 1`, `right = n - 1`.
+4. While `left < right`:
+   - `sum = nums[i] + nums[left] + nums[right]`.
+   - If `sum < 0`: `left++`.
+   - If `sum > 0`: `right--`.
+   - If `sum == 0`:
+     - Add `[nums[i], nums[left], nums[right]]` to result.
+     - `left++`, `right--`.
+     - Skip duplicates for `left`: `while left < right and nums[left] == nums[left-1]: left++`.
+     - (Optional) Skip duplicates for `right`.
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Input: [-1, 0, 1, 2, -1, -4]
+Sorted: [-4, -1, -1, 0, 1, 2]
+
+1. i = 0 (Val -4).
+   - L=1 (-1), R=5 (2). Sum = -3. L++.
+   - L=2 (-1), R=5 (2). Sum = -3. L++.
+   - ... No solution.
+
+2. i = 1 (Val -1).
+   - L=2 (-1), R=5 (2). Sum = 0. Found [-1, -1, 2].
+   - L++, R--.
+   - L=3 (0), R=4 (1). Sum = 0. Found [-1, 0, 1].
+   - L++, R--.
+
+3. i = 2 (Val -1).
+   - Skip (Duplicate of i=1).
+
+Result: [[-1, -1, 2], [-1, 0, 1]].
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Sorting + Two Pointers (Optimal) ✓ RECOMMENDED
+class Solution:
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        res = []
+        nums.sort()
+        n = len(nums)
+        
+        for i in range(n - 2):
+            # Optimization: If smallest number is > 0, sum cannot be 0
+            if nums[i] > 0:
+                break
+                
+            # Skip duplicates for the first element
+            if i > 0 and nums[i] == nums[i - 1]:
+                continue
+                
+            l, r = i + 1, n - 1
+            while l < r:
+                total = nums[i] + nums[l] + nums[r]
+                
+                if total < 0:
+                    l += 1
+                elif total > 0:
+                    r -= 1
+                else:
+                    res.append([nums[i], nums[l], nums[r]])
+                    l += 1
+                    r -= 1
+                    
+                    # Skip duplicates for the second element
+                    while l < r and nums[l] == nums[l - 1]:
+                        l += 1
+                        
+        return res
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Time Complexity: O(N^2)
+  - Sorting: O(N log N).
+  - Loop + Two Pointers: O(N^2).
+
+Space Complexity: O(1) or O(log N)
+  - Sorting space.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Standard
+  Input: [-1,0,1,2,-1,-4]
+  Output: [[-1,-1,2],[-1,0,1]]
+  ✓ Correct
+
+Test Case 2: Zeros
+  Input: [0,0,0,0]
+  Output: [[0,0,0]]
+  ✓ Correct
+
+Test Case 3: No Solution
+  Input: [1,2,3]
+  Output: []
+  ✓ Correct
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Sorting + Two Pointers ✓ RECOMMENDED
+------------------------------------------------
+Pros:
+  - O(N^2) is optimal.
+  - No extra space (unlike Hash Set).
+
+Cons:
+  - Requires sorting.
+
+Approach 2: Hash Set (No Sort)
+------------------------------
+Fix `i`, then 2Sum with Hash Set.
+Pros: O(N^2).
+Cons: O(N) space. Harder to handle duplicate triplets (requires sorting triplet before adding to set).
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Duplicate Triplets
+   ❌ Not skipping `nums[i] == nums[i-1]`
+   ✓ Must skip duplicates for both the outer loop `i` and the inner pointer `l`.
+
+2. TLE
+   ❌ Using 3 nested loops (O(N^3))
+   ✓ Use Two Pointers to reduce inner complexity to O(N).
+
+3. Pointer Movement
+   ✓ Remember to move `l` and `r` *after* finding a match.
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. 3Sum = Fix one, then 2Sum.
+2. Sorting simplifies duplicate handling and enables Two Pointers.
+3. Time O(N^2), Space O(1).
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Two Sum (Easy)
+- 3Sum Closest (Medium)
+- 4Sum (Medium)
+
+
+================================================================================

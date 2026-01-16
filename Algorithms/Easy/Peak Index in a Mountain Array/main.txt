@@ -1,0 +1,235 @@
+================================================================================
+PEAK INDEX IN A MOUNTAIN ARRAY - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+An array arr a mountain if the following properties hold:
+- arr.length >= 3
+- There exists some i with 0 < i < arr.length - 1 such that:
+  - arr[0] < arr[1] < ... < arr[i - 1] < arr[i] 
+  - arr[i] > arr[i + 1] > ... > arr[arr.length - 1]
+
+Given a mountain array arr, return the index i such that 
+arr[0] < arr[1] < ... < arr[i - 1] < arr[i] > arr[i + 1] > ... > arr[arr.length - 1].
+
+You must solve it in O(log(arr.length)) time complexity.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: arr = [0,1,0]
+  Output: 1
+
+Example 2:
+  Input: arr = [0,2,1,0]
+  Output: 1
+
+Example 3:
+  Input: arr = [0,10,5,2]
+  Output: 1
+
+CONSTRAINTS:
+------------
+- 3 <= arr.length <= 10^5
+- 0 <= arr[i] <= 10^6
+- arr is guaranteed to be a mountain array.
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. O(log n) requirement implies Binary Search
+2. Identifying the peak condition
+3. Handling ascending vs descending slopes
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Linear Scan (O(n))
+1. Iterate array.
+2. Find first index `i` where `arr[i] > arr[i+1]`.
+3. That `i` is the peak.
+
+Approach 2: Binary Search (O(log n)) ✓ OPTIMAL
+1. Initialize `left = 0`, `right = len(arr) - 1`.
+2. While `left < right`:
+   - `mid = (left + right) // 2`.
+   - Compare `arr[mid]` with `arr[mid + 1]`.
+   - If `arr[mid] < arr[mid + 1]`:
+     - We are on the ascending slope.
+     - Peak must be to the right.
+     - `left = mid + 1`.
+   - Else (`arr[mid] > arr[mid + 1]`):
+     - We are on the descending slope OR at the peak.
+     - Peak is at `mid` or to the left.
+     - `right = mid`.
+3. Return `left` (or `right`, they converge).
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Binary Search Trace: [0, 10, 5, 2]
+----------------------------------
+1. L=0, R=3, Mid=1 (Val 10)
+   - Compare arr[1] (10) vs arr[2] (5).
+   - 10 > 5. Descending part.
+   - Peak is at 1 or left.
+   - R = 1.
+
+2. L=0, R=1, Mid=0 (Val 0)
+   - Compare arr[0] (0) vs arr[1] (10).
+   - 0 < 10. Ascending part.
+   - Peak is right.
+   - L = 1.
+
+3. L=1, R=1. Loop ends.
+   - Return 1.
+
+Why this works?
+---------------
+The array is strictly increasing then strictly decreasing.
+- If `arr[mid] < arr[mid+1]`, we are definitely on the left side of the peak.
+- If `arr[mid] > arr[mid+1]`, we are either AT the peak or on the right side.
+This monotonicity allows binary search.
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Binary Search (Optimal) ✓ RECOMMENDED
+class Solution:
+    def peakIndexInMountainArray(self, arr: List[int]) -> int:
+        left, right = 0, len(arr) - 1
+        
+        while left < right:
+            mid = (left + right) // 2
+            
+            if arr[mid] < arr[mid + 1]:
+                # Ascending slope -> Peak is to the right
+                left = mid + 1
+            else:
+                # Descending slope or Peak -> Peak is here or left
+                right = mid
+                
+        return left
+
+
+# Approach 2: Linear Scan (Simple but O(n))
+class SolutionLinear:
+    def peakIndexInMountainArray(self, arr: List[int]) -> int:
+        for i in range(len(arr) - 1):
+            if arr[i] > arr[i + 1]:
+                return i
+        return 0
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: Binary Search
+-------------------------
+Time Complexity: O(log n)
+  - Standard binary search.
+
+Space Complexity: O(1)
+  - Only pointers.
+
+Approach 2: Linear Scan
+-----------------------
+Time Complexity: O(n)
+  - Worst case peak is at end (not possible in mountain, but close).
+
+Space Complexity: O(1)
+  - Only pointers.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Small Mountain
+  Input: [0,1,0]
+  Output: 1
+  ✓ Peak at 1
+
+Test Case 2: Skewed Mountain
+  Input: [0,2,1,0]
+  Output: 1
+  ✓ Peak at 1
+
+Test Case 3: Larger Mountain
+  Input: [0,10,5,2]
+  Output: 1
+  ✓ Peak at 1
+
+Test Case 4: Peak at End?
+  Input: [0,1,2] -> Invalid per constraints (must decrease)
+  Input: [2,1,0] -> Invalid per constraints (must increase first)
+  Constraints guarantee valid mountain.
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Binary Search ✓ RECOMMENDED
+---------------------------------------
+Pros:
+  - Meets O(log n) constraint.
+  - Efficient.
+
+Cons:
+  - None.
+
+Approach 2: Golden Section Search / Ternary Search
+--------------------------------------------------
+Can be used for finding max in unimodal function.
+Pros: Works.
+Cons: More complex than binary search.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Infinite Loop
+   ❌ right = mid - 1 when arr[mid] > arr[mid+1]
+   ✓ If arr[mid] > arr[mid+1], mid COULD be the peak. So right = mid.
+   ✓ If we used right = mid - 1, we might skip the peak.
+
+2. Boundary Checks
+   ✓ Problem guarantees peak is not at 0 or len-1.
+   ✓ So mid+1 is always safe if loop is left < right.
+
+3. Returning Value instead of Index
+   ❌ return arr[left]
+   ✓ return left
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Mountain Array = Unimodal Function.
+2. Binary Search works by checking slope (derivative).
+3. `arr[mid] < arr[mid+1]` means positive slope (go right).
+4. `arr[mid] > arr[mid+1]` means negative slope (go left/stay).
+5. Time O(log n), Space O(1).
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Find Peak Element (Medium) - Same problem but multiple peaks allowed
+- Find in Mountain Array (Hard) - Search target in mountain
+- Search in Rotated Sorted Array (Medium)
+
+
+================================================================================

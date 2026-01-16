@@ -1,0 +1,297 @@
+================================================================================
+REVERSE STRING - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Write a function that reverses a string. The input string is given as an array 
+of characters s.
+
+You must do this by modifying the input array in-place with O(1) extra memory.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: s = ["h","e","l","l","o"]
+  Output: ["o","l","l","e","h"]
+
+Example 2:
+  Input: s = ["H","a","n","n","a","h"]
+  Output: ["h","a","n","n","a","H"]
+
+CONSTRAINTS:
+------------
+- 1 <= s.length <= 10^5
+- s[i] is a printable ASCII character
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Must modify in-place (no new array)
+2. O(1) extra space requirement
+3. Swapping elements efficiently
+4. Handling odd/even length arrays
+
+ALGORITHM STEPS:
+----------------
+Two Pointers Approach:
+1. Initialize left = 0, right = len(s) - 1
+2. While left < right:
+   a. Swap s[left] and s[right]
+   b. Increment left
+   c. Decrement right
+3. Return modified array
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Two Pointers Approach:
+----------------------
+Use two pointers starting from opposite ends, swap elements and move inward.
+
+Example: s = ["h","e","l","l","o"]
+----------------------------------
+Initial: left=0, right=4
+  s = ["h","e","l","l","o"]
+
+Step 1: Swap s[0] and s[4]
+  s = ["o","e","l","l","h"]
+  left=1, right=3
+
+Step 2: Swap s[1] and s[3]
+  s = ["o","l","l","e","h"]
+  left=2, right=2
+
+left >= right, stop!
+Result: ["o","l","l","e","h"]
+
+Why This Works:
+---------------
+- Each element swapped exactly once
+- Pointers meet in middle
+- Works for both odd and even lengths
+- In-place modification
+
+Odd vs Even Length:
+-------------------
+Even length: ["a","b","c","d"]
+  - Swap pairs: (a,d), (b,c)
+  - left and right cross
+
+Odd length: ["a","b","c"]
+  - Swap pairs: (a,c)
+  - Middle element (b) stays in place
+  - left == right, stop
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Two Pointers ✓ OPTIMAL
+class Solution(object):
+    def reverseString(self, s):
+        left = 0
+        right = len(s) - 1
+        
+        while left < right:
+            # Swap elements
+            s[left], s[right] = s[right], s[left]
+            left += 1
+            right -= 1
+        
+        return s
+
+
+# Alternative: More explicit swap
+def reverseString_v2(s):
+    left, right = 0, len(s) - 1
+    
+    while left < right:
+        temp = s[left]
+        s[left] = s[right]
+        s[right] = temp
+        left += 1
+        right -= 1
+
+
+# Using range (Pythonic)
+def reverseString_range(s):
+    for i in range(len(s) // 2):
+        s[i], s[len(s) - 1 - i] = s[len(s) - 1 - i], s[i]
+
+
+# From original code
+def reverseString_original(s):
+    l = len(s) - 1
+    i = 0
+    while i != l and i < l:
+        s[i], s[l] = s[l], s[i]
+        l -= 1
+        i += 1
+    return s
+
+
+# Using Python's built-in (not in-place, creates new list)
+def reverseString_builtin(s):
+    return s[::-1]  # Not acceptable - creates new list
+
+
+# LeetCode Solution Class Format
+class Solution:
+    def reverseString(self, s: List[str]) -> None:
+        """
+        Do not return anything, modify s in-place instead.
+        """
+        left, right = 0, len(s) - 1
+        
+        while left < right:
+            s[left], s[right] = s[right], s[left]
+            left += 1
+            right -= 1
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Two Pointers Approach
+----------------------
+Time Complexity: O(n)
+  - Visit each element once
+  - n/2 swaps for n elements
+  - Total: O(n)
+
+Space Complexity: O(1)
+  - Only using two pointer variables
+  - In-place modification
+  - Total: O(1) ✓ MEETS REQUIREMENT
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Odd Length
+  Input: s = ["h","e","l","l","o"]
+  Output: ["o","l","l","e","h"]
+  ✓ Correctly reversed
+
+Test Case 2: Even Length
+  Input: s = ["H","a","n","n","a","h"]
+  Output: ["h","a","n","n","a","H"]
+  ✓ Correctly reversed
+
+Test Case 3: Single Character
+  Input: s = ["a"]
+  Output: ["a"]
+  ✓ Unchanged (already reversed)
+
+Test Case 4: Two Characters
+  Input: s = ["a","b"]
+  Output: ["b","a"]
+  ✓ Simple swap
+
+Test Case 5: All Same
+  Input: s = ["a","a","a"]
+  Output: ["a","a","a"]
+  ✓ Unchanged
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Two Pointers ✓ RECOMMENDED
+---------------------------------------
+Swap from both ends moving inward.
+
+Pros:
+  - O(n) time, O(1) space
+  - Meets all requirements
+  - Simple and efficient
+  - In-place modification
+
+Cons:
+  - None for this problem
+
+Approach 2: Using range
+-----------------------
+Iterate through first half, swap with second half.
+
+Pros:
+  - Pythonic
+  - Same complexity
+
+Cons:
+  - Slightly less readable
+  - More complex indexing
+
+Approach 3: Built-in reverse (Not Acceptable)
+----------------------------------------------
+Use s[::-1] or s.reverse().
+
+Pros:
+  - One-liner
+  - Very simple
+
+Cons:
+  - s[::-1] creates new list (not in-place)
+  - s.reverse() is acceptable but defeats purpose
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Creating New Array
+   ❌ return s[::-1] creates new list
+   ✓ Modify s in-place
+
+2. Wrong Loop Condition
+   ❌ while left <= right (swaps middle twice)
+   ✓ while left < right
+
+3. Not Swapping Correctly
+   ❌ Forgetting temp variable or tuple unpacking
+   ✓ Use s[left], s[right] = s[right], s[left]
+
+4. Off-by-One Errors
+   ❌ Wrong pointer initialization or updates
+   ✓ left=0, right=len(s)-1
+
+5. Not Modifying In-Place
+   ❌ Creating and returning new array
+   ✓ Modify original array
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Two pointers is optimal for reversing in-place
+2. Swap elements from both ends moving inward
+3. Loop condition: left < right (not <=)
+4. Works for both odd and even length arrays
+5. Python's tuple unpacking simplifies swapping
+6. O(1) space means no new data structures
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Reverse String II (Easy) - Reverse every 2k characters
+- Reverse Words in a String (Medium) - Reverse word order
+- Reverse Words in a String III (Easy) - Reverse each word
+- Reverse Vowels of a String (Easy) - Reverse only vowels
+- Valid Palindrome (Easy) - Two pointer technique
+- Rotate Array (Medium) - Similar in-place modification
+
+
+================================================================================

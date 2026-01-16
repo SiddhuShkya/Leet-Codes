@@ -1,0 +1,247 @@
+================================================================================
+CONTAINS DUPLICATE II - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given an integer array nums and an integer k, return true if there are two 
+distinct indices i and j in the array such that nums[i] == nums[j] and 
+abs(i - j) <= k.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: nums = [1,2,3,1], k = 3
+  Output: true
+  Explanation: nums[0] == nums[3] == 1, and |0 - 3| = 3 <= 3.
+
+Example 2:
+  Input: nums = [1,0,1,1], k = 1
+  Output: true
+  Explanation: nums[2] == nums[3] == 1, and |2 - 3| = 1 <= 1.
+
+Example 3:
+  Input: nums = [1,2,3,1,2,3], k = 2
+  Output: false
+  Explanation: nums[0] == nums[3] == 1, but |0 - 3| = 3 > 2.
+
+CONSTRAINTS:
+------------
+- 1 <= nums.length <= 10^5
+- -10^9 <= nums[i] <= 10^9
+- 0 <= k <= 10^5
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Finding duplicates efficiently
+2. Checking distance constraint
+3. Handling large arrays (O(n) time required)
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Hash Map (Index Storage) ✓ OPTIMAL
+1. Initialize an empty hash map `seen` to store {value: index}.
+2. Iterate through the array with index `i`.
+3. If `nums[i]` is in `seen`:
+   - Check if `i - seen[nums[i]] <= k`.
+   - If yes, return True.
+4. Update `seen[nums[i]]` to current index `i` (we want the latest index to minimize distance).
+5. If loop finishes, return False.
+
+Approach 2: Sliding Window (Set)
+1. Use a set to store elements in the current window of size k.
+2. Iterate through array.
+3. If `nums[i]` is in set, return True (duplicate found within window).
+4. Add `nums[i]` to set.
+5. If set size > k, remove `nums[i-k]` (slide window).
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Hash Map Logic:
+---------------
+We want to find if `current_index - previous_index <= k`.
+By storing the *most recent* index of every number, we maximize our chance of 
+satisfying the condition (minimizing the difference).
+
+Example: [1, 2, 3, 1], k=3
+1. i=0, val=1: seen={1:0}
+2. i=1, val=2: seen={1:0, 2:1}
+3. i=2, val=3: seen={1:0, 2:1, 3:2}
+4. i=3, val=1:
+   - 1 is in seen.
+   - diff = 3 - seen[1] = 3 - 0 = 3.
+   - 3 <= 3? Yes. Return True.
+
+Sliding Window Logic:
+---------------------
+Maintain a set of at most k elements.
+Example: [1, 2, 3, 1, 2, 3], k=2
+1. i=0, val=1: set={1}
+2. i=1, val=2: set={1, 2}
+3. i=2, val=3:
+   - set size > k (2). Remove nums[0]=1. set={2}.
+   - Add 3. set={2, 3}.
+4. i=3, val=1:
+   - set size > k. Remove nums[1]=2. set={3}.
+   - Add 1. set={3, 1}.
+   - (Note: 1 was not in set when checked).
+...
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Hash Map (Index Storage) ✓ RECOMMENDED
+class Solution:
+    def containsNearbyDuplicate(self, nums: List[int], k: int) -> bool:
+        seen = {}
+        
+        for i, num in enumerate(nums):
+            if num in seen and i - seen[num] <= k:
+                return True
+            # Always update to latest index
+            seen[num] = i
+            
+        return False
+
+
+# Approach 2: Sliding Window (Set)
+class SolutionWindow:
+    def containsNearbyDuplicate(self, nums: List[int], k: int) -> bool:
+        window = set()
+        
+        for i, num in enumerate(nums):
+            if num in window:
+                return True
+            
+            window.add(num)
+            
+            # Maintain window size k
+            if len(window) > k:
+                window.remove(nums[i - k])
+                
+        return False
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: Hash Map
+--------------------
+Time Complexity: O(n)
+  - Iterate array once.
+  - Map operations are O(1).
+
+Space Complexity: O(n)
+  - Map stores up to n unique elements.
+
+Approach 2: Sliding Window
+--------------------------
+Time Complexity: O(n)
+  - Iterate array once.
+  - Set operations are O(1).
+
+Space Complexity: O(min(n, k))
+  - Set stores at most k+1 elements.
+  - Better space complexity if k < n.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Duplicate Within k
+  Input: [1,2,3,1], k=3
+  Output: true
+  ✓ Dist 3 <= 3
+
+Test Case 2: Duplicate Outside k
+  Input: [1,2,3,1,2,3], k=2
+  Output: false
+  ✓ Dist 3 > 2
+
+Test Case 3: Multiple Duplicates
+  Input: [1,0,1,1], k=1
+  Output: true
+  ✓ 1 at indices 2,3 (dist 1)
+
+Test Case 4: No Duplicates
+  Input: [1,2,3], k=5
+  Output: false
+  ✓ Unique elements
+
+Test Case 5: k=0
+  Input: [1,1], k=0
+  Output: false
+  ✓ Dist 1 > 0 (indices must be distinct)
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Brute Force
+-----------------------
+Check every pair (i, j).
+Pros: None.
+Cons: O(n*k) or O(n^2) time.
+
+Approach 2: Hash Map ✓ RECOMMENDED
+----------------------------------
+Pros: Simple, O(n) time.
+Cons: O(n) space.
+
+Approach 3: Sliding Window
+--------------------------
+Pros: O(min(n, k)) space.
+Cons: Slightly more logic to manage window.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Not Updating Index
+   ❌ Only storing first index seen
+   ✓ Update seen[num] = i to ensure we check shortest distance
+
+2. Checking Value vs Index
+   ❌ if nums[i] == nums[j]
+   ✓ Check abs(i - j) <= k
+
+3. Distinct Indices
+   ✓ Problem says distinct indices, but loop naturally handles i != prev_i
+
+4. k=0 Case
+   ✓ Logic should handle k=0 (requires distance <= 0, impossible for distinct i,j)
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Use Hash Map to store "last seen index".
+2. Update index on every encounter to minimize distance.
+3. Sliding window with Set can optimize space to O(k).
+4. Time O(n) is required.
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Contains Duplicate (Easy) - Any duplicate
+- Contains Duplicate III (Hard) - Value diff <= t, Index diff <= k
+- Two Sum (Easy) - Hash map usage
+
+
+================================================================================

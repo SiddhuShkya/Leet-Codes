@@ -1,0 +1,352 @@
+================================================================================
+SINGLE NUMBER - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given a non-empty array of integers nums, every element appears twice except 
+for one. Find that single one.
+
+You must implement a solution with a linear runtime complexity and use only 
+constant extra space.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: nums = [2,2,1]
+  Output: 1
+
+Example 2:
+  Input: nums = [4,1,2,1,2]
+  Output: 4
+
+Example 3:
+  Input: nums = [1]
+  Output: 1
+
+CONSTRAINTS:
+------------
+- 1 <= nums.length <= 3 * 10^4
+- -3 * 10^4 <= nums[i] <= 3 * 10^4
+- Each element in the array appears twice except for one element which appears 
+  only once
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Finding unique element among duplicates
+2. Achieving O(n) time complexity
+3. Using O(1) space (no hash map allowed)
+4. Handling negative numbers
+
+ALGORITHM STEPS:
+----------------
+Approach 1: XOR Bit Manipulation ✓ OPTIMAL
+1. Initialize result = 0
+2. XOR all numbers in array
+3. Return result
+
+Why it works:
+- a ⊕ a = 0 (any number XOR itself is 0)
+- a ⊕ 0 = a (any number XOR 0 is itself)
+- XOR is commutative and associative
+- All duplicate numbers cancel out, leaving only the single number
+
+Approach 2: Hash Set
+1. Create empty set
+2. For each number:
+   - If in set, remove it
+   - If not in set, add it
+3. Return the remaining element in set
+
+Approach 3: Mathematical Sum
+1. Calculate sum of unique elements × 2
+2. Subtract sum of all elements
+3. Result is the single number
+
+
+DETAILED EXPLANATION:
+---------------------
+
+XOR Properties:
+---------------
+XOR (exclusive OR) has special properties perfect for this problem:
+- 0 ⊕ 0 = 0
+- 0 ⊕ 1 = 1
+- 1 ⊕ 0 = 1
+- 1 ⊕ 1 = 0
+
+Key insight: a ⊕ a = 0
+
+XOR Approach Walkthrough:
+-------------------------
+nums = [4, 1, 2, 1, 2]
+
+result = 0
+result = 0 ⊕ 4 = 4
+result = 4 ⊕ 1 = 5 (binary: 100 ⊕ 001 = 101)
+result = 5 ⊕ 2 = 7 (binary: 101 ⊕ 010 = 111)
+result = 7 ⊕ 1 = 6 (binary: 111 ⊕ 001 = 110)
+result = 6 ⊕ 2 = 4 (binary: 110 ⊕ 010 = 100)
+
+Final result: 4
+
+Why it works:
+- Rearranging: (4) ⊕ (1 ⊕ 1) ⊕ (2 ⊕ 2)
+- Simplify: 4 ⊕ 0 ⊕ 0 = 4
+
+Hash Set Approach:
+------------------
+nums = [4, 1, 2, 1, 2]
+
+set = {}
+Process 4: not in set, add → set = {4}
+Process 1: not in set, add → set = {4, 1}
+Process 2: not in set, add → set = {4, 1, 2}
+Process 1: in set, remove → set = {4, 2}
+Process 2: in set, remove → set = {4}
+
+Return 4
+
+Mathematical Approach:
+----------------------
+nums = [4, 1, 2, 1, 2]
+
+Unique elements: {1, 2, 4}
+Sum of unique × 2 = (1 + 2 + 4) × 2 = 14
+Sum of all = 4 + 1 + 2 + 1 + 2 = 10
+Difference = 14 - 10 = 4
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: XOR Bit Manipulation ✓ OPTIMAL
+def singleNumber_xor(nums):
+    result = 0
+    for num in nums:
+        result ^= num
+    return result
+
+# Even more concise using reduce
+from functools import reduce
+import operator
+
+def singleNumber_xor_v2(nums):
+    return reduce(operator.xor, nums)
+
+
+# Approach 2: Hash Set
+def singleNumber_set(nums):
+    seen = set()
+    for num in nums:
+        if num in seen:
+            seen.remove(num)
+        else:
+            seen.add(num)
+    return seen.pop()
+
+
+# Approach 3: Mathematical
+def singleNumber_math(nums):
+    return 2 * sum(set(nums)) - sum(nums)
+
+
+# Approach 4: Sorting (From original code - not optimal)
+def singleNumber_sort(arr):
+    if len(arr) == 1:
+        return arr[0]
+    arr.sort()
+    for i in range(0, len(arr) - 1, 2):
+        if arr[i] != arr[i + 1]:
+            return arr[i]
+    return arr[-1]  # Last element if all others paired
+
+
+# LeetCode Solution Class Format
+class Solution:
+    def singleNumber(self, nums: List[int]) -> int:
+        result = 0
+        for num in nums:
+            result ^= num
+        return result
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: XOR Bit Manipulation
+---------------------------------
+Time Complexity: O(n)
+  - Single pass through array
+  - XOR operation is O(1)
+  - Total: O(n)
+
+Space Complexity: O(1)
+  - Only using result variable
+  - Total: O(1) ✓ OPTIMAL
+
+Approach 2: Hash Set
+---------------------
+Time Complexity: O(n)
+  - Single pass through array
+  - Set operations are O(1) average
+  - Total: O(n)
+
+Space Complexity: O(n)
+  - Set can store up to n/2 + 1 elements
+  - Total: O(n)
+
+Approach 3: Mathematical
+-------------------------
+Time Complexity: O(n)
+  - Creating set: O(n)
+  - Sum operations: O(n)
+  - Total: O(n)
+
+Space Complexity: O(n)
+  - Set stores unique elements
+  - Total: O(n)
+
+Approach 4: Sorting
+-------------------
+Time Complexity: O(n log n)
+  - Sorting: O(n log n)
+  - Iteration: O(n)
+  - Total: O(n log n)
+
+Space Complexity: O(1) or O(n)
+  - Depends on sorting algorithm
+  - In-place sort: O(1)
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Single Element
+  Input: nums = [1]
+  Output: 1
+  ✓ Only one element
+
+Test Case 2: Three Elements
+  Input: nums = [2,2,1]
+  Output: 1
+  ✓ One pair, one single
+
+Test Case 3: Five Elements
+  Input: nums = [4,1,2,1,2]
+  Output: 4
+  ✓ Two pairs, one single
+
+Test Case 4: Negative Numbers
+  Input: nums = [-1,-1,-2]
+  Output: -2
+  ✓ Works with negative numbers
+
+Test Case 5: Large Numbers
+  Input: nums = [30000,30000,1]
+  Output: 1
+  ✓ Handles large values
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: XOR Bit Manipulation ✓ RECOMMENDED
+-----------------------------------------------
+Use XOR properties to cancel duplicates.
+
+Pros:
+  - O(n) time, O(1) space
+  - Meets problem constraints perfectly
+  - Elegant and efficient
+  - Works with negative numbers
+
+Cons:
+  - Requires understanding of XOR
+  - Less intuitive for beginners
+
+Approach 2: Hash Set
+--------------------
+Add/remove elements from set.
+
+Pros:
+  - Intuitive and easy to understand
+  - O(n) time complexity
+
+Cons:
+  - O(n) space - violates constraint
+  - Not acceptable for this problem
+
+Approach 3: Mathematical
+-------------------------
+Use sum formula to find difference.
+
+Pros:
+  - Creative mathematical solution
+  - O(n) time
+
+Cons:
+  - O(n) space for set
+  - Potential overflow with large numbers
+  - Not acceptable for this problem
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Using Hash Map/Set
+   ❌ O(n) space violates constraint
+   ✓ Use XOR for O(1) space
+
+2. Sorting Approach
+   ❌ O(n log n) time is not optimal
+   ✓ Use O(n) XOR approach
+
+3. Not Understanding XOR
+   ❌ Trying complex solutions
+   ✓ Learn XOR properties: a ⊕ a = 0, a ⊕ 0 = a
+
+4. Assuming Positive Numbers Only
+   ❌ Not testing with negative numbers
+   ✓ XOR works with all integers
+
+5. Modifying Input Array
+   ❌ Sorting modifies original array
+   ✓ XOR doesn't modify input
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. XOR is perfect for finding unique element among pairs
+2. XOR properties: a ⊕ a = 0, a ⊕ 0 = a
+3. XOR is commutative and associative (order doesn't matter)
+4. This is a classic bit manipulation problem
+5. O(1) space requirement eliminates hash-based solutions
+6. Understanding bit operations unlocks elegant solutions
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Single Number II (Medium) - Elements appear 3 times
+- Single Number III (Medium) - Two unique elements
+- Missing Number (Easy) - Similar XOR technique
+- Find the Difference (Easy) - XOR application
+- Find the Duplicate Number (Medium) - Finding duplicates
+- Majority Element (Easy) - Finding frequent element
+
+
+================================================================================

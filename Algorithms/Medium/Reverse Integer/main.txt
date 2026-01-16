@@ -1,0 +1,266 @@
+================================================================================
+REVERSE INTEGER - LEETCODE MEDIUM
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given a signed 32-bit integer x, return x with its digits reversed. 
+If reversing x causes the value to go outside the signed 32-bit integer range 
+[-2^31, 2^31 - 1], then return 0.
+
+Assume the environment does not allow you to store 64-bit integers.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: x = 123
+  Output: 321
+
+Example 2:
+  Input: x = -123
+  Output: -321
+
+Example 3:
+  Input: x = 120
+  Output: 21
+
+CONSTRAINTS:
+------------
+-2^31 <= x <= 2^31 - 1
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Handling negative numbers correctly
+2. Detecting integer overflow (32-bit bounds)
+3. Removing trailing zeros automatically
+
+ALGORITHM STEPS:
+----------------
+1. Define 32-bit integer bounds: INT_MIN = -2^31, INT_MAX = 2^31 - 1
+
+2. Extract the sign and work with absolute value:
+   - Store sign as -1 (negative) or 1 (positive)
+   - Convert x to its absolute value
+
+3. Reverse the integer digit by digit:
+   - While x != 0:
+     a. Extract last digit: pop = x % 10
+     b. Remove last digit: x = x // 10
+     c. Check for overflow BEFORE adding digit
+     d. Build reversed number: rev = rev * 10 + pop
+
+4. Apply the sign back to the reversed number
+
+5. Final overflow check and return result
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Step 1: Sign Extraction
+-----------------------
+Why? Python's modulo (%) and floor division (//) behave differently with 
+negative numbers. To avoid complications, we:
+  - Extract the sign: sign = -1 if x < 0 else 1
+  - Work with absolute value: x = abs(x)
+  - Reapply sign at the end
+
+Step 2: Digit Reversal
+----------------------
+We use mathematical operations instead of string conversion:
+  - x % 10 gives us the last digit
+  - x // 10 removes the last digit
+  - rev * 10 + pop builds the reversed number
+
+Example with x = 123:
+  Iteration 1: pop = 3, x = 12, rev = 0*10 + 3 = 3
+  Iteration 2: pop = 2, x = 1,  rev = 3*10 + 2 = 32
+  Iteration 3: pop = 1, x = 0,  rev = 32*10 + 1 = 321
+
+Step 3: Overflow Detection
+---------------------------
+32-bit signed integer range: [-2,147,483,648 to 2,147,483,647]
+
+We check BEFORE adding the next digit:
+  - If rev > INT_MAX // 10, the next multiplication will overflow
+  - Example: If rev = 214748365 and we multiply by 10, we get 2147483650
+    which exceeds INT_MAX (2147483647)
+
+We also check after applying the sign to catch edge cases.
+
+Step 4: Trailing Zeros
+-----------------------
+Trailing zeros are automatically handled because:
+  - 120 reversed becomes 021
+  - When we build 021 mathematically, it's just 21
+  - No special handling needed!
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+class Solution:
+    def reverse(self, x: int) -> int:
+        # Define 32-bit integer bounds
+        INT_MIN, INT_MAX = -2**31, 2**31 - 1
+        
+        # Extract sign and work with absolute value
+        sign = -1 if x < 0 else 1
+        x = abs(x)
+        
+        # Reverse the integer
+        rev = 0
+        while x != 0:
+            pop = x % 10
+            x = x // 10
+            
+            # Check for overflow before adding the digit
+            if rev > INT_MAX // 10:
+                return 0
+            
+            rev = rev * 10 + pop
+        
+        # Apply sign and check final overflow
+        result = sign * rev
+        if result < INT_MIN or result > INT_MAX:
+            return 0
+            
+        return result
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Time Complexity: O(log₁₀(x))
+  - We process each digit of x exactly once
+  - Number of digits in x is log₁₀(x)
+  - Example: 123 has 3 digits, and log₁₀(123) ≈ 2.09
+
+Space Complexity: O(1)
+  - We only use a constant amount of extra space
+  - Variables: sign, rev, pop, result
+  - No data structures that grow with input size
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Positive Number
+  Input: 123
+  Output: 321
+  ✓ Digits reversed correctly
+
+Test Case 2: Negative Number
+  Input: -123
+  Output: -321
+  ✓ Sign preserved, digits reversed
+
+Test Case 3: Trailing Zeros
+  Input: 120
+  Output: 21
+  ✓ Trailing zeros removed automatically
+
+Test Case 4: Overflow Detection
+  Input: 1534236469
+  Reversed: 9646324351 (exceeds 2^31 - 1 = 2147483647)
+  Output: 0
+  ✓ Overflow detected and handled
+
+Test Case 5: Zero
+  Input: 0
+  Output: 0
+  ✓ Edge case handled
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: String Conversion (Not Recommended)
+------------------------------------------------
+Convert to string, reverse it, convert back to integer.
+
+Pros:
+  - Simple and intuitive
+  - Easy to implement
+
+Cons:
+  - Uses O(log n) extra space for string
+  - String operations are slower
+  - Need special handling for negative sign
+  - Still need overflow checking
+
+Code:
+  def reverse(self, x: int) -> int:
+      sign = -1 if x < 0 else 1
+      rev = int(str(abs(x))[::-1])
+      result = sign * rev
+      return result if -2**31 <= result <= 2**31 - 1 else 0
+
+
+Approach 2: Mathematical (Current Solution) ✓ RECOMMENDED
+----------------------------------------------------------
+Use modulo and division to extract and reverse digits.
+
+Pros:
+  - O(1) space complexity
+  - No string conversion overhead
+  - More efficient
+  - Demonstrates strong algorithmic thinking
+
+Cons:
+  - Slightly more complex logic
+  - Need to handle sign separately
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Forgetting Overflow Check
+   ❌ return rev  # Wrong!
+   ✓ Check bounds before returning
+
+2. Incorrect Negative Number Handling
+   ❌ pop = x % 10  # Doesn't work for negative x in Python
+   ✓ Use abs(x) and reapply sign
+
+3. Late Overflow Detection
+   ❌ Checking after rev = rev * 10 + pop
+   ✓ Check BEFORE to prevent overflow during calculation
+
+4. Using 64-bit Integers
+   ❌ Working with numbers > 32-bit range
+   ✓ Problem states we can't use 64-bit integers
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Always consider edge cases: negative numbers, overflow, trailing zeros
+2. Mathematical digit manipulation is more efficient than string conversion
+3. Overflow detection must happen BEFORE the operation that causes it
+4. Working with absolute values simplifies negative number handling
+5. Time complexity depends on number of digits: O(log₁₀(n))
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Palindrome Number (Easy)
+- String to Integer (atoi) (Medium)
+- Reverse Bits (Easy)
+- Add Two Numbers (Medium)
+
+
+================================================================================

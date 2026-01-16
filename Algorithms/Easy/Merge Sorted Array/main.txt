@@ -1,0 +1,318 @@
+================================================================================
+MERGE SORTED ARRAY - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+You are given two integer arrays nums1 and nums2, sorted in non-decreasing order, 
+and two integers m and n, representing the number of elements in nums1 and nums2 
+respectively.
+
+Merge nums2 into nums1 as one sorted array.
+
+The final sorted array should not be returned by the function, but instead be 
+stored inside the array nums1. To accommodate this, nums1 has a length of m + n, 
+where the first m elements denote the elements that should be merged, and the 
+last n elements are set to 0 and should be ignored. nums2 has a length of n.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3
+  Output: [1,2,2,3,5,6]
+  Explanation: The arrays we are merging are [1,2,3] and [2,5,6].
+  The result of the merge is [1,2,2,3,5,6].
+
+Example 2:
+  Input: nums1 = [1], m = 1, nums2 = [], n = 0
+  Output: [1]
+  Explanation: The arrays we are merging are [1] and [].
+
+Example 3:
+  Input: nums1 = [0], m = 0, nums2 = [1], n = 1
+  Output: [1]
+  Explanation: The arrays we are merging are [] and [1].
+
+CONSTRAINTS:
+------------
+- nums1.length == m + n
+- nums2.length == n
+- 0 <= m, n <= 200
+- 1 <= m + n <= 200
+- -10^9 <= nums1[i], nums2[j] <= 10^9
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Merging in-place (modifying nums1 directly)
+2. Avoiding overwriting unprocessed elements in nums1
+3. Handling different array lengths
+4. Maintaining sorted order
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Three Pointers (Backward) ✓ OPTIMAL
+1. Start from end of both arrays
+2. Use three pointers:
+   - p1: last element of nums1 (index m-1)
+   - p2: last element of nums2 (index n-1)
+   - p: last position in nums1 (index m+n-1)
+3. Compare nums1[p1] and nums2[p2]:
+   - Place larger element at nums1[p]
+   - Move corresponding pointer backward
+4. After loop, copy remaining nums2 elements if any
+
+Approach 2: Merge and Sort (Not Optimal)
+1. Copy nums2 into end of nums1
+2. Sort entire nums1 array
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Why Merge Backward:
+-------------------
+If we merge forward (left to right), we'd overwrite unprocessed elements in nums1.
+Merging backward uses the empty space at the end of nums1, avoiding overwrites.
+
+Example: nums1 = [1,2,3,0,0,0], m=3, nums2 = [2,5,6], n=3
+
+Forward (WRONG):
+  - Compare 1 vs 2, place 1 at position 0
+  - But position 0 already has 1! We'd lose data.
+
+Backward (CORRECT):
+  - Compare 3 vs 6, place 6 at position 5 (end)
+  - Compare 3 vs 5, place 5 at position 4
+  - Compare 3 vs 2, place 3 at position 3
+  - And so on...
+
+Backward Merge Walkthrough:
+----------------------------
+nums1 = [1,2,3,0,0,0], m=3, nums2 = [2,5,6], n=3
+
+Initial: p1=2 (val=3), p2=2 (val=6), p=5
+
+Step 1: 3 < 6, place 6 at p=5
+  nums1 = [1,2,3,0,0,6]
+  p1=2, p2=1, p=4
+
+Step 2: 3 < 5, place 5 at p=4
+  nums1 = [1,2,3,0,5,6]
+  p1=2, p2=0, p=3
+
+Step 3: 3 > 2, place 3 at p=3
+  nums1 = [1,2,3,3,5,6]
+  p1=1, p2=0, p=2
+
+Step 4: 2 == 2, place nums1[p1]=2 at p=2
+  nums1 = [1,2,2,3,5,6]
+  p1=0, p2=0, p=1
+
+Step 5: 1 < 2, place 2 at p=1
+  nums1 = [1,2,2,3,5,6]
+  p1=0, p2=-1, p=0
+
+Step 6: p2 < 0, done!
+  Final: [1,2,2,3,5,6]
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Three Pointers (Backward) ✓ OPTIMAL
+class Solution(object):
+    def merge(self, nums1, m, nums2, n):
+        p1 = m - 1  # Last element in nums1's initial part
+        p2 = n - 1  # Last element in nums2
+        p = m + n - 1  # Last position in nums1
+        
+        # Merge from back to front
+        while p1 >= 0 and p2 >= 0:
+            if nums1[p1] > nums2[p2]:
+                nums1[p] = nums1[p1]
+                p1 -= 1
+            else:
+                nums1[p] = nums2[p2]
+                p2 -= 1
+            p -= 1
+        
+        # Copy remaining elements from nums2 if any
+        nums1[:p2 + 1] = nums2[:p2 + 1]
+        
+        return nums1
+
+
+# Alternative: More explicit remaining elements handling
+def merge_v2(nums1, m, nums2, n):
+    p1, p2, p = m - 1, n - 1, m + n - 1
+    
+    while p1 >= 0 and p2 >= 0:
+        if nums1[p1] > nums2[p2]:
+            nums1[p] = nums1[p1]
+            p1 -= 1
+        else:
+            nums1[p] = nums2[p2]
+            p2 -= 1
+        p -= 1
+    
+    # If nums2 has remaining elements, copy them
+    while p2 >= 0:
+        nums1[p] = nums2[p2]
+        p2 -= 1
+        p -= 1
+
+
+# Approach 2: Merge and Sort (Not Optimal)
+def merge_sort(nums1, m, nums2, n):
+    # Copy nums2 to end of nums1
+    nums1[m:] = nums2
+    # Sort entire array
+    nums1.sort()
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1: Three Pointers (Backward)
+--------------------------------------
+Time Complexity: O(m + n)
+  - Visit each element exactly once
+  - Total elements: m + n
+  - Total: O(m + n)
+
+Space Complexity: O(1)
+  - Only using three pointer variables
+  - In-place modification
+  - Total: O(1)
+
+Approach 2: Merge and Sort
+---------------------------
+Time Complexity: O((m + n) log(m + n))
+  - Copying: O(n)
+  - Sorting: O((m + n) log(m + n))
+  - Total: O((m + n) log(m + n))
+
+Space Complexity: O(1) or O(m + n)
+  - Depends on sorting algorithm
+  - Python's sort: O(m + n) worst case
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Both Arrays Non-Empty
+  Input: nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3
+  Output: [1,2,2,3,5,6]
+  ✓ Correctly merged and sorted
+
+Test Case 2: nums2 Empty
+  Input: nums1 = [1], m = 1, nums2 = [], n = 0
+  Output: [1]
+  ✓ No changes needed
+
+Test Case 3: nums1 Empty (only zeros)
+  Input: nums1 = [0], m = 0, nums2 = [1], n = 1
+  Output: [1]
+  ✓ nums2 copied to nums1
+
+Test Case 4: All nums1 Elements Larger
+  Input: nums1 = [4,5,6,0,0,0], m = 3, nums2 = [1,2,3], n = 3
+  Output: [1,2,3,4,5,6]
+  ✓ All nums2 elements come first
+
+Test Case 5: All nums2 Elements Larger
+  Input: nums1 = [1,2,3,0,0,0], m = 3, nums2 = [4,5,6], n = 3
+  Output: [1,2,3,4,5,6]
+  ✓ All nums1 elements come first
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Three Pointers Backward ✓ RECOMMENDED
+--------------------------------------------------
+Merge from end to beginning.
+
+Pros:
+  - O(m + n) time, O(1) space
+  - Optimal solution
+  - No overwriting issues
+  - In-place modification
+
+Cons:
+  - Requires understanding backward iteration
+  - Slightly less intuitive
+
+Approach 2: Merge and Sort
+---------------------------
+Copy nums2 and sort entire array.
+
+Pros:
+  - Very simple to implement
+  - Easy to understand
+
+Cons:
+  - O((m+n) log(m+n)) time - not optimal
+  - Doesn't utilize sorted property
+  - Not acceptable in interviews
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Merging Forward
+   ❌ Overwriting unprocessed nums1 elements
+   ✓ Merge backward from end
+
+2. Forgetting Remaining nums2 Elements
+   ❌ Not copying leftover nums2 elements
+   ✓ Copy nums1[:p2+1] = nums2[:p2+1]
+
+3. Wrong Pointer Initialization
+   ❌ p1 = m, p2 = n (should be m-1, n-1)
+   ✓ Use m-1 and n-1 for last indices
+
+4. Not Handling Empty Arrays
+   ❌ Assuming m > 0 and n > 0
+   ✓ Handle m=0 or n=0 cases
+
+5. Modifying nums2
+   ❌ Changing nums2 array
+   ✓ Only modify nums1
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Merge backward to avoid overwriting unprocessed elements
+2. Three pointers track positions in both arrays and result
+3. Utilize existing space in nums1 for O(1) space complexity
+4. Only need to copy remaining nums2 elements (nums1 already in place)
+5. Time complexity is optimal at O(m + n)
+6. Similar to merge step in merge sort algorithm
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Merge Two Sorted Lists (Easy) - Linked list version
+- Merge Intervals (Medium) - Merging intervals
+- Sort Colors (Medium) - In-place sorting
+- Merge k Sorted Lists (Hard) - Multiple sorted lists
+- Squares of a Sorted Array (Easy) - Similar two-pointer technique
+- Intersection of Two Arrays (Easy) - Array merging
+
+
+================================================================================

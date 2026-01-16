@@ -1,0 +1,288 @@
+================================================================================
+REMOVE LINKED LIST ELEMENTS - LEETCODE EASY
+================================================================================
+
+PROBLEM STATEMENT:
+------------------
+Given the head of a linked list and an integer val, remove all the nodes of the 
+linked list that has Node.val == val, and return the new head.
+
+EXAMPLES:
+---------
+Example 1:
+  Input: head = [1,2,6,3,4,5,6], val = 6
+  Output: [1,2,3,4,5]
+
+Example 2:
+  Input: head = [], val = 1
+  Output: []
+
+Example 3:
+  Input: head = [7,7,7,7], val = 7
+  Output: []
+
+CONSTRAINTS:
+------------
+- The number of nodes in the list is in the range [0, 10^4].
+- 1 <= Node.val <= 50
+- 0 <= val <= 50
+
+
+================================================================================
+SOLUTION APPROACH
+================================================================================
+
+KEY CHALLENGES:
+---------------
+1. Removing head node(s)
+2. Removing consecutive nodes
+3. Removing tail node
+4. Handling empty list
+
+ALGORITHM STEPS:
+----------------
+Approach 1: Iterative with Sentinel (Dummy Head) ✓ OPTIMAL
+1. Create a dummy node pointing to head.
+2. Initialize `curr` pointer to dummy.
+3. While `curr.next` exists:
+   - If `curr.next.val == val`:
+     - Skip next node: `curr.next = curr.next.next`
+   - Else:
+     - Move `curr` forward: `curr = curr.next`
+4. Return `dummy.next`.
+
+Approach 2: Iterative without Sentinel
+1. Handle head removal: while head and head.val == val, head = head.next.
+2. If head is null, return null.
+3. Initialize `curr` to head.
+4. While `curr` and `curr.next`:
+   - If `curr.next.val == val`:
+     - `curr.next = curr.next.next`
+   - Else:
+     - `curr = curr.next`
+5. Return head.
+
+Approach 3: Recursive
+1. Base case: if head is null, return null.
+2. Recursively call for head.next.
+3. If head.val == val, return head.next (skip current).
+4. Else, return head (keep current).
+
+
+DETAILED EXPLANATION:
+---------------------
+
+Why Dummy Head?
+---------------
+A dummy head simplifies edge cases, especially when the head itself needs to be 
+removed. Without a dummy head, we need special logic to update the `head` variable.
+With a dummy head, `head` is just `dummy.next`, and we treat all actual nodes 
+uniformly.
+
+Example: [1, 2, 6, 3], val = 6
+------------------------------
+Dummy -> 1 -> 2 -> 6 -> 3
+
+1. curr = Dummy
+   curr.next (1) != 6 -> curr = 1
+
+2. curr = 1
+   curr.next (2) != 6 -> curr = 2
+
+3. curr = 2
+   curr.next (6) == 6
+   curr.next = curr.next.next (3)
+   List: Dummy -> 1 -> 2 -> 3
+   curr stays at 2 (to check new next)
+
+4. curr = 2
+   curr.next (3) != 6 -> curr = 3
+
+5. curr = 3
+   curr.next is None -> Stop
+
+Result: Dummy.next -> 1 -> 2 -> 3
+
+
+================================================================================
+CODE IMPLEMENTATION
+================================================================================
+
+# Approach 1: Iterative with Dummy Head ✓ RECOMMENDED
+class Solution:
+    def removeElements(self, head: Optional[ListNode], val: int) -> Optional[ListNode]:
+        dummy = ListNode(0)
+        dummy.next = head
+        
+        curr = dummy
+        while curr.next:
+            if curr.next.val == val:
+                # Skip the node
+                curr.next = curr.next.next
+            else:
+                # Move forward
+                curr = curr.next
+                
+        return dummy.next
+
+
+# Approach 2: Iterative without Dummy Head
+class SolutionNoDummy:
+    def removeElements(self, head: Optional[ListNode], val: int) -> Optional[ListNode]:
+        # Remove matching heads
+        while head and head.val == val:
+            head = head.next
+            
+        if not head:
+            return None
+        
+        curr = head
+        while curr.next:
+            if curr.next.val == val:
+                curr.next = curr.next.next
+            else:
+                curr = curr.next
+                
+        return head
+
+
+# Approach 3: Recursive
+class SolutionRecursive:
+    def removeElements(self, head: Optional[ListNode], val: int) -> Optional[ListNode]:
+        if not head:
+            return None
+        
+        head.next = self.removeElements(head.next, val)
+        
+        if head.val == val:
+            return head.next
+        else:
+            return head
+
+
+================================================================================
+COMPLEXITY ANALYSIS
+================================================================================
+
+Approach 1 & 2: Iterative
+-------------------------
+Time Complexity: O(n)
+  - Traverse list once.
+
+Space Complexity: O(1)
+  - Only pointers used.
+
+Approach 3: Recursive
+---------------------
+Time Complexity: O(n)
+  - Traverse list once.
+
+Space Complexity: O(n)
+  - Recursion stack depth.
+
+
+================================================================================
+TEST CASES & VERIFICATION
+================================================================================
+
+Test Case 1: Middle Removal
+  Input: [1,2,6,3,4,5,6], val = 6
+  Output: [1,2,3,4,5]
+  ✓ Removes 6s
+
+Test Case 2: Head Removal
+  Input: [6,1,2], val = 6
+  Output: [1,2]
+  ✓ Removes head
+
+Test Case 3: All Removal
+  Input: [7,7,7,7], val = 7
+  Output: []
+  ✓ Returns empty
+
+Test Case 4: Empty List
+  Input: [], val = 1
+  Output: []
+  ✓ Handles empty
+
+Test Case 5: Tail Removal
+  Input: [1,2,6], val = 6
+  Output: [1,2]
+  ✓ Removes tail
+
+
+================================================================================
+ALTERNATIVE APPROACHES
+================================================================================
+
+Approach 1: Dummy Head ✓ RECOMMENDED
+------------------------------------
+Pros:
+  - Cleanest code.
+  - Handles head removal automatically.
+  - O(1) space.
+
+Cons:
+  - None.
+
+Approach 2: No Dummy
+--------------------
+Pros:
+  - No extra node allocation (negligible).
+
+Cons:
+  - Extra while loop for head.
+  - More complex logic.
+
+Approach 3: Recursive
+---------------------
+Pros:
+  - Elegant short code.
+
+Cons:
+  - O(n) space due to stack.
+  - Stack overflow for large lists.
+
+
+================================================================================
+COMMON MISTAKES TO AVOID
+================================================================================
+
+1. Advancing Pointer After Removal
+   ❌ curr = curr.next after removal
+   ✓ Don't advance curr if removal happens (check new next in next iteration)
+
+2. Not Handling Head Removal
+   ❌ Forgetting to update head if it matches
+   ✓ Use dummy head or explicit while loop
+
+3. Null Pointer Exception
+   ❌ Checking curr.next.val without checking curr.next
+   ✓ Loop condition while curr.next:
+
+4. Memory Leaks (in C++)
+   ✓ Python handles garbage collection, but in C++ delete removed nodes.
+
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. Dummy head simplifies linked list operations involving head changes.
+2. When removing, check `curr.next` and modify `curr.next`.
+3. Only advance `curr` if NO removal happened.
+4. Recursive solution is elegant but uses O(n) stack space.
+5. Time O(n), Space O(1).
+
+
+================================================================================
+RELATED PROBLEMS
+================================================================================
+
+- Remove Duplicates from Sorted List (Easy)
+- Delete Node in a Linked List (Medium)
+- Remove Nth Node From End of List (Medium)
+- Reverse Linked List (Easy)
+
+
+================================================================================
