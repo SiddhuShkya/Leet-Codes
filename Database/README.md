@@ -68,7 +68,7 @@ A SQL query is built using clauses, and each clause starts with one or more SQL 
 - A keyword is a reserved word in SQL used to write queries. 
 - A clause is a section of a SQL query that performs a specific task.
 
-| Clause Category             | Clause           | What it does                                              | Key points                                                                           | Example                                                    |
+| Clause Category             | Keyword           | What it does                                              | Key points                                                                           | Clause Example                                                    |
 | --------------------------- | ---------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
 | **Projection**              | `SELECT`         | Chooses which columns or expressions appear in the result | Can include columns, expressions, aliases, aggregates. Does not filter rows          | `SELECT name, salary * 12 AS annual_salary FROM Employee;` |
 | **Source**                  | `FROM`           | Specifies where the data comes from                       | Tables, views, subqueries. Defines joins and join conditions                         | `FROM Employee e JOIN Department d ON e.dept_id = d.id;`   |
@@ -113,5 +113,4 @@ ORDER BY salary DESC;         -- ORDER BY clause (keywords: ORDER BY, DESC)
 - Clauses start with keywords
 - But some keywords do not start a new clause
 
-
-
+--- 
