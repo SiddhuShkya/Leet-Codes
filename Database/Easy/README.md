@@ -334,6 +334,91 @@ SELECT email AS Email FROM (
 ---
 
 
+### <div align="center">Employee Bonus</div>
+
+> Table 
+
+```text
+Table: Employee
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| empId       | int     |
+| name        | varchar |
+| supervisor  | int     |
+| salary      | int     |
++-------------+---------+
+ 
+Table: Bonus
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| empId       | int  |
+| bonus       | int  |
++-------------+------+
+```
+
+> Problem 
+
+empId is the column with unique values for this table.
+Each row of this table indicates the name and the ID of an employee in addition to their salary and the id of their manager.
+empId is the column of unique values for this table.
+empId is a foreign key (reference column) to empId from the Employee table.
+Each row of this table contains the id of an employee and their respective bonus.
+Write a solution to report the name and bonus amount of each employee who satisfies either of the following:
+The employee has a bonus less than 1000.
+The employee did not get any bonus.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Employee table:
++-------+--------+------------+--------+
+| empId | name   | supervisor | salary |
++-------+--------+------------+--------+
+| 3     | Brad   | null       | 4000   |
+| 1     | John   | 3          | 1000   |
+| 2     | Dan    | 3          | 2000   |
+| 4     | Thomas | 3          | 4000   |
++-------+--------+------------+--------+
+Bonus table:
++-------+-------+
+| empId | bonus |
++-------+-------+
+| 2     | 500   |
+| 4     | 2000  |
++-------+-------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT name, bonus
+FROM (
+    SELECT e.name, b.bonus
+    FROM Employee e
+    LEFT JOIN Bonus b
+      ON e.empId = b.empId
+    WHERE b.bonus < 1000 OR b.bonus IS NULL
+) t;
+```
+
+> Output Example
+
+```text
++------+-------+
+| name | bonus |
++------+-------+
+| Brad | null  |
+| John | null  |
+| Dan  | 500   |
++------+-------+
+```
+
+---
+
+
 ### <div align="center">Employees Earning More Than Their Managers</div>
 
 > Table 
