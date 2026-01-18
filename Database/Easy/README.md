@@ -4,9 +4,11 @@ This readme file contains solved SQL problems from LeetCode,from the Easy catego
 
 Each problem includes:
 
-- ✅ Input example
+- ✅ Table Schema
+- ✅ Problem Description
+- ✅ Input Example
 - ✅ Correct SQL solution
-- ✅ Output example
+- ✅ Output Example
 
 ---
 
