@@ -16,23 +16,14 @@ This repo is dedicated to storing the LeetCode problems I have solved, along wit
 
 ```
 Leet-Codes/
-├── Algorithms/
+├── Algorithms/     ## Leetcode Problems & Solutions (Algorithms)
 │   ├── Easy/
-│   │   ├── Two Sum/
-│   │   │   ├── main.py          # Solution implementation
-│   │   │   └── main.txt         # Detailed documentation
-│   │   └── ...
 │   ├── Medium/
-│   │   └── ...
 │   └── Hard/
-│       └── ...
-├── Database/
+├── Database/       ## Leetcode Problems & Solutions (Database)
 │   ├── Easy/
-│   │   └── ...
 │   ├── Medium/
-│   │   └── ...
 │   └── Hard/
-│       └── ...
 └── README.md
 ```
 
