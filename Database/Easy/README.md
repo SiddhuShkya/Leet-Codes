@@ -477,3 +477,126 @@ WHERE e.salary > m.salary;
 ```
 
 ---
+
+
+### <div align="center">Game Play Analysis I</div>
+
+> Table 
+
+```text
+Table: Activity
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| player_id    | int     |
+| device_id    | int     |
+| event_date   | date    |
+| games_played | int     |
++--------------+---------+
+```
+
+> Problem 
+
+(player_id, event_date) is the primary key (combination of columns with unique values) of this table.
+This table shows the activity of players of some games.
+Each row is a record of a player who logged in and played a number of games (possibly 0) before logging out on someday using some device.
+Write a solution to find the first login date for each player.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Activity table:
++-----------+-----------+------------+--------------+
+| player_id | device_id | event_date | games_played |
++-----------+-----------+------------+--------------+
+| 1         | 2         | 2016-03-01 | 5            |
+| 1         | 2         | 2016-05-02 | 6            |
+| 2         | 3         | 2017-06-25 | 1            |
+| 3         | 1         | 2016-03-02 | 0            |
+| 3         | 4         | 2018-07-03 | 5            |
++-----------+-----------+------------+--------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT player_id, MAX(event_date) AS first_login
+FROM Activity 
+GROUP BY player_id;
+```
+
+> Output Example
+
+```text
++-----------+-------------+
+| player_id | first_login |
++-----------+-------------+
+| 1         | 2016-03-01  |
+| 2         | 2017-06-25  |
+| 3         | 2016-03-02  |
++-----------+-------------+
+```
+
+---
+
+
+### <div align="center">Rising Temperature</div>
+
+> Table 
+
+```text
+Table: Weather
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| id            | int     |
+| recordDate    | date    |
+| temperature   | int     |
++---------------+---------+
+```
+
+> Problem 
+
+id is the column with unique values for this table.
+There are no different rows with the same recordDate.
+This table contains information about the temperature on a certain day.
+Write a solution to find all dates' id with higher temperatures compared to its previous dates (yesterday).
+Return the result table in any order.
+
+> Input Example
+
+```text
+Weather table:
++----+------------+-------------+
+| id | recordDate | temperature |
++----+------------+-------------+
+| 1  | 2015-01-01 | 10          |
+| 2  | 2015-01-02 | 25          |
+| 3  | 2015-01-03 | 20          |
+| 4  | 2015-01-04 | 30          |
++----+------------+-------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT w1.id
+FROM Weather w1
+JOIN Weather w2 
+    ON w1.recordDate = DATE_ADD(w2.recordDate, INTERVAL 1 DAY)
+WHERE w1.temperature > w2.temperature;
+```
+
+> Output Example
+
+```text
++----+
+| id |
++----+
+| 2  |
+| 4  |
++----+
+```
+
+---
