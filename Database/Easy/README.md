@@ -76,6 +76,84 @@ ORDER BY author_id ASC;
 ---
 
 
+### <div align="center">Biggest Single Number</div>
+
+> Table 
+
+```text
+Table: MyNumbers
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| num         | int  |
++-------------+------+
+```
+
+> Problem 
+
+This table may contain duplicates (In other words, there is no primary key for this table in SQL).
+Each row of this table contains an integer.
+A single number is a number that appeared only once in the MyNumbers table.
+Find the largest single number. If there is no single number, report null.
+
+> Input Example
+
+```text
+MyNumbers table:
++-----+
+| num |
++-----+
+| 8   |
+| 8   |
+| 3   |
+| 3   |
+| 1   |
+| 4   |
+| 5   |
+| 6   |
++-----+
+MyNumbers table:
++-----+
+| num |
++-----+
+| 8   |
+| 8   |
+| 7   |
+| 7   |
+| 3   |
+| 3   |
+| 3   |
++-----+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT MAX(num) AS num FROM (
+    SELECT num, COUNT(num) FROM MyNumbers
+    GROUP BY num
+    HAVING COUNT(num) = 1
+)t;
+```
+
+> Output Example
+
+```text
++-----+
+| num |
++-----+
+| 6   |
++-----+
++------+
+| num  |
++------+
+| null |
++------+
+```
+
+---
+
+
 ### <div align="center">Classes With Atleast 5 Students</div>
 
 > Table 
@@ -541,6 +619,69 @@ GROUP BY player_id;
 ---
 
 
+### <div align="center">Not Boring Movies</div>
+
+> Table 
+
+```text
+Table: Cinema
++----------------+----------+
+| Column Name    | Type     |
++----------------+----------+
+| id             | int      |
+| movie          | varchar  |
+| description    | varchar  |
+| rating         | float    |
++----------------+----------+
+```
+
+> Problem 
+
+id is the primary key (column with unique values) for this table.
+Each row contains information about the name of a movie, its genre, and its rating.
+rating is a 2 decimal places float in the range [0, 10]
+Write a solution to report the movies with an odd-numbered ID and a description that is not "boring".
+Return the result table ordered by rating in descending order.
+
+> Input Example
+
+```text
+Cinema table:
++----+------------+-------------+--------+
+| id | movie      | description | rating |
++----+------------+-------------+--------+
+| 1  | War        | great 3D    | 8.9    |
+| 2  | Science    | fiction     | 8.5    |
+| 3  | irish      | boring      | 6.2    |
+| 4  | Ice song   | Fantacy     | 8.6    |
+| 5  | House card | Interesting | 9.1    |
++----+------------+-------------+--------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT *
+FROM cinema
+WHERE id % 2 = 1
+AND description <> 'boring'
+ORDER BY rating DESC;
+```
+
+> Output Example
+
+```text
++----+------------+-------------+--------+
+| id | movie      | description | rating |
++----+------------+-------------+--------+
+| 5  | House card | Interesting | 9.1    |
+| 1  | War        | great 3D    | 8.9    |
++----+------------+-------------+--------+
+```
+
+---
+
+
 ### <div align="center">Rising Temperature</div>
 
 > Table 
@@ -597,6 +738,118 @@ WHERE w1.temperature > w2.temperature;
 | 2  |
 | 4  |
 +----+
+```
+
+---
+
+
+### <div align="center">Sales Person</div>
+
+> Table 
+
+```text
+Table: SalesPerson
++-----------------+---------+
+| Column Name     | Type    |
++-----------------+---------+
+| sales_id        | int     |
+| name            | varchar |
+| salary          | int     |
+| commission_rate | int     |
+| hire_date       | date    |
++-----------------+---------+
+ 
+Table: Company
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| com_id      | int     |
+| name        | varchar |
+| city        | varchar |
++-------------+---------+
+ 
+Table: Orders
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| order_id    | int  |
+| order_date  | date |
+| com_id      | int  |
+| sales_id    | int  |
+| amount      | int  |
++-------------+------+
+```
+
+> Problem 
+
+sales_id is the primary key (column with unique values) for this table.
+Each row of this table indicates the name and the ID of a salesperson alongside their salary, commission rate, and hire date.
+com_id is the primary key (column with unique values) for this table.
+Each row of this table indicates the name and the ID of a company and the city in which the company is located.
+order_id is the primary key (column with unique values) for this table.
+com_id is a foreign key (reference column) to com_id from the Company table.
+sales_id is a foreign key (reference column) to sales_id from the SalesPerson table.
+Each row of this table contains information about one order. This includes the ID of the company, the ID of the salesperson, the date of the order, and the amount paid.
+Write a solution to find the names of all the salespersons who did not have any orders related to the company with the name "RED".
+Return the result table in any order.
+
+> Input Example
+
+```text
+SalesPerson table:
++----------+------+--------+-----------------+------------+
+| sales_id | name | salary | commission_rate | hire_date  |
++----------+------+--------+-----------------+------------+
+| 1        | John | 100000 | 6               | 4/1/2006   |
+| 2        | Amy  | 12000  | 5               | 5/1/2010   |
+| 3        | Mark | 65000  | 12              | 12/25/2008 |
+| 4        | Pam  | 25000  | 25              | 1/1/2005   |
+| 5        | Alex | 5000   | 10              | 2/3/2007   |
++----------+------+--------+-----------------+------------+
+Company table:
++--------+--------+----------+
+| com_id | name   | city     |
++--------+--------+----------+
+| 1      | RED    | Boston   |
+| 2      | ORANGE | New York |
+| 3      | YELLOW | Boston   |
+| 4      | GREEN  | Austin   |
++--------+--------+----------+
+Orders table:
++----------+------------+--------+----------+--------+
+| order_id | order_date | com_id | sales_id | amount |
++----------+------------+--------+----------+--------+
+| 1        | 1/1/2014   | 3      | 4        | 10000  |
+| 2        | 2/1/2014   | 4      | 5        | 5000   |
+| 3        | 3/1/2014   | 1      | 1        | 50000  |
+| 4        | 4/1/2014   | 1      | 4        | 25000  |
++----------+------------+--------+----------+--------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT s.name
+FROM SalesPerson s
+WHERE s.sales_id NOT IN (
+    SELECT o.sales_id
+    FROM Orders o
+    JOIN Company c
+      ON o.com_id = c.com_id
+    WHERE c.name = 'RED'
+);
+```
+
+> Output Example
+
+```text
++------+
+| name |
++------+
+| Amy  |
+| Mark |
+| Alex |
++------+
 ```
 
 ---
