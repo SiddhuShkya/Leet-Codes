@@ -234,3 +234,72 @@ ORDER BY s1.Score Desc
 ```
 
 ---
+
+
+### <div align="center">Second Highest Salary</div>
+
+> Table 
+
+```text
+Table: Employee
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| id          | int  |
+| salary      | int  |
++-------------+------+
+```
+
+> Problem 
+
+id is the primary key (column with unique values) for this table.
+Each row of this table contains information about the salary of an employee.
+Write a solution to find the second highest distinct salary from the Employee table. If there is no second highest salary, return null (return None in Pandas).
+
+> Input Example
+
+```text
+Employee table:
++----+--------+
+| id | salary |
++----+--------+
+| 1  | 100    |
+| 2  | 200    |
+| 3  | 300    |
++----+--------+
+Employee table:
++----+--------+
+| id | salary |
++----+--------+
+| 1  | 100    |
++----+--------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT (
+    SELECT DISTINCT salary
+    FROM employee
+    ORDER BY salary DESC
+    LIMIT 1 OFFSET 1
+) AS SecondHighestSalary;
+```
+
+> Output Example
+
+```text
++---------------------+
+| SecondHighestSalary |
++---------------------+
+| 200                 |
++---------------------+
+
++---------------------+
+| SecondHighestSalary |
++---------------------+
+| null                |
++---------------------+
+```
+
+---
