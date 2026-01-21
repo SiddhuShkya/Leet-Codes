@@ -112,6 +112,18 @@ MyNumbers table:
 | 5   |
 | 6   |
 +-----+
+MyNumbers table:
++-----+
+| num |
++-----+
+| 8   |
+| 8   |
+| 7   |
+| 7   |
+| 3   |
+| 3   |
+| 3   |
++-----+
 ```
 
 > SQL Query **Solution**
