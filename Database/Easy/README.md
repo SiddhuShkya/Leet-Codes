@@ -295,6 +295,64 @@ ON p.personId = a.personId;
 ---
 
 
+### <div align="center">Customer Placing the Largest Number of Orders</div>
+
+> Table 
+
+```text
+Table: Orders
++-----------------+----------+
+| Column Name     | Type     |
++-----------------+----------+
+| order_number    | int      |
+| customer_number | int      |
++-----------------+----------+
+```
+
+> Problem 
+
+order_number is the primary key (column with unique values) for this table.
+This table contains information about the order ID and the customer ID.
+Write a solution to find the customer_number for the customer who has placed the largest number of orders.
+The test cases are generated so that exactly one customer will have placed more orders than any other customer.
+
+> Input Example
+
+```text
+Orders table:
++--------------+-----------------+
+| order_number | customer_number |
++--------------+-----------------+
+| 1            | 1               |
+| 2            | 2               |
+| 3            | 3               |
+| 4            | 3               |
++--------------+-----------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT customer_number FROM (
+    SELECT customer_number, COUNT(customer_number) FROM orders
+    GROUP BY customer_number
+    ORDER BY COUNT(customer_number) DESC
+)t LIMIT 1;
+```
+
+> Output Example
+
+```text
++-----------------+
+| customer_number |
++-----------------+
+| 3               |
++-----------------+
+```
+
+---
+
+
 ### <div align="center">Delete Duplicate Emails</div>
 
 > Table 
@@ -552,6 +610,62 @@ WHERE e.salary > m.salary;
 +----------+
 | Joe      |
 +----------+
+```
+
+---
+
+
+### <div align="center">Find Customer Referee</div>
+
+> Table 
+
+```text
+Table: Orders
++-----------------+----------+
+| Column Name     | Type     |
++-----------------+----------+
+| order_number    | int      |
+| customer_number | int      |
++-----------------+----------+
+```
+
+> Problem 
+
+order_number is the primary key (column with unique values) for this table.
+This table contains information about the order ID and the customer ID.
+Write a solution to find the customer_number for the customer who has placed the largest number of orders.
+The test cases are generated so that exactly one customer will have placed more orders than any other customer.
+
+> Input Example
+
+```text
+Orders table:
++--------------+-----------------+
+| order_number | customer_number |
++--------------+-----------------+
+| 1            | 1               |
+| 2            | 2               |
+| 3            | 3               |
+| 4            | 3               |
++--------------+-----------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT name FROM customer
+WHERE referee_id != 2 OR
+referee_id IS NULL;
+```
+
+> Output Example
+
+```text
++-----------------+
+| customer_number |
++-----------------+
+| 3               |
++-----------------+
 ```
 
 ---
@@ -850,6 +964,134 @@ WHERE s.sales_id NOT IN (
 | Mark |
 | Alex |
 +------+
+```
+
+---
+
+
+### <div align="center">Swap Sex of Employees</div>
+
+> Table 
+
+```text
+Table: Salary
++-------------+----------+
+| Column Name | Type     |
++-------------+----------+
+| id          | int      |
+| name        | varchar  |
+| sex         | ENUM     |
+| salary      | int      |
++-------------+----------+
+```
+
+> Problem 
+
+id is the primary key (column with unique values) for this table.
+The sex column is ENUM (category) value of type ('m', 'f').
+The table contains information about an employee.
+Write a solution to swap all 'f' and 'm' values (i.e., change all 'f' values to 'm' and vice versa) with a single update statement and no intermediate temporary tables.
+Note that you must write a single update statement, do not write any select statement for this problem.
+
+> Input Example
+
+```text
+Salary table:
++----+------+-----+--------+
+| id | name | sex | salary |
++----+------+-----+--------+
+| 1  | A    | m   | 2500   |
+| 2  | B    | f   | 1500   |
+| 3  | C    | m   | 5500   |
+| 4  | D    | f   | 500    |
++----+------+-----+--------+
+```
+
+> SQL Query **Solution**
+
+```sql
+UPDATE Salary
+SET sex = CASE
+    WHEN sex = 'm' THEN 'f'
+    WHEN sex = 'f' THEN 'm'
+END;
+```
+
+> Output Example
+
+```text
++----+------+-----+--------+
+| id | name | sex | salary |
++----+------+-----+--------+
+| 1  | A    | f   | 2500   |
+| 2  | B    | m   | 1500   |
+| 3  | C    | f   | 5500   |
+| 4  | D    | m   | 500    |
++----+------+-----+--------+
+```
+
+---
+
+
+### <div align="center">Triangle Judgement</div>
+
+> Table 
+
+```text
+Table: Triangle
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| x           | int  |
+| y           | int  |
+| z           | int  |
++-------------+------+
+```
+
+> Problem 
+
+In SQL, (x, y, z) is the primary key column for this table.
+Each row of this table contains the lengths of three line segments.
+Report for every three line segments whether they can form a triangle.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Triangle table:
++----+----+----+
+| x  | y  | z  |
++----+----+----+
+| 13 | 15 | 30 |
+| 10 | 20 | 15 |
++----+----+----+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT 
+    x,
+    y,
+    z,
+    CASE
+        WHEN x + y > z 
+         AND x + z > y 
+         AND y + z > x THEN 'Yes'
+        ELSE 'No'
+    END AS triangle
+FROM Triangle;
+```
+
+> Output Example
+
+```text
++----+----+----+----------+
+| x  | y  | z  | triangle |
++----+----+----+----------+
+| 13 | 15 | 30 | No       |
+| 10 | 20 | 15 | Yes      |
++----+----+----+----------+
 ```
 
 ---
