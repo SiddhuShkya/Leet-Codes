@@ -12,6 +12,68 @@ Each problem includes:
 
 ---
 
+### <div align="center">Actors and Directors Who Cooperated At Least Three Times</div>
+
+> Table 
+
+```text
+Table: ActorDirector
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| actor_id    | int     |
+| director_id | int     |
+| timestamp   | int     |
++-------------+---------+
+```
+
+> Problem 
+
+timestamp is the primary key (column with unique values) for this table.
+Write a solution to find all the pairs (actor_id, director_id) where the actor has cooperated with the director at least three times.
+Return the result table in any order.
+
+> Input Example
+
+```text
+ActorDirector table:
++-------------+-------------+-------------+
+| actor_id    | director_id | timestamp   |
++-------------+-------------+-------------+
+| 1           | 1           | 0           |
+| 1           | 1           | 1           |
+| 1           | 1           | 2           |
+| 1           | 2           | 3           |
+| 1           | 2           | 4           |
+| 2           | 1           | 5           |
+| 2           | 1           | 6           |
++-------------+-------------+-------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT actor_id, director_id FROM (
+    SELECT actor_id, director_id, COUNT(*) AS cnt
+    FROM actordirector
+    GROUP BY actor_id, director_id
+    HAVING COUNT(*) >= 3
+)t;
+```
+
+> Output Example
+
+```text
++-------------+-------------+
+| actor_id    | director_id |
++-------------+-------------+
+| 1           | 1           |
++-------------+-------------+
+```
+
+---
+
+
 ### <div align="center">Article Views I</div>
 
 > Table 
@@ -796,6 +858,245 @@ ORDER BY rating DESC;
 ---
 
 
+### <div align="center">Product Sales Analysis I</div>
+
+> Table 
+
+```text
+Table: Sales
++-------------+-------+
+| Column Name | Type  |
++-------------+-------+
+| sale_id     | int   |
+| product_id  | int   |
+| year        | int   |
+| quantity    | int   |
+| price       | int   |
++-------------+-------+
+ 
+Table: Product
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| product_id   | int     |
+| product_name | varchar |
++--------------+---------+
+```
+
+> Problem 
+
+(sale_id, year) is the primary key (combination of columns with unique values) of this table.
+product_id is a foreign key (reference column) to Product table.
+Each row of this table shows a sale on the product product_id in a certain year.
+Note that the price is per unit.
+product_id is the primary key (column with unique values) of this table.
+Each row of this table indicates the product name of each product.
+Write a solution to report the product_name, year, and price for each sale_id in the Sales table.
+Return the resulting table in any order.
+
+> Input Example
+
+```text
+Sales table:
++---------+------------+------+----------+-------+
+| sale_id | product_id | year | quantity | price |
++---------+------------+------+----------+-------+ 
+| 1       | 100        | 2008 | 10       | 5000  |
+| 2       | 100        | 2009 | 12       | 5000  |
+| 7       | 200        | 2011 | 15       | 9000  |
++---------+------------+------+----------+-------+
+Product table:
++------------+--------------+
+| product_id | product_name |
++------------+--------------+
+| 100        | Nokia        |
+| 200        | Apple        |
+| 300        | Samsung      |
++------------+--------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT p.product_name, s.year, s.price 
+FROM sales s
+JOIN product p 
+ON s.product_id = p.product_id;
+```
+
+> Output Example
+
+```text
++--------------+-------+-------+
+| product_name | year  | price |
++--------------+-------+-------+
+| Nokia        | 2008  | 5000  |
+| Nokia        | 2009  | 5000  |
+| Apple        | 2011  | 9000  |
++--------------+-------+-------+
+```
+
+---
+
+
+### <div align="center">Project Employees I</div>
+
+> Table 
+
+```text
+Table: Project
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| project_id  | int     |
+| employee_id | int     |
++-------------+---------+
+ 
+Table: Employee
++------------------+---------+
+| Column Name      | Type    |
++------------------+---------+
+| employee_id      | int     |
+| name             | varchar |
+| experience_years | int     |
++------------------+---------+
+```
+
+> Problem 
+
+(project_id, employee_id) is the primary key of this table.
+employee_id is a foreign key to Employee table.
+Each row of this table indicates that the employee with employee_id is working on the project with project_id.
+employee_id is the primary key of this table. It's guaranteed that experience_years is not NULL.
+Each row of this table contains information about one employee.
+Write an SQL query that reports the average experience years of all the employees for each project, rounded to 2 digits.
+Return the result table in any order.
+The query result format is in the following example.
+
+> Input Example
+
+```text
+Project table:
++-------------+-------------+
+| project_id  | employee_id |
++-------------+-------------+
+| 1           | 1           |
+| 1           | 2           |
+| 1           | 3           |
+| 2           | 1           |
+| 2           | 4           |
++-------------+-------------+
+Employee table:
++-------------+--------+------------------+
+| employee_id | name   | experience_years |
++-------------+--------+------------------+
+| 1           | Khaled | 3                |
+| 2           | Ali    | 2                |
+| 3           | John   | 1                |
+| 4           | Doe    | 2                |
++-------------+--------+------------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT 
+    p.project_id,
+    ROUND(AVG(e.experience_years), 2) AS average_years
+FROM Project p
+JOIN Employee e
+ON p.employee_id = e.employee_id
+GROUP BY p.project_id;
+```
+
+> Output Example
+
+```text
++-------------+---------------+
+| project_id  | average_years |
++-------------+---------------+
+| 1           | 2.00          |
+| 2           | 2.50          |
++-------------+---------------+
+```
+
+---
+
+
+### <div align="center">Reformat Department Table</div>
+
+> Table 
+
+```text
+Table: Department
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| revenue     | int     |
+| month       | varchar |
++-------------+---------+
+```
+
+> Problem 
+
+In SQL,(id, month) is the primary key of this table.
+The table has information about the revenue of each department per month.
+The month has values in ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].
+Reformat the table such that there is a department id column and a revenue column for each month.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Department table:
++------+---------+-------+
+| id   | revenue | month |
++------+---------+-------+
+| 1    | 8000    | Jan   |
+| 2    | 9000    | Jan   |
+| 3    | 10000   | Feb   |
+| 1    | 7000    | Feb   |
+| 1    | 6000    | Mar   |
++------+---------+-------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT
+    id,
+    SUM(CASE WHEN month = 'Jan' THEN revenue END) AS Jan_Revenue,
+    SUM(CASE WHEN month = 'Feb' THEN revenue END) AS Feb_Revenue,
+    SUM(CASE WHEN month = 'Mar' THEN revenue END) AS Mar_Revenue,
+    SUM(CASE WHEN month = 'Apr' THEN revenue END) AS Apr_Revenue,
+    SUM(CASE WHEN month = 'May' THEN revenue END) AS May_Revenue,
+    SUM(CASE WHEN month = 'Jun' THEN revenue END) AS Jun_Revenue,
+    SUM(CASE WHEN month = 'Jul' THEN revenue END) AS Jul_Revenue,
+    SUM(CASE WHEN month = 'Aug' THEN revenue END) AS Aug_Revenue,
+    SUM(CASE WHEN month = 'Sep' THEN revenue END) AS Sep_Revenue,
+    SUM(CASE WHEN month = 'Oct' THEN revenue END) AS Oct_Revenue,
+    SUM(CASE WHEN month = 'Nov' THEN revenue END) AS Nov_Revenue,
+    SUM(CASE WHEN month = 'Dec' THEN revenue END) AS Dec_Revenue
+FROM Department
+GROUP BY id;
+```
+
+> Output Example
+
+```text
++------+-------------+-------------+-------------+-----+-------------+
+| id   | Jan_Revenue | Feb_Revenue | Mar_Revenue | ... | Dec_Revenue |
++------+-------------+-------------+-------------+-----+-------------+
+| 1    | 8000        | 7000        | 6000        | ... | null        |
+| 2    | 9000        | null        | null        | ... | null        |
+| 3    | null        | 10000       | null        | ... | null        |
++------+-------------+-------------+-------------+-----+-------------+
+```
+
+---
+
+
 ### <div align="center">Rising Temperature</div>
 
 > Table 
@@ -852,6 +1153,89 @@ WHERE w1.temperature > w2.temperature;
 | 2  |
 | 4  |
 +----+
+```
+
+---
+
+
+### <div align="center">Sales Analysis III</div>
+
+> Table 
+
+```text
+Table: Product
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| product_id   | int     |
+| product_name | varchar |
+| unit_price   | int     |
++--------------+---------+
+Table: Sales
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| seller_id   | int     |
+| product_id  | int     |
+| buyer_id    | int     |
+| sale_date   | date    |
+| quantity    | int     |
+| price       | int     |
++-------------+---------+
+```
+
+> Problem 
+
+product_id is the primary key (column with unique values) of this table.
+Each row of this table indicates the name and the price of each product.
+This table can have duplicate rows.
+product_id is a foreign key (reference column) to the Product table.
+Each row of this table contains some information about one sale.
+Write a solution to report the products that were only sold in the first quarter of 2019. That is, between 2019-01-01 and 2019-03-31 inclusive.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Product table:
++------------+--------------+------------+
+| product_id | product_name | unit_price |
++------------+--------------+------------+
+| 1          | S8           | 1000       |
+| 2          | G4           | 800        |
+| 3          | iPhone       | 1400       |
++------------+--------------+------------+
+Sales table:
++-----------+------------+----------+------------+----------+-------+
+| seller_id | product_id | buyer_id | sale_date  | quantity | price |
++-----------+------------+----------+------------+----------+-------+
+| 1         | 1          | 1        | 2019-01-21 | 2        | 2000  |
+| 1         | 2          | 2        | 2019-02-17 | 1        | 800   |
+| 2         | 2          | 3        | 2019-06-02 | 1        | 800   |
+| 3         | 3          | 4        | 2019-05-13 | 2        | 2800  |
++-----------+------------+----------+------------+----------+-------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT p.product_id, p.product_name
+FROM Product p
+JOIN Sales s
+ON p.product_id = s.product_id
+GROUP BY p.product_id, p.product_name
+HAVING MIN(s.sale_date) >= '2019-01-01'
+   AND MAX(s.sale_date) <= '2019-03-31';
+```
+
+> Output Example
+
+```text
++-------------+--------------+
+| product_id  | product_name |
++-------------+--------------+
+| 1           | S8           |
++-------------+--------------+
 ```
 
 ---
