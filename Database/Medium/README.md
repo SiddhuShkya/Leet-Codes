@@ -12,6 +12,67 @@ Each problem includes:
 
 ---
 
+### <div align="center">Consecutive Numbers</div>
+
+> Table 
+
+```text
+Table: Logs
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| num         | varchar |
++-------------+---------+
+```
+
+> Problem 
+
+In SQL, id is the primary key for this table.
+id is an autoincrement column starting from 1.
+Find all numbers that appear at least three times consecutively.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Logs table:
++----+-----+
+| id | num |
++----+-----+
+| 1  | 1   |
+| 2  | 1   |
+| 3  | 1   |
+| 4  | 2   |
+| 5  | 1   |
+| 6  | 2   |
+| 7  | 2   |
++----+-----+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT DISTINCT l1.num AS ConsecutiveNums
+FROM logs l1
+JOIN logs l2 ON l1.id = l2.id - 1
+JOIN logs l3 ON l2.id = l3.id - 1
+WHERE l1.num = l2.num AND l2.num = l3.num;
+```
+
+> Output Example
+
+```text
++-----------------+
+| ConsecutiveNums |
++-----------------+
+| 1               |
++-----------------+
+```
+
+---
+
+
 ### <div align="center">Department Highest Salary</div>
 
 > Table 
