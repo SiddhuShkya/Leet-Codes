@@ -883,6 +883,100 @@ GROUP BY player_id;
 ---
 
 
+### <div align="center">List the Products Ordered in a Period</div>
+
+> Table 
+
+```text
+Table: Products
++------------------+---------+
+| Column Name      | Type    |
++------------------+---------+
+| product_id       | int     |
+| product_name     | varchar |
+| product_category | varchar |
++------------------+---------+
+ 
+Table: Orders
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| product_id    | int     |
+| order_date    | date    |
+| unit          | int     |
++---------------+---------+
+```
+
+> Problem 
+
+product_id is the primary key (column with unique values) for this table.
+This table contains data about the company's products.
+This table may have duplicate rows.
+product_id is a foreign key (reference column) to the Products table.
+unit is the number of products ordered in order_date.
+Write a solution to get the names of products that have at least 100 units ordered in February 2020 and their amount.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Products table:
++-------------+-----------------------+------------------+
+| product_id  | product_name          | product_category |
++-------------+-----------------------+------------------+
+| 1           | Leetcode Solutions    | Book             |
+| 2           | Jewels of Stringology | Book             |
+| 3           | HP                    | Laptop           |
+| 4           | Lenovo                | Laptop           |
+| 5           | Leetcode Kit          | T-shirt          |
++-------------+-----------------------+------------------+
+Orders table:
++--------------+--------------+----------+
+| product_id   | order_date   | unit     |
++--------------+--------------+----------+
+| 1            | 2020-02-05   | 60       |
+| 1            | 2020-02-10   | 70       |
+| 2            | 2020-01-18   | 30       |
+| 2            | 2020-02-11   | 80       |
+| 3            | 2020-02-17   | 2        |
+| 3            | 2020-02-24   | 3        |
+| 4            | 2020-03-01   | 20       |
+| 4            | 2020-03-04   | 30       |
+| 4            | 2020-03-04   | 60       |
+| 5            | 2020-02-25   | 50       |
+| 5            | 2020-02-27   | 50       |
+| 5            | 2020-03-01   | 50       |
++--------------+--------------+----------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT
+    p.product_name,
+    SUM(o.unit) AS unit
+FROM Products p
+JOIN Orders o
+    ON p.product_id = o.product_id
+WHERE o.order_date BETWEEN '2020-02-01' AND '2020-02-29'
+GROUP BY p.product_id
+HAVING SUM(o.unit) >= 100;
+```
+
+> Output Example
+
+```text
++--------------------+---------+
+| product_name       | unit    |
++--------------------+---------+
+| Leetcode Solutions | 130     |
+| Leetcode Kit       | 100     |
++--------------------+---------+
+```
+
+---
+
+
 ### <div align="center">Not Boring Movies</div>
 
 > Table 
@@ -1106,6 +1200,80 @@ GROUP BY p.project_id;
 | 1           | 2.00          |
 | 2           | 2.50          |
 +-------------+---------------+
+```
+
+---
+
+
+### <div align="center">Queries Quality and Percentage</div>
+
+> Table 
+
+```text
+Table: Queries
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| query_name  | varchar |
+| result      | varchar |
+| position    | int     |
+| rating      | int     |
++-------------+---------+
+```
+
+> Problem 
+
+This table may have duplicate rows.
+This table contains information collected from some queries on a database.
+The position column has a value from 1 to 500.
+The rating column has a value from 1 to 5. Query with rating less than 3 is a poor query.
+We define query quality as:
+The average of the ratio between query rating and its position.
+We also define poor query percentage as:
+The percentage of all queries with rating less than 3.
+Write a solution to find each query_name, the quality and poor_query_percentage.
+Both quality and poor_query_percentage should be rounded to 2 decimal places.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Queries table:
++------------+-------------------+----------+--------+
+| query_name | result            | position | rating |
++------------+-------------------+----------+--------+
+| Dog        | Golden Retriever  | 1        | 5      |
+| Dog        | German Shepherd   | 2        | 5      |
+| Dog        | Mule              | 200      | 1      |
+| Cat        | Shirazi           | 5        | 2      |
+| Cat        | Siamese           | 3        | 3      |
+| Cat        | Sphynx            | 7        | 4      |
++------------+-------------------+----------+--------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT
+    query_name,
+    ROUND(AVG(rating / position), 2) AS quality,
+    ROUND(
+        100.0 * SUM(CASE WHEN rating < 3 THEN 1 ELSE 0 END) / COUNT(*),
+        2
+    ) AS poor_query_percentage
+FROM Queries
+GROUP BY query_name;
+```
+
+> Output Example
+
+```text
++------------+---------+-----------------------+
+| query_name | quality | poor_query_percentage |
++------------+---------+-----------------------+
+| Dog        | 2.50    | 33.33                 |
+| Cat        | 0.66    | 33.33                 |
++------------+---------+-----------------------+
 ```
 
 ---
@@ -1441,6 +1609,131 @@ WHERE s.sales_id NOT IN (
 ---
 
 
+### <div align="center">Students and Examinations</div>
+
+> Table 
+
+```text
+Table: Students
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| student_id    | int     |
+| student_name  | varchar |
++---------------+---------+
+ 
+Table: Subjects
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| subject_name | varchar |
++--------------+---------+
+ 
+Table: Examinations
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| student_id   | int     |
+| subject_name | varchar |
++--------------+---------+
+```
+
+> Problem 
+
+student_id is the primary key (column with unique values) for this table.
+Each row of this table contains the ID and the name of one student in the school.
+subject_name is the primary key (column with unique values) for this table.
+Each row of this table contains the name of one subject in the school.
+There is no primary key (column with unique values) for this table. It may contain duplicates.
+Each student from the Students table takes every course from the Subjects table.
+Each row of this table indicates that a student with ID student_id attended the exam of subject_name.
+Write a solution to find the number of times each student attended each exam.
+Return the result table ordered by student_id and subject_name.
+
+> Input Example
+
+```text
+Students table:
++------------+--------------+
+| student_id | student_name |
++------------+--------------+
+| 1          | Alice        |
+| 2          | Bob          |
+| 13         | John         |
+| 6          | Alex         |
++------------+--------------+
+Subjects table:
++--------------+
+| subject_name |
++--------------+
+| Math         |
+| Physics      |
+| Programming  |
++--------------+
+Examinations table:
++------------+--------------+
+| student_id | subject_name |
++------------+--------------+
+| 1          | Math         |
+| 1          | Physics      |
+| 1          | Programming  |
+| 2          | Programming  |
+| 1          | Physics      |
+| 1          | Math         |
+| 13         | Math         |
+| 13         | Programming  |
+| 13         | Physics      |
+| 2          | Math         |
+| 1          | Math         |
++------------+--------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT
+    s.student_id,
+    s.student_name,
+    sub.subject_name,
+    COUNT(e.student_id) AS attended_exams
+FROM Students s
+JOIN Subjects sub
+LEFT JOIN Examinations e
+    ON s.student_id = e.student_id
+   AND sub.subject_name = e.subject_name
+GROUP BY
+    s.student_id,
+    s.student_name,
+    sub.subject_name
+ORDER BY
+    s.student_id,
+    sub.subject_name;
+```
+
+> Output Example
+
+```text
++------------+--------------+--------------+----------------+
+| student_id | student_name | subject_name | attended_exams |
++------------+--------------+--------------+----------------+
+| 1          | Alice        | Math         | 3              |
+| 1          | Alice        | Physics      | 2              |
+| 1          | Alice        | Programming  | 1              |
+| 2          | Bob          | Math         | 1              |
+| 2          | Bob          | Physics      | 0              |
+| 2          | Bob          | Programming  | 1              |
+| 6          | Alex         | Math         | 0              |
+| 6          | Alex         | Physics      | 0              |
+| 6          | Alex         | Programming  | 0              |
+| 13         | John         | Math         | 1              |
+| 13         | John         | Physics      | 1              |
+| 13         | John         | Programming  | 1              |
++------------+--------------+--------------+----------------+
+```
+
+---
+
+
 ### <div align="center">Swap Sex of Employees</div>
 
 > Table 
@@ -1500,6 +1793,103 @@ END;
 | 3  | C    | f   | 5500   |
 | 4  | D    | m   | 500    |
 +----+------+-----+--------+
+```
+
+---
+
+
+### <div align="center">Top Travellers</div>
+
+> Table 
+
+```text
+Table: Users
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| id            | int     |
+| name          | varchar |
++---------------+---------+
+ 
+Table: Rides
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| id            | int     |
+| user_id       | int     |
+| distance      | int     |
++---------------+---------+
+```
+
+> Problem 
+
+id is the column with unique values for this table.
+name is the name of the user.
+id is the column with unique values for this table.
+user_id is the id of the user who traveled the distance "distance".
+Write a solution to report the distance traveled by each user.
+Return the result table ordered by travelled_distance in descending order, if two or more users traveled the same distance, order them by their name in ascending order.
+
+> Input Example
+
+```text
+Users table:
++------+-----------+
+| id   | name      |
++------+-----------+
+| 1    | Alice     |
+| 2    | Bob       |
+| 3    | Alex      |
+| 4    | Donald    |
+| 7    | Lee       |
+| 13   | Jonathan  |
+| 19   | Elvis     |
++------+-----------+
+Rides table:
++------+----------+----------+
+| id   | user_id  | distance |
++------+----------+----------+
+| 1    | 1        | 120      |
+| 2    | 2        | 317      |
+| 3    | 3        | 222      |
+| 4    | 7        | 100      |
+| 5    | 13       | 312      |
+| 6    | 19       | 50       |
+| 7    | 7        | 120      |
+| 8    | 19       | 400      |
+| 9    | 7        | 230      |
++------+----------+----------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT
+    u.name,
+    IFNULL(SUM(r.distance), 0) AS travelled_distance
+FROM Users u
+LEFT JOIN Rides r
+    ON u.id = r.user_id
+GROUP BY u.id
+ORDER BY
+    travelled_distance DESC,
+    u.name ASC;
+```
+
+> Output Example
+
+```text
++----------+--------------------+
+| name     | travelled_distance |
++----------+--------------------+
+| Elvis    | 450                |
+| Lee      | 450                |
+| Bob      | 317                |
+| Jonathan | 312                |
+| Alex     | 222                |
+| Alice    | 120                |
+| Donald   | 0                  |
++----------+--------------------+
 ```
 
 ---
