@@ -1,3 +1,4 @@
 venv/
 scripts/
 prompt.txt
+Database/update_query_docs.py
