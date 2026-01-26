@@ -1,8 +1,8 @@
-# LeetCode Solutions & Documentation
+## LeetCode Solutions & Documentation
 
 This repo is dedicated to storing the LeetCode problems I have solved, along with detailed documentation. Each problem includes Python solutions and in-depth explanations covering multiple approaches, complexity analysis, and edge cases.
 
-## 📊 Progress Summary
+### 📊 Progress Summary
 
 <!-- PROGRESS_TABLE_START -->
 | Category | Easy | Medium | Hard | Total |
@@ -12,7 +12,7 @@ This repo is dedicated to storing the LeetCode problems I have solved, along wit
 | **Total** | **95** | **63** | **3** | **161** |
 <!-- PROGRESS_TABLE_END -->
 
-## 🎯 Topics Covered
+### 🎯 Topics Covered
 
 **Database · Array · Hash Table · String · Sorting · Binary Search · Linked List · Tree · Graph · Math · Bit Manipulation**
 
