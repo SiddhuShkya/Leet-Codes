@@ -503,6 +503,92 @@ SELECT customer_number FROM (
 ---
 
 
+### <div align="center">Customer Who Visited but Did Not Make Any Transactions</div>
+
+> Table 
+
+```text
+Table: Visits
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| visit_id    | int     |
+| customer_id | int     |
++-------------+---------+
+ 
+Table: Transactions
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| transaction_id | int     |
+| visit_id       | int     |
+| amount         | int     |
++----------------+---------+
+```
+
+> Problem 
+
+visit_id is the column with unique values for this table.
+This table contains information about the customers who visited the mall.
+transaction_id is column with unique values for this table.
+This table contains information about the transactions made during the visit_id.
+Write a solution to find the IDs of the users who visited without making any transactions and the number of times they made these types of visits.
+Return the result table sorted in any order.
+
+> Input Example
+
+```text
+Visits
++----------+-------------+
+| visit_id | customer_id |
++----------+-------------+
+| 1        | 23          |
+| 2        | 9           |
+| 4        | 30          |
+| 5        | 54          |
+| 6        | 96          |
+| 7        | 54          |
+| 8        | 54          |
++----------+-------------+
+Transactions
++----------------+----------+--------+
+| transaction_id | visit_id | amount |
++----------------+----------+--------+
+| 2              | 5        | 310    |
+| 3              | 5        | 300    |
+| 9              | 5        | 200    |
+| 12             | 1        | 910    |
+| 13             | 2        | 970    |
++----------------+----------+--------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT v.customer_id,
+    COUNT(*) AS count_no_trans
+FROM visits v
+LEFT JOIN transactions t
+    ON v.visit_id = t.visit_id
+WHERE t.visit_id IS NULL
+GROUP BY v.customer_id;
+```
+
+> Output Example
+
+```text
++-------------+----------------+
+| customer_id | count_no_trans |
++-------------+----------------+
+| 54          | 2              |
+| 30          | 1              |
+| 96          | 1              |
++-------------+----------------+
+```
+
+---
+
+
 ### <div align="center">Delete Duplicate Emails</div>
 
 > Table 
@@ -1548,6 +1634,86 @@ GROUP BY id;
 | 2    | 9000        | null        | null        | ... | null        |
 | 3    | null        | 10000       | null        | ... | null        |
 +------+-------------+-------------+-------------+-----+-------------+
+```
+
+---
+
+
+### <div align="center">Replace Employee ID With The Unique Identifier</div>
+
+> Table 
+
+```text
+Table: Employees
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| id            | int     |
+| name          | varchar |
++---------------+---------+
+ 
+Table: EmployeeUNI
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| id            | int     |
+| unique_id     | int     |
++---------------+---------+
+```
+
+> Problem 
+
+id is the primary key (column with unique values) for this table.
+Each row of this table contains the id and the name of an employee in a company.
+(id, unique_id) is the primary key (combination of columns with unique values) for this table.
+Each row of this table contains the id and the corresponding unique id of an employee in the company.
+Write a solution to show the unique ID of each user, If a user does not have a unique ID replace just show null.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Employees table:
++----+----------+
+| id | name     |
++----+----------+
+| 1  | Alice    |
+| 7  | Bob      |
+| 11 | Meir     |
+| 90 | Winston  |
+| 3  | Jonathan |
++----+----------+
+EmployeeUNI table:
++----+-----------+
+| id | unique_id |
++----+-----------+
+| 3  | 1         |
+| 11 | 2         |
+| 90 | 3         |
++----+-----------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT u.unique_id, e.name
+FROM employees e
+LEFT JOIN employeeuni u
+ON e.id = u.id;
+```
+
+> Output Example
+
+```text
++-----------+----------+
+| unique_id | name     |
++-----------+----------+
+| null      | Alice    |
+| null      | Bob      |
+| 2         | Meir     |
+| 3         | Winston  |
+| 1         | Jonathan |
++-----------+----------+
 ```
 
 ---
