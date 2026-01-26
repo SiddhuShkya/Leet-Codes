@@ -226,6 +226,91 @@ GROUP BY p.product_id;
 ---
 
 
+### <div align="center">Bank Account Summary II</div>
+
+> Table 
+
+```text
+Table: Users
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| account      | int     |
+| name         | varchar |
++--------------+---------+
+ 
+Table: Transactions
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| trans_id      | int     |
+| account       | int     |
+| amount        | int     |
+| transacted_on | date    |
++---------------+---------+
+```
+
+> Problem 
+
+account is the primary key (column with unique values) for this table.
+Each row of this table contains the account number of each user in the bank.
+There will be no two users having the same name in the table.
+trans_id is the primary key (column with unique values) for this table.
+Each row of this table contains all changes made to all accounts.
+amount is positive if the user received money and negative if they transferred money.
+All accounts start with a balance of 0.
+Write a solution to report the name and balance of users with a balance higher than 10000. The balance of an account is equal to the sum of the amounts of all transactions involving that account.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Users table:
++------------+--------------+
+| account    | name         |
++------------+--------------+
+| 900001     | Alice        |
+| 900002     | Bob          |
+| 900003     | Charlie      |
++------------+--------------+
+Transactions table:
++------------+------------+------------+---------------+
+| trans_id   | account    | amount     | transacted_on |
++------------+------------+------------+---------------+
+| 1          | 900001     | 7000       |  2020-08-01   |
+| 2          | 900001     | 7000       |  2020-09-01   |
+| 3          | 900001     | -3000      |  2020-09-02   |
+| 4          | 900002     | 1000       |  2020-09-12   |
+| 5          | 900003     | 6000       |  2020-08-07   |
+| 6          | 900003     | 6000       |  2020-09-07   |
+| 7          | 900003     | -4000      |  2020-09-11   |
++------------+------------+------------+---------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT u.name, SUM(t.amount) AS balance
+FROM users u
+JOIN transactions t
+    ON u.account = t.account
+GROUP BY u.name
+HAVING balance > 10000;
+```
+
+> Output Example
+
+```text
++------------+------------+
+| name       | balance    |
++------------+------------+
+| Alice      | 11000      |
++------------+------------+
+```
+
+---
+
+
 ### <div align="center">Biggest Single Number</div>
 
 > Table 
@@ -971,6 +1056,66 @@ WHERE REGEXP_LIKE(
 | 3       | Annabelle | bella-@leetcode.com     |
 | 4       | Sally     | sally.come@leetcode.com |
 +---------+-----------+-------------------------+
+```
+
+---
+
+
+### <div align="center">Fix Names in a Table</div>
+
+> Table 
+
+```text
+Table: Users
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| user_id        | int     |
+| name           | varchar |
++----------------+---------+
+```
+
+> Problem 
+
+user_id is the primary key (column with unique values) for this table.
+This table contains the ID and the name of the user. The name consists of only lowercase and uppercase characters.
+Write a solution to fix the names so that only the first character is uppercase and the rest are lowercase.
+Return the result table ordered by user_id.
+
+> Input Example
+
+```text
+Users table:
++---------+-------+
+| user_id | name  |
++---------+-------+
+| 1       | aLice |
+| 2       | bOB   |
++---------+-------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT
+    user_id,
+    CONCAT(
+        UPPER(SUBSTRING(name, 1, 1)),
+        LOWER(SUBSTRING(name, 2))
+    ) AS name
+FROM users
+ORDER BY user_id;
+```
+
+> Output Example
+
+```text
++---------+-------+
+| user_id | name  |
++---------+-------+
+| 1       | Alice |
+| 2       | Bob   |
++---------+-------+
 ```
 
 ---
