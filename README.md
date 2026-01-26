@@ -14,17 +14,7 @@ This repo is dedicated to storing the LeetCode problems I have solved, along wit
 
 ## 🎯 Topics Covered
 
-- Database
-- Array
-- Hash Table
-- String
-- Sorting
-- Binary Search
-- Linked List
-- Tree
-- Graph
-- Math
-- Bit Manipulation
+**Database · Array · Hash Table · String · Sorting · Binary Search · Linked List · Tree · Graph · Math · Bit Manipulation**
 
 ---
 
