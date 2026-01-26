@@ -12,36 +12,19 @@ This repo is dedicated to storing the LeetCode problems I have solved, along wit
 | **Total** | **95** | **63** | **3** | **161** |
 <!-- PROGRESS_TABLE_END -->
 
-## 📂 Repository Structure
-
-```
-Leet-Codes/
-├── Algorithms/     ## Leetcode Problems & Solutions (Algorithms)
-│   ├── Easy/
-│   ├── Medium/
-│   └── Hard/
-├── Database/       ## Leetcode Problems & Solutions (Database)
-│   ├── Easy/
-│   ├── Medium/
-│   └── Hard/
-└── README.md
-```
-
-## 📝 What's Inside
-
-Each problem folder contains:
-- **`main.py`** - Python solution implementation
-- **`main.txt`** - Detailed documentation including:
-  - Problem statement and examples
-  - Multiple solution approaches
-  - Time and space complexity analysis
-  - Step-by-step walkthroughs
-  - Edge cases and optimizations
-  - Related problems
-
 ## 🎯 Topics Covered
 
-Array • Hash Table • String • Dynamic Programming • Sorting • Binary Search • Linked List • Tree • Graph • Backtracking • Greedy • Math • Bit Manipulation • and more
+- Database
+- Array
+- Hash Table
+- String
+- Sorting
+- Binary Search
+- Linked List
+- Tree
+- Graph
+- Math
+- Bit Manipulation
 
 ---
 
