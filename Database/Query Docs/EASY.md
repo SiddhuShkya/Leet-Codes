@@ -1150,6 +1150,65 @@ referee_id IS NULL;
 ---
 
 
+### <div align="center">Find Followers Count</div>
+
+> Table 
+
+```text
+Table: Followers
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| user_id     | int  |
+| follower_id | int  |
++-------------+------+
+```
+
+> Problem 
+
+(user_id, follower_id) is the primary key (combination of columns with unique values) for this table.
+This table contains the IDs of a user and a follower in a social media app where the follower follows the user.
+Write a solution that will, for each user, return the number of followers.
+Return the result table ordered by user_id in ascending order.
+
+> Input Example
+
+```text
+Followers table:
++---------+-------------+
+| user_id | follower_id |
++---------+-------------+
+| 0       | 1           |
+| 1       | 0           |
+| 2       | 0           |
+| 2       | 1           |
++---------+-------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT user_id, COUNT(user_id) AS followers_count
+FROM followers
+GROUP BY user_id
+ORDER BY user_id;
+```
+
+> Output Example
+
+```text
++---------+----------------+
+| user_id | followers_count|
++---------+----------------+
+| 0       | 1              |
+| 1       | 1              |
+| 2       | 2              |
++---------+----------------+
+```
+
+---
+
+
 ### <div align="center">Find Users With Valid E-Mails</div>
 
 > Table 
@@ -1718,6 +1777,81 @@ ORDER BY
 | 215        | 66.67      |
 | 207        | 33.33      |
 +------------+------------+
+```
+
+---
+
+
+### <div align="center">Primary Department for Each Employee</div>
+
+> Table 
+
+```text
+Table: Employee
++---------------+---------+
+| Column Name   |  Type   |
++---------------+---------+
+| employee_id   | int     |
+| department_id | int     |
+| primary_flag  | varchar |
++---------------+---------+
+```
+
+> Problem 
+
+(employee_id, department_id) is the primary key (combination of columns with unique values) for this table.
+employee_id is the id of the employee.
+department_id is the id of the department to which the employee belongs.
+primary_flag is an ENUM (category) of type ('Y', 'N'). If the flag is 'Y', the department is the primary department for the employee. If the flag is 'N', the department is not the primary.
+Employees can belong to multiple departments. When the employee joins other departments, they need to decide which department is their primary department. Note that when an employee belongs to only one department, their primary column is 'N'.
+Write a solution to report all the employees with their primary department. For employees who belong to one department, report their only department.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Employee table:
++-------------+---------------+--------------+
+| employee_id | department_id | primary_flag |
++-------------+---------------+--------------+
+| 1           | 1             | N            |
+| 2           | 1             | Y            |
+| 2           | 2             | N            |
+| 3           | 3             | N            |
+| 4           | 2             | N            |
+| 4           | 3             | Y            |
+| 4           | 4             | N            |
++-------------+---------------+--------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT employee_id, department_id
+FROM employee
+WHERE primary_flag = 'Y'
+UNION ALL
+SELECT e.employee_id, e.department_id
+FROM employee e
+WHERE e.primary_flag = 'N'
+  AND (
+        SELECT COUNT(*)
+        FROM employee e2
+        WHERE e2.employee_id = e.employee_id
+      ) = 1;
+```
+
+> Output Example
+
+```text
++-------------+---------------+
+| employee_id | department_id |
++-------------+---------------+
+| 1           | 1             |
+| 2           | 1             |
+| 3           | 3             |
+| 4           | 3             |
++-------------+---------------+
 ```
 
 ---
@@ -2556,6 +2690,95 @@ END;
 | 3  | C    | f   | 5500   |
 | 4  | D    | m   | 500    |
 +----+------+-----+--------+
+```
+
+---
+
+
+### <div align="center">The Number of Employees Which Report to Each Employee</div>
+
+> Table 
+
+```text
+Table: Employees
++-------------+----------+
+| Column Name | Type     |
++-------------+----------+
+| employee_id | int      |
+| name        | varchar  |
+| reports_to  | int      |
+| age         | int      |
++-------------+----------+
+```
+
+> Problem 
+
+employee_id is the column with unique values for this table.
+This table contains information about the employees and the id of the manager they report to. Some employees do not report to anyone (reports_to is null). 
+For this problem, we will consider a manager an employee who has at least 1 other employee reporting to them.
+Write a solution to report the ids and the names of all managers, the number of employees who report directly to them, and the average age of the reports rounded to the nearest integer.
+Return the result table ordered by employee_id.
+
+> Input Example
+
+```text
+Employees table:
++-------------+---------+------------+-----+
+| employee_id | name    | reports_to | age |
++-------------+---------+------------+-----+
+| 9           | Hercy   | null       | 43  |
+| 6           | Alice   | 9          | 41  |
+| 4           | Bob     | 9          | 36  |
+| 2           | Winston | null       | 37  |
++-------------+---------+------------+-----+
+Employees table:
++-------------+---------+------------+-----+ 
+| employee_id | name    | reports_to | age |
+|-------------|---------|------------|-----|
+| 1           | Michael | null       | 45  |
+| 2           | Alice   | 1          | 38  |
+| 3           | Bob     | 1          | 42  |
+| 4           | Charlie | 2          | 34  |
+| 5           | David   | 2          | 40  |
+| 6           | Eve     | 3          | 37  |
+| 7           | Frank   | null       | 50  |
+| 8           | Grace   | null       | 48  |
++-------------+---------+------------+-----+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT
+    m.employee_id,
+    m.name,
+    COUNT(e.employee_id) AS reports_count,
+    ROUND(AVG(e.age), 0) AS average_age
+FROM Employees m
+JOIN Employees e
+    ON e.reports_to = m.employee_id
+GROUP BY
+    m.employee_id,
+    m.name
+ORDER BY
+    m.employee_id;
+```
+
+> Output Example
+
+```text
++-------------+-------+---------------+-------------+
+| employee_id | name  | reports_count | average_age |
++-------------+-------+---------------+-------------+
+| 9           | Hercy | 2             | 39          |
++-------------+-------+---------------+-------------+
++-------------+---------+---------------+-------------+
+| employee_id | name    | reports_count | average_age |
+| ----------- | ------- | ------------- | ----------- |
+| 1           | Michael | 2             | 40          |
+| 2           | Alice   | 2             | 37          |
+| 3           | Bob     | 1             | 37          |
++-------------+---------+---------------+-------------+
 ```
 
 ---
