@@ -73,6 +73,87 @@ WHERE l1.num = l2.num AND l2.num = l3.num;
 ---
 
 
+### <div align="center">Customers Who Bought All Products</div>
+
+> Table 
+
+```text
+Table: Customer
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| customer_id | int     |
+| product_key | int     |
++-------------+---------+
+ 
+Table: Product
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| product_key | int     |
++-------------+---------+
+```
+
+> Problem 
+
+This table may contain duplicates rows. 
+customer_id is not NULL.
+product_key is a foreign key (reference column) to Product table.
+product_key is the primary key (column with unique values) for this table.
+Write a solution to report the customer ids from the Customer table that bought all the products in the Product table.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Customer table:
++-------------+-------------+
+| customer_id | product_key |
++-------------+-------------+
+| 1           | 5           |
+| 2           | 6           |
+| 3           | 5           |
+| 3           | 6           |
+| 1           | 6           |
++-------------+-------------+
+Product table:
++-------------+
+| product_key |
++-------------+
+| 5           |
+| 6           |
++-------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT customer_id 
+FROM (
+    SELECT
+        customer_id,
+        COUNT(DISTINCT product_key) AS num_products_bought,
+        (SELECT COUNT(*) FROM Product) AS total_products
+    FROM Customer
+    GROUP BY customer_id
+)t
+WHERE num_products_bought = total_products;
+```
+
+> Output Example
+
+```text
++-------------+
+| customer_id |
++-------------+
+| 1           |
+| 3           |
++-------------+
+```
+
+---
+
+
 ### <div align="center">Department Highest Salary</div>
 
 > Table 
@@ -361,6 +442,158 @@ FROM (
 +------+
 | John |
 +------+
+```
+
+---
+
+
+### <div align="center">Nth Highest Salary</div>
+
+> Table 
+
+```text
+Table: Employee
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| id          | int  |
+| salary      | int  |
++-------------+------+
+```
+
+> Problem 
+
+id is the primary key (column with unique values) for this table.
+Each row of this table contains information about the salary of an employee.
+Write a solution to find the nth highest distinct salary from the Employee table. If there are less than n distinct salaries, return null.
+
+> Input Example
+
+```text
+Employee table:
++----+--------+
+| id | salary |
++----+--------+
+| 1  | 100    |
+| 2  | 200    |
+| 3  | 300    |
++----+--------+
+n = 2
+Employee table:
++----+--------+
+| id | salary |
++----+--------+
+| 1  | 100    |
++----+--------+
+n = 2
+```
+
+> SQL Query **Solution**
+
+```sql
+CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+BEGIN
+    DECLARE offset_val INT;
+    SET offset_val = N - 1;
+    RETURN (
+        SELECT DISTINCT salary
+        FROM Employee
+        ORDER BY salary DESC
+        LIMIT 1 OFFSET offset_val
+    );
+END
+```
+
+> Output Example
+
+```text
++------------------------+
+| getNthHighestSalary(2) |
++------------------------+
+| 200                    |
++------------------------+
+
++------------------------+
+| getNthHighestSalary(2) |
++------------------------+
+| null                   |
++------------------------+
+```
+
+---
+
+
+### <div align="center">Product Price at a Given Date</div>
+
+> Table 
+
+```text
+Table: Products
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| product_id    | int     |
+| new_price     | int     |
+| change_date   | date    |
++---------------+---------+
+```
+
+> Problem 
+
+(product_id, change_date) is the primary key (combination of columns with unique values) of this table.
+Each row of this table indicates that the price of some product was changed to a new price at some date.
+Initially, all products have price 10.
+Write a solution to find the prices of all products on the date 2019-08-16.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Products table:
++------------+-----------+-------------+
+| product_id | new_price | change_date |
++------------+-----------+-------------+
+| 1          | 20        | 2019-08-14  |
+| 2          | 50        | 2019-08-14  |
+| 1          | 30        | 2019-08-15  |
+| 1          | 35        | 2019-08-16  |
+| 2          | 65        | 2019-08-17  |
+| 3          | 20        | 2019-08-18  |
++------------+-----------+-------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT product_id, new_price AS price
+FROM products
+WHERE change_date <= '2019-08-16'
+  AND (product_id, change_date) IN (
+        SELECT product_id, MAX(change_date)
+        FROM products
+        WHERE change_date <= '2019-08-16'
+        GROUP BY product_id
+  )
+UNION ALL
+SELECT DISTINCT product_id, 10 AS price
+FROM products
+WHERE product_id NOT IN (
+    SELECT DISTINCT product_id
+    FROM products
+    WHERE change_date <= '2019-08-16'
+);
+```
+
+> Output Example
+
+```text
++------------+-------+
+| product_id | price |
++------------+-------+
+| 2          | 50    |
+| 1          | 35    |
+| 3          | 10    |
++------------+-------+
 ```
 
 ---
