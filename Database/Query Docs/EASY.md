@@ -476,6 +476,78 @@ SELECT MAX(num) AS num FROM (
 ---
 
 
+### <div align="center">Calculate Special Bonus</div>
+
+> Table 
+
+```text
+Table: Employees
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| employee_id | int     |
+| name        | varchar |
+| salary      | int     |
++-------------+---------+
+```
+
+> Problem 
+
+employee_id is the primary key (column with unique values) for this table.
+Each row of this table indicates the employee ID, employee name, and salary.
+Write a solution to calculate the bonus of each employee. The bonus of an employee is 100% of their salary if the ID of the employee is an odd number and the employee's name does not start with the character 'M'. The bonus of an employee is 0 otherwise.
+Return the result table ordered by employee_id.
+
+> Input Example
+
+```text
+Employees table:
++-------------+---------+--------+
+| employee_id | name    | salary |
++-------------+---------+--------+
+| 2           | Meir    | 3000   |
+| 3           | Michael | 3800   |
+| 7           | Addilyn | 7400   |
+| 8           | Juan    | 6100   |
+| 9           | Kannon  | 7700   |
++-------------+---------+--------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT employee_id, bonus
+FROM (
+    SELECT
+        employee_id,
+        CASE
+            WHEN employee_id % 2 = 1
+                AND NOT REGEXP_LIKE(name, '^m', 'i')
+            THEN salary
+            ELSE 0
+        END AS bonus
+    FROM Employees
+) t
+ORDER BY employee_id;
+```
+
+> Output Example
+
+```text
++-------------+-------+
+| employee_id | bonus |
++-------------+-------+
+| 2           | 0     |
+| 3           | 0     |
+| 7           | 7400  |
+| 8           | 0     |
+| 9           | 7700  |
++-------------+-------+
+```
+
+---
+
+
 ### <div align="center">Classes With Atleast 5 Students</div>
 
 > Table 
@@ -2690,6 +2762,73 @@ END;
 | 3  | C    | f   | 5500   |
 | 4  | D    | m   | 500    |
 +----+------+-----+--------+
+```
+
+---
+
+
+### <div align="center">The Latest Login in 2020</div>
+
+> Table 
+
+```text
+Table: Logins
++----------------+----------+
+| Column Name    | Type     |
++----------------+----------+
+| user_id        | int      |
+| time_stamp     | datetime |
++----------------+----------+
+```
+
+> Problem 
+
+(user_id, time_stamp) is the primary key (combination of columns with unique values) for this table.
+Each row contains information about the login time for the user with ID user_id.
+Write a solution to report the latest login for all users in the year 2020. Do not include the users who did not login in 2020.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Logins table:
++---------+---------------------+
+| user_id | time_stamp          |
++---------+---------------------+
+| 6       | 2020-06-30 15:06:07 |
+| 6       | 2021-04-21 14:06:06 |
+| 6       | 2019-03-07 00:18:15 |
+| 8       | 2020-02-01 05:10:53 |
+| 8       | 2020-12-30 00:46:50 |
+| 2       | 2020-01-16 02:49:50 |
+| 2       | 2019-08-25 07:59:08 |
+| 14      | 2019-07-14 09:00:00 |
+| 14      | 2021-01-06 11:59:59 |
++---------+---------------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT
+    user_id,
+    MAX(time_stamp) AS last_stamp
+FROM Logins
+WHERE time_stamp >= '2020-01-01'
+  AND time_stamp <  '2021-01-01'
+GROUP BY user_id;
+```
+
+> Output Example
+
+```text
++---------+---------------------+
+| user_id | last_stamp          |
++---------+---------------------+
+| 6       | 2020-06-30 15:06:07 |
+| 8       | 2020-12-30 00:46:50 |
+| 2       | 2020-01-16 02:49:50 |
++---------+---------------------+
 ```
 
 ---
