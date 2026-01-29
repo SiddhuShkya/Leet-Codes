@@ -9,6 +9,7 @@ Each problem includes:
 - ✅ Input example
 - ✅ Correct SQL solution
 - ✅ Output example
+- ✅ SQL Keywords Used
 
 ---
 
@@ -99,5 +100,7 @@ WHERE (
 | Sales      | Sam      | 60000  |
 +------------+----------+--------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, AS, DISTINCT, AND, COUNT
 
 ---

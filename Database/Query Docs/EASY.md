@@ -9,6 +9,7 @@ Each problem includes:
 - ✅ Input example
 - ✅ Correct SQL solution
 - ✅ Output example
+- ✅ SQL Keywords Used
 
 ---
 
@@ -70,6 +71,8 @@ SELECT actor_id, director_id FROM (
 | 1           | 1           |
 +-------------+-------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, HAVING, AS, COUNT
 
 ---
 
@@ -134,6 +137,8 @@ ORDER BY author_id ASC;
 | 7    |
 +------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, ORDER BY, AS, DISTINCT
 
 ---
 
@@ -223,6 +228,8 @@ GROUP BY p.product_id;
 +------------+---------------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON, GROUP BY, AS, AND, BETWEEN, SUM, IFNULL, ROUND
+
 ---
 
 
@@ -310,6 +317,8 @@ GROUP BY machine_id;
 +------------+-----------------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, CASE, WHEN, THEN, END, AVG, MAX, ROUND
+
 ---
 
 
@@ -395,6 +404,8 @@ HAVING balance > 10000;
 +------------+------------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, JOIN, ON, GROUP BY, HAVING, AS, SUM
+
 ---
 
 
@@ -473,6 +484,8 @@ SELECT MAX(num) AS num FROM (
 +------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, HAVING, AS, COUNT, MAX
+
 ---
 
 
@@ -545,6 +558,8 @@ ORDER BY employee_id;
 +-------------+-------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, ORDER BY, AS, AND, CASE, WHEN, THEN, ELSE, END
+
 ---
 
 
@@ -609,6 +624,8 @@ WHERE cnt >= 5;
 | Math    |
 +---------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, AS, COUNT
 
 ---
 
@@ -686,6 +703,8 @@ ON p.personId = a.personId;
 +-----------+----------+---------------+----------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON, AS
+
 ---
 
 
@@ -743,6 +762,8 @@ SELECT customer_number FROM (
 | 3               |
 +-----------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, LIMIT, COUNT
 
 ---
 
@@ -830,6 +851,8 @@ GROUP BY v.customer_id;
 +-------------+----------------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, LEFT JOIN, ON, GROUP BY, AS, IS NULL, COUNT
+
 ---
 
 
@@ -901,6 +924,8 @@ GROUP BY date_id, make_name;
 +-----------+-----------+--------------+-----------------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, DISTINCT, COUNT
+
 ---
 
 
@@ -960,6 +985,8 @@ ON p.email = p2.email AND p.id > p2.id;
 +----+------------------+
 ```
 
+> `SQL Keywords Used:` FROM, JOIN, ON, AND
+
 ---
 
 
@@ -1017,6 +1044,8 @@ SELECT email AS Email FROM (
 | a@b.com |
 +---------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, HAVING, AS, COUNT
 
 ---
 
@@ -1103,6 +1132,8 @@ FROM (
 +------+-------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, LEFT JOIN, ON, OR, IS NULL
+
 ---
 
 
@@ -1163,6 +1194,8 @@ WHERE e.salary > m.salary;
 +----------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, AS
+
 ---
 
 
@@ -1218,6 +1251,8 @@ referee_id IS NULL;
 | 3               |
 +-----------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, OR, IS NULL
 
 ---
 
@@ -1277,6 +1312,8 @@ ORDER BY user_id;
 | 2       | 2              |
 +---------+----------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, AS, COUNT
 
 ---
 
@@ -1347,6 +1384,8 @@ WHERE REGEXP_LIKE(
 +---------+-----------+-------------------------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, WHERE
+
 ---
 
 
@@ -1406,6 +1445,8 @@ ORDER BY user_id;
 | 2       | Bob   |
 +---------+-------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, ORDER BY, AS, CONCAT, SUBSTRING, UPPER, LOWER
 
 ---
 
@@ -1468,6 +1509,8 @@ GROUP BY player_id;
 | 3         | 2016-03-02  |
 +-----------+-------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, MAX
 
 ---
 
@@ -1538,6 +1581,8 @@ ORDER BY sell_date;
 | 2020-06-02 | 1        | Mask                         |
 +------------+----------+------------------------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, AS, DISTINCT, COUNT
 
 ---
 
@@ -1633,6 +1678,8 @@ HAVING SUM(o.unit) >= 100;
 +--------------------+---------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, GROUP BY, HAVING, AS, AND, BETWEEN, SUM
+
 ---
 
 
@@ -1696,6 +1743,8 @@ ORDER BY rating DESC;
 +----+------------+-------------+--------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, WHERE, ORDER BY, AND
+
 ---
 
 
@@ -1756,6 +1805,8 @@ WHERE conditions LIKE 'DIAB1%'
 | 4          | George       | ACNE DIAB100 | 
 +------------+--------------+--------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, OR, LIKE
 
 ---
 
@@ -1851,6 +1902,8 @@ ORDER BY
 +------------+------------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, AS, DISTINCT, COUNT, ROUND
+
 ---
 
 
@@ -1925,6 +1978,8 @@ WHERE e.primary_flag = 'N'
 | 4           | 3             |
 +-------------+---------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, UNION, ALL, AND, ALL, COUNT
 
 ---
 
@@ -2006,6 +2061,8 @@ ON s.product_id = p.product_id;
 | Apple        | 2011  | 9000  |
 +--------------+-------+-------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, JOIN, ON
 
 ---
 
@@ -2091,6 +2148,8 @@ GROUP BY p.project_id;
 +-------------+---------------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, JOIN, ON, GROUP BY, AS, AVG, ROUND
+
 ---
 
 
@@ -2165,6 +2224,8 @@ GROUP BY query_name;
 +------------+---------+-----------------------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, CASE, WHEN, THEN, ELSE, END, COUNT, SUM, AVG, ROUND, POSITION
+
 ---
 
 
@@ -2238,6 +2299,8 @@ GROUP BY id;
 | 3    | null        | 10000       | null        | ... | null        |
 +------+-------------+-------------+-------------+-----+-------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, CASE, WHEN, THEN, END, SUM
 
 ---
 
@@ -2319,6 +2382,8 @@ ON e.id = u.id;
 +-----------+----------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON
+
 ---
 
 
@@ -2379,6 +2444,8 @@ WHERE w1.temperature > w2.temperature;
 | 4  |
 +----+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, DATE_ADD
 
 ---
 
@@ -2462,6 +2529,8 @@ HAVING MIN(s.sale_date) >= '2019-01-01'
 | 1           | S8           |
 +-------------+--------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, JOIN, ON, GROUP BY, HAVING, AND, MIN, MAX
 
 ---
 
@@ -2574,6 +2643,8 @@ WHERE s.sales_id NOT IN (
 | Alex |
 +------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, IN
 
 ---
 
@@ -2700,6 +2771,8 @@ ORDER BY
 +------------+--------------+--------------+----------------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON, GROUP BY, ORDER BY, AS, AND, COUNT
+
 ---
 
 
@@ -2763,6 +2836,8 @@ END;
 | 4  | D    | m   | 500    |
 +----+------+-----+--------+
 ```
+
+> `SQL Keywords Used:` CASE, WHEN, THEN, END
 
 ---
 
@@ -2830,6 +2905,8 @@ GROUP BY user_id;
 | 2       | 2020-01-16 02:49:50 |
 +---------+---------------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, AS, AND, MAX
 
 ---
 
@@ -2919,6 +2996,8 @@ ORDER BY
 | 3           | Bob     | 1             | 37          |
 +-------------+---------+---------------+-------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, JOIN, ON, GROUP BY, ORDER BY, AS, COUNT, AVG, ROUND
 
 ---
 
@@ -3017,6 +3096,8 @@ ORDER BY
 +----------+--------------------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON, GROUP BY, ORDER BY, AS, SUM, IFNULL
+
 ---
 
 
@@ -3080,6 +3161,8 @@ FROM Triangle;
 | 10 | 20 | 15 | Yes      |
 +----+----+----+----------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, AS, AND, CASE, WHEN, THEN, ELSE, END
 
 ---
 
@@ -3150,5 +3233,7 @@ GROUP BY activity_date;
 | 2019-07-21 | 2            |
 +------------+--------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, AS, DISTINCT, AND, BETWEEN, COUNT
 
 ---

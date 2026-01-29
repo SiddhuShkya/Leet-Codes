@@ -9,6 +9,7 @@ Each problem includes:
 - ✅ Input example
 - ✅ Correct SQL solution
 - ✅ Output example
+- ✅ SQL Keywords Used
 
 ---
 
@@ -69,6 +70,8 @@ WHERE l1.num = l2.num AND l2.num = l3.num;
 | 1               |
 +-----------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, AS, DISTINCT, AND
 
 ---
 
@@ -150,6 +153,8 @@ WHERE num_products_bought = total_products;
 | 3           |
 +-------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, AS, DISTINCT, COUNT
 
 ---
 
@@ -233,6 +238,8 @@ GROUP BY departmentId);
 +------------+----------+--------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, GROUP BY, AS, IN, MAX
+
 ---
 
 
@@ -295,6 +302,8 @@ LIMIT 1;
 | 3  | 3   |
 +----+-----+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, LIMIT, UNION, ALL, AS, ALL, COUNT
 
 ---
 
@@ -372,6 +381,8 @@ AND (lat, lon) IN (
 +----------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, HAVING, AS, AND, IN, COUNT, SUM, ROUND
+
 ---
 
 
@@ -443,6 +454,8 @@ FROM (
 | John |
 +------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, RIGHT JOIN, ON, GROUP BY, HAVING, IS NOT NULL, COUNT
 
 ---
 
@@ -520,6 +533,8 @@ END
 +------------------------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, ORDER BY, LIMIT, DISTINCT, END
+
 ---
 
 
@@ -596,6 +611,8 @@ WHERE product_id NOT IN (
 +------------+-------+
 ```
 
+> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, UNION, ALL, AS, DISTINCT, AND, IN, ALL, MAX
+
 ---
 
 
@@ -661,6 +678,8 @@ ORDER BY s1.Score Desc
 | 3.50  | 4    |
 +-------+------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, ORDER BY, AS, DISTINCT, COUNT
 
 ---
 
@@ -730,5 +749,7 @@ SELECT (
 | null                |
 +---------------------+
 ```
+
+> `SQL Keywords Used:` SELECT, FROM, ORDER BY, LIMIT, AS, DISTINCT
 
 ---
