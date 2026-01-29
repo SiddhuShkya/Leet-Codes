@@ -10,6 +10,7 @@ Each problem includes:
 - ✅ Correct SQL solution
 - ✅ Output example
 - ✅ SQL Keywords Used
+- ✅ SQL Functions Used
 
 ---
 
@@ -154,7 +155,9 @@ WHERE num_products_bought = total_products;
 +-------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, AS, DISTINCT, COUNT
+> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, AS, DISTINCT
+
+> `SQL Functions Used:` COUNT
 
 ---
 
@@ -238,7 +241,9 @@ GROUP BY departmentId);
 +------------+----------+--------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, GROUP BY, AS, IN, MAX
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, GROUP BY, AS, IN
+
+> `SQL Functions Used:` MAX
 
 ---
 
@@ -303,7 +308,9 @@ LIMIT 1;
 +----+-----+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, LIMIT, UNION, ALL, AS, ALL, COUNT
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, LIMIT, UNION, ALL, AS, ALL
+
+> `SQL Functions Used:` COUNT
 
 ---
 
@@ -381,7 +388,9 @@ AND (lat, lon) IN (
 +----------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, HAVING, AS, AND, IN, COUNT, SUM, ROUND
+> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, HAVING, AS, AND, IN
+
+> `SQL Functions Used:` COUNT, SUM, ROUND
 
 ---
 
@@ -455,7 +464,9 @@ FROM (
 +------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, RIGHT JOIN, ON, GROUP BY, HAVING, IS NOT NULL, COUNT
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, RIGHT JOIN, ON, GROUP BY, HAVING, IS NOT NULL
+
+> `SQL Functions Used:` COUNT
 
 ---
 
@@ -611,7 +622,9 @@ WHERE product_id NOT IN (
 +------------+-------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, UNION, ALL, AS, DISTINCT, AND, IN, ALL, MAX
+> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, UNION, ALL, AS, DISTINCT, AND, IN, ALL
+
+> `SQL Functions Used:` MAX
 
 ---
 
@@ -679,7 +692,9 @@ ORDER BY s1.Score Desc
 +-------+------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, WHERE, ORDER BY, AS, DISTINCT, COUNT
+> `SQL Keywords Used:` SELECT, FROM, WHERE, ORDER BY, AS, DISTINCT
+
+> `SQL Functions Used:` COUNT
 
 ---
 

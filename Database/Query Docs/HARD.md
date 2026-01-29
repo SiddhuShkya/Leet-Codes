@@ -10,6 +10,7 @@ Each problem includes:
 - ✅ Correct SQL solution
 - ✅ Output example
 - ✅ SQL Keywords Used
+- ✅ SQL Functions Used
 
 ---
 
@@ -101,6 +102,8 @@ WHERE (
 +------------+----------+--------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, AS, DISTINCT, AND, COUNT
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, AS, DISTINCT, AND
+
+> `SQL Functions Used:` COUNT
 
 ---

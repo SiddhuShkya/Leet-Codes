@@ -10,6 +10,7 @@ Each problem includes:
 - ✅ Correct SQL solution
 - ✅ Output example
 - ✅ SQL Keywords Used
+- ✅ SQL Functions Used
 
 ---
 
@@ -72,7 +73,9 @@ SELECT actor_id, director_id FROM (
 +-------------+-------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, GROUP BY, HAVING, AS, COUNT
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, HAVING, AS
+
+> `SQL Functions Used:` COUNT
 
 ---
 
@@ -228,7 +231,9 @@ GROUP BY p.product_id;
 +------------+---------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON, GROUP BY, AS, AND, BETWEEN, SUM, IFNULL, ROUND
+> `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON, GROUP BY, AS, AND, BETWEEN
+
+> `SQL Functions Used:` SUM, IFNULL, ROUND
 
 ---
 
@@ -317,7 +322,9 @@ GROUP BY machine_id;
 +------------+-----------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, CASE, WHEN, THEN, END, AVG, MAX, ROUND
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, CASE, WHEN, THEN, END
+
+> `SQL Functions Used:` AVG, MAX, ROUND
 
 ---
 
@@ -404,7 +411,9 @@ HAVING balance > 10000;
 +------------+------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, JOIN, ON, GROUP BY, HAVING, AS, SUM
+> `SQL Keywords Used:` SELECT, FROM, JOIN, ON, GROUP BY, HAVING, AS
+
+> `SQL Functions Used:` SUM
 
 ---
 
@@ -484,7 +493,9 @@ SELECT MAX(num) AS num FROM (
 +------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, GROUP BY, HAVING, AS, COUNT, MAX
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, HAVING, AS
+
+> `SQL Functions Used:` COUNT, MAX
 
 ---
 
@@ -560,6 +571,8 @@ ORDER BY employee_id;
 
 > `SQL Keywords Used:` SELECT, FROM, ORDER BY, AS, AND, CASE, WHEN, THEN, ELSE, END
 
+> `SQL Functions Used:` REGEXP_LIKE
+
 ---
 
 
@@ -625,7 +638,9 @@ WHERE cnt >= 5;
 +---------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, AS, COUNT
+> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, AS
+
+> `SQL Functions Used:` COUNT
 
 ---
 
@@ -763,7 +778,9 @@ SELECT customer_number FROM (
 +-----------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, LIMIT, COUNT
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, LIMIT
+
+> `SQL Functions Used:` COUNT
 
 ---
 
@@ -851,7 +868,9 @@ GROUP BY v.customer_id;
 +-------------+----------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, LEFT JOIN, ON, GROUP BY, AS, IS NULL, COUNT
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, LEFT JOIN, ON, GROUP BY, AS, IS NULL
+
+> `SQL Functions Used:` COUNT
 
 ---
 
@@ -924,7 +943,9 @@ GROUP BY date_id, make_name;
 +-----------+-----------+--------------+-----------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, DISTINCT, COUNT
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, DISTINCT
+
+> `SQL Functions Used:` COUNT
 
 ---
 
@@ -1045,7 +1066,9 @@ SELECT email AS Email FROM (
 +---------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, GROUP BY, HAVING, AS, COUNT
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, HAVING, AS
+
+> `SQL Functions Used:` COUNT
 
 ---
 
@@ -1313,7 +1336,9 @@ ORDER BY user_id;
 +---------+----------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, AS, COUNT
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, AS
+
+> `SQL Functions Used:` COUNT
 
 ---
 
@@ -1386,6 +1411,8 @@ WHERE REGEXP_LIKE(
 
 > `SQL Keywords Used:` SELECT, FROM, WHERE
 
+> `SQL Functions Used:` REGEXP_LIKE
+
 ---
 
 
@@ -1446,7 +1473,9 @@ ORDER BY user_id;
 +---------+-------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, ORDER BY, AS, CONCAT, SUBSTRING, UPPER, LOWER
+> `SQL Keywords Used:` SELECT, FROM, ORDER BY, AS
+
+> `SQL Functions Used:` CONCAT, SUBSTRING, UPPER, LOWER
 
 ---
 
@@ -1510,7 +1539,9 @@ GROUP BY player_id;
 +-----------+-------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, MAX
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS
+
+> `SQL Functions Used:` MAX
 
 ---
 
@@ -1582,7 +1613,9 @@ ORDER BY sell_date;
 +------------+----------+------------------------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, AS, DISTINCT, COUNT
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, AS, DISTINCT
+
+> `SQL Functions Used:` COUNT
 
 ---
 
@@ -1678,7 +1711,9 @@ HAVING SUM(o.unit) >= 100;
 +--------------------+---------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, GROUP BY, HAVING, AS, AND, BETWEEN, SUM
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, GROUP BY, HAVING, AS, AND, BETWEEN
+
+> `SQL Functions Used:` SUM
 
 ---
 
@@ -1902,7 +1937,9 @@ ORDER BY
 +------------+------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, AS, DISTINCT, COUNT, ROUND
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, AS, DISTINCT
+
+> `SQL Functions Used:` COUNT, ROUND
 
 ---
 
@@ -1979,7 +2016,9 @@ WHERE e.primary_flag = 'N'
 +-------------+---------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, WHERE, UNION, ALL, AND, ALL, COUNT
+> `SQL Keywords Used:` SELECT, FROM, WHERE, UNION, ALL, AND, ALL
+
+> `SQL Functions Used:` COUNT
 
 ---
 
@@ -2148,7 +2187,9 @@ GROUP BY p.project_id;
 +-------------+---------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, JOIN, ON, GROUP BY, AS, AVG, ROUND
+> `SQL Keywords Used:` SELECT, FROM, JOIN, ON, GROUP BY, AS
+
+> `SQL Functions Used:` AVG, ROUND
 
 ---
 
@@ -2224,7 +2265,9 @@ GROUP BY query_name;
 +------------+---------+-----------------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, CASE, WHEN, THEN, ELSE, END, COUNT, SUM, AVG, ROUND, POSITION
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, CASE, WHEN, THEN, ELSE, END
+
+> `SQL Functions Used:` COUNT, SUM, AVG, ROUND, POSITION
 
 ---
 
@@ -2300,7 +2343,9 @@ GROUP BY id;
 +------+-------------+-------------+-------------+-----+-------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, CASE, WHEN, THEN, END, SUM
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, CASE, WHEN, THEN, END
+
+> `SQL Functions Used:` SUM
 
 ---
 
@@ -2445,7 +2490,9 @@ WHERE w1.temperature > w2.temperature;
 +----+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, DATE_ADD
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON
+
+> `SQL Functions Used:` DATE_ADD
 
 ---
 
@@ -2530,7 +2577,9 @@ HAVING MIN(s.sale_date) >= '2019-01-01'
 +-------------+--------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, JOIN, ON, GROUP BY, HAVING, AND, MIN, MAX
+> `SQL Keywords Used:` SELECT, FROM, JOIN, ON, GROUP BY, HAVING, AND
+
+> `SQL Functions Used:` MIN, MAX
 
 ---
 
@@ -2771,7 +2820,9 @@ ORDER BY
 +------------+--------------+--------------+----------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON, GROUP BY, ORDER BY, AS, AND, COUNT
+> `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON, GROUP BY, ORDER BY, AS, AND
+
+> `SQL Functions Used:` COUNT
 
 ---
 
@@ -2906,7 +2957,9 @@ GROUP BY user_id;
 +---------+---------------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, AS, AND, MAX
+> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, AS, AND
+
+> `SQL Functions Used:` MAX
 
 ---
 
@@ -2997,7 +3050,9 @@ ORDER BY
 +-------------+---------+---------------+-------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, JOIN, ON, GROUP BY, ORDER BY, AS, COUNT, AVG, ROUND
+> `SQL Keywords Used:` SELECT, FROM, JOIN, ON, GROUP BY, ORDER BY, AS
+
+> `SQL Functions Used:` COUNT, AVG, ROUND
 
 ---
 
@@ -3096,7 +3151,9 @@ ORDER BY
 +----------+--------------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON, GROUP BY, ORDER BY, AS, SUM, IFNULL
+> `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON, GROUP BY, ORDER BY, AS
+
+> `SQL Functions Used:` SUM, IFNULL
 
 ---
 
@@ -3234,6 +3291,8 @@ GROUP BY activity_date;
 +------------+--------------+
 ```
 
-> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, AS, DISTINCT, AND, BETWEEN, COUNT
+> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, AS, DISTINCT, AND, BETWEEN
+
+> `SQL Functions Used:` COUNT
 
 ---
