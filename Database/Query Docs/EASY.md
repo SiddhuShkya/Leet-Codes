@@ -1222,6 +1222,98 @@ WHERE e.salary > m.salary;
 ---
 
 
+### <div align="center">Employees With Missing Information</div>
+
+> Table 
+
+```text
+Table: Employees
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| employee_id | int     |
+| name        | varchar |
++-------------+---------+
+ 
+Table: Salaries
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| employee_id | int     |
+| salary      | int     |
++-------------+---------+
+```
+
+> Problem 
+
+employee_id is the column with unique values for this table.
+Each row of this table indicates the name of the employee whose ID is employee_id.
+employee_id is the column with unique values for this table.
+Each row of this table indicates the salary of the employee whose ID is employee_id.
+Write a solution to report the IDs of all the employees with missing information. The information of an employee is missing if:
+The employee's name is missing, or
+The employee's salary is missing.
+Return the result table ordered by employee_id in ascending order.
+
+> Input Example
+
+```text
+Employees table:
++-------------+----------+
+| employee_id | name     |
++-------------+----------+
+| 2           | Crew     |
+| 4           | Haven    |
+| 5           | Kristian |
++-------------+----------+
+Salaries table:
++-------------+--------+
+| employee_id | salary |
++-------------+--------+
+| 5           | 76071  |
+| 1           | 22517  |
+| 4           | 63539  |
++-------------+--------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT DISTINCT employee_id
+FROM (
+    SELECT e.employee_id, e.name, s.salary
+    FROM Employees e
+    LEFT JOIN Salaries s
+        ON e.employee_id = s.employee_id
+
+    UNION ALL
+
+    SELECT s.employee_id, e.name, s.salary
+    FROM Employees e
+    RIGHT JOIN Salaries s
+        ON e.employee_id = s.employee_id
+) t
+WHERE name IS NULL
+   OR salary IS NULL
+ORDER BY employee_id;
+```
+
+> Output Example
+
+```text
++-------------+
+| employee_id |
++-------------+
+| 1           |
+| 2           |
++-------------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, LEFT JOIN, RIGHT JOIN, ON, ORDER BY, UNION, ALL, DISTINCT, OR, IS NULL, ALL
+
+---
+
+
 ### <div align="center">Find Customer Referee</div>
 
 > Table 
@@ -1620,6 +1712,65 @@ ORDER BY sell_date;
 ---
 
 
+### <div align="center">Invalid Tweets</div>
+
+> Table 
+
+```text
+Table: Tweets
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| tweet_id       | int     |
+| content        | varchar |
++----------------+---------+
+```
+
+> Problem 
+
+tweet_id is the primary key (column with unique values) for this table.
+content consists of alphanumeric characters, '!', or ' ' and no other special characters.
+This table contains all the tweets in a social media app.
+Write a solution to find the IDs of the invalid tweets. The tweet is invalid if the number of characters used in the content of the tweet is strictly greater than 15.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Tweets table:
++----------+-----------------------------------+
+| tweet_id | content                           |
++----------+-----------------------------------+
+| 1        | Let us Code                       |
+| 2        | More than fifteen chars are here! |
++----------+-----------------------------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT tweet_id
+FROM tweets
+WHERE LENGTH(content) > 15;
+```
+
+> Output Example
+
+```text
++----------+
+| tweet_id |
++----------+
+| 2        |
++----------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE
+
+> `SQL Functions Used:` LENGTH
+
+---
+
+
 ### <div align="center">List the Products Ordered in a Period</div>
 
 > Table 
@@ -1779,6 +1930,73 @@ ORDER BY rating DESC;
 ```
 
 > `SQL Keywords Used:` SELECT, FROM, WHERE, ORDER BY, AND
+
+---
+
+
+### <div align="center">Number of Unique Subjects Taught by Each Teacher</div>
+
+> Table 
+
+```text
+Table: Teacher
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| teacher_id  | int  |
+| subject_id  | int  |
+| dept_id     | int  |
++-------------+------+
+```
+
+> Problem 
+
+(subject_id, dept_id) is the primary key (combinations of columns with unique values) of this table.
+Each row in this table indicates that the teacher with teacher_id teaches the subject subject_id in the department dept_id.
+Write a solution to calculate the number of unique subjects each teacher teaches in the university.
+Return the result table in any order.
+The result format is shown in the following example.
+
+> Input Example
+
+```text
+Teacher table:
++------------+------------+---------+
+| teacher_id | subject_id | dept_id |
++------------+------------+---------+
+| 1          | 2          | 3       |
+| 1          | 2          | 4       |
+| 1          | 3          | 3       |
+| 2          | 1          | 1       |
+| 2          | 2          | 1       |
+| 2          | 3          | 1       |
+| 2          | 4          | 1       |
++------------+------------+---------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT teacher_id, 
+    COUNT(DISTINCT subject_id) AS cnt
+FROM teacher
+GROUP BY teacher_id;
+```
+
+> Output Example
+
+```text
++------------+-----+
+| teacher_id | cnt |
++------------+-----+
+| 1          | 2   |
+| 2          | 4   |
++------------+-----+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, DISTINCT
+
+> `SQL Functions Used:` COUNT
 
 ---
 
