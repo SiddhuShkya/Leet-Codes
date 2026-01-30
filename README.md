@@ -8,8 +8,8 @@ This repo is dedicated to storing the LeetCode problems I have solved, along wit
 | Category | Easy | Medium | Hard | Total |
 | :--- | :---: | :---: | :---: | :---: |
 | Algorithms | 63 | 56 | 2 | **121** |
-| Database | 42 | 10 | 1 | **53** |
-| **Total** | **105** | **66** | **3** | **174** |
+| Database | 45 | 10 | 1 | **56** |
+| **Total** | **108** | **66** | **3** | **177** |
 <!-- PROGRESS_TABLE_END -->
 
 ### 🎯 Topics Covered
