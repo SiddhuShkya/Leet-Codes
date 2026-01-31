@@ -629,6 +629,84 @@ WHERE product_id NOT IN (
 ---
 
 
+### <div align="center">Product Sales Analysis III</div>
+
+> Table 
+
+```text
+Table: Sales
++-------------+-------+
+| Column Name | Type  |
++-------------+-------+
+| sale_id     | int   |
+| product_id  | int   |
+| year        | int   |
+| quantity    | int   |
+| price       | int   |
++-------------+-------+
+```
+
+> Problem 
+
+(sale_id, year) is the primary key (combination of columns with unique values) of this table.
+Each row records a sale of a product in a given year.
+A product may have multiple sales entries in the same year.
+Note that the per-unit price.
+Write a solution to find all sales that occurred in the first year each product was sold.
+For each product_id, identify the earliest year it appears in the Sales table.
+Return all sales entries for that product in that year.
+Return a table with the following columns: product_id, first_year, quantity, and price.
+Return the result in any order.
+
+> Input Example
+
+```text
+Sales table:
++---------+------------+------+----------+-------+
+| sale_id | product_id | year | quantity | price |
++---------+------------+------+----------+-------+ 
+| 1       | 100        | 2008 | 10       | 5000  |
+| 2       | 100        | 2009 | 12       | 5000  |
+| 7       | 200        | 2011 | 15       | 9000  |
++---------+------------+------+----------+-------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT 
+    s.product_id,
+    s.year AS first_year,
+    s.quantity,
+    s.price
+FROM sales s
+JOIN (
+    SELECT product_id, MIN(year) AS first_year
+    FROM sales
+    GROUP BY product_id
+) first_years
+ON s.product_id = first_years.product_id
+   AND s.year = first_years.first_year;
+```
+
+> Output Example
+
+```text
++------------+------------+----------+-------+
+| product_id | first_year | quantity | price |
++------------+------------+----------+-------+ 
+| 100        | 2008       | 10       | 5000  |
+| 200        | 2011       | 15       | 9000  |
++------------+------------+----------+-------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, JOIN, ON, GROUP BY, AS, AND
+
+> `SQL Functions Used:` MIN
+
+---
+
+
 ### <div align="center">Rank Scores</div>
 
 > Table 
@@ -766,5 +844,93 @@ SELECT (
 ```
 
 > `SQL Keywords Used:` SELECT, FROM, ORDER BY, LIMIT, AS, DISTINCT
+
+---
+
+
+### <div align="center">Tree Node</div>
+
+> Table 
+
+```text
+Table: Tree
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| id          | int  |
+| p_id        | int  |
++-------------+------+
+```
+
+> Problem 
+
+id is the column with unique values for this table.
+Each row of this table contains information about the id of a node and the id of its parent node in a tree.
+The given structure is always a valid tree.
+Each node in the tree can be one of three types:
+"Leaf": if the node is a leaf node.
+"Root": if the node is the root of the tree.
+"Inner": If the node is neither a leaf node nor a root node.
+Write a solution to report the type of each node in the tree.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Tree table:
++----+------+
+| id | p_id |
++----+------+
+| 1  | null |
+| 2  | 1    |
+| 3  | 1    |
+| 4  | 2    |
+| 5  | 2    |
++----+------+
+Tree table:
++----+------+
+| id | p_id |
++----+------+
+| 1  | null |
++----+------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT 
+    t1.id,
+    CASE
+        WHEN t1.p_id IS NULL THEN 'Root'
+        WHEN t1.id IN (
+            SELECT p_id 
+            FROM tree 
+            WHERE p_id IS NOT NULL
+        ) THEN 'Inner'
+        ELSE 'Leaf'
+    END AS type
+FROM tree t1;
+```
+
+> Output Example
+
+```text
++----+-------+
+| id | type  |
++----+-------+
+| 1  | Root  |
+| 2  | Inner |
+| 3  | Leaf  |
+| 4  | Leaf  |
+| 5  | Leaf  |
++----+-------+
++----+-------+
+| id | type  |
++----+-------+
+| 1  | Root  |
++----+-------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, AS, IN, IS NULL, IS NOT NULL, CASE, WHEN, THEN, ELSE, END
 
 ---

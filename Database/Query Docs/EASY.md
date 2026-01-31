@@ -1435,6 +1435,81 @@ ORDER BY user_id;
 ---
 
 
+### <div align="center">Find Products with Valid Serial Numbers</div>
+
+> Table 
+
+```text
+Table: products
++--------------+------------+
+| Column Name  | Type       |
++--------------+------------+
+| product_id   | int        |
+| product_name | varchar    |
+| description  | varchar    |
++--------------+------------+
+```
+
+> Problem 
+
+(product_id) is the unique key for this table.
+Each row in the table represents a product with its unique ID, name, and description.
+Write a solution to find all products whose description contains a valid serial number pattern. A valid serial number follows these rules:
+It starts with the letters SN (case-sensitive).
+Followed by exactly 4 digits.
+It must have a hyphen (-) followed by exactly 4 digits.
+The serial number must be within the description (it may not necessarily start at the beginning).
+Return the result table ordered by product_id in ascending order.
+Example:
+
+> Input Example
+
+```text
+products table:
+
++------------+--------------+------------------------------------------------------+
+| product_id | product_name | description                                          |
++------------+--------------+------------------------------------------------------+
+| 1          | Widget A     | This is a sample product with SN1234-5678            |
+| 2          | Widget B     | A product with serial SN9876-1234 in the description |
+| 3          | Widget C     | Product SN1234-56789 is available now                |
+| 4          | Widget D     | No serial number here                                |
+| 5          | Widget E     | Check out SN4321-8765 in this description            |
++------------+--------------+------------------------------------------------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT product_id, product_name, description
+FROM products
+WHERE REGEXP_LIKE(
+    description,
+    '\\bSN[0-9]{4}-[0-9]{4}\\b',
+    'c'
+)
+ORDER BY product_id;
+```
+
+> Output Example
+
+```text
++------------+--------------+------------------------------------------------------+
+| product_id | product_name | description                                          |
++------------+--------------+------------------------------------------------------+
+| 1          | Widget A     | This is a sample product with SN1234-5678            |
+| 2          | Widget B     | A product with serial SN9876-1234 in the description |
+| 5          | Widget E     | Check out SN4321-8765 in this description            |
++------------+--------------+------------------------------------------------------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, ORDER BY
+
+> `SQL Functions Used:` REGEXP_LIKE
+
+---
+
+
 ### <div align="center">Find Users With Valid E-Mails</div>
 
 > Table 
