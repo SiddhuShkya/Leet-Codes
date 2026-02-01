@@ -1314,6 +1314,119 @@ ORDER BY employee_id;
 ---
 
 
+### <div align="center">Find Books with No Available Copies</div>
+
+> Table 
+
+```text
+Table: library_books
++------------------+---------+
+| Column Name      | Type    |
++------------------+---------+
+| book_id          | int     |
+| title            | varchar |
+| author           | varchar |
+| genre            | varchar |
+| publication_year | int     |
+| total_copies     | int     |
++------------------+---------+
+Table: borrowing_records
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| record_id     | int     |
+| book_id       | int     |
+| borrower_name | varchar |
+| borrow_date   | date    |
+| return_date   | date    |
++---------------+---------+
+```
+
+> Problem 
+
+book_id is the unique identifier for this table.
+Each row contains information about a book in the library, including the total number of copies owned by the library.
+record_id is the unique identifier for this table.
+Each row represents a borrowing transaction and return_date is NULL if the book is currently borrowed and hasn't been returned yet.
+Write a solution to find all books that are currently borrowed (not returned) and have zero copies available in the library.
+A book is considered currently borrowed if there exists a borrowing record with a NULL return_date
+Return the result table ordered by current borrowers in descending order, then by book title in ascending order.
+Example:
+
+> Input Example
+
+```text
+library_books table:
+
++---------+------------------------+------------------+----------+------------------+--------------+
+| book_id | title                  | author           | genre    | publication_year | total_copies |
++---------+------------------------+------------------+----------+------------------+--------------+
+| 1       | The Great Gatsby       | F. Scott         | Fiction  | 1925             | 3            |
+| 2       | To Kill a Mockingbird  | Harper Lee       | Fiction  | 1960             | 3            |
+| 3       | 1984                   | George Orwell    | Dystopian| 1949             | 1            |
+| 4       | Pride and Prejudice    | Jane Austen      | Romance  | 1813             | 2            |
+| 5       | The Catcher in the Rye | J.D. Salinger    | Fiction  | 1951             | 1            |
+| 6       | Brave New World        | Aldous Huxley    | Dystopian| 1932             | 4            |
++---------+------------------------+------------------+----------+------------------+--------------+
+borrowing_records table:
+
++-----------+---------+---------------+-------------+-------------+
+| record_id | book_id | borrower_name | borrow_date | return_date |
++-----------+---------+---------------+-------------+-------------+
+| 1         | 1       | Alice Smith   | 2024-01-15  | NULL        |
+| 2         | 1       | Bob Johnson   | 2024-01-20  | NULL        |
+| 3         | 2       | Carol White   | 2024-01-10  | 2024-01-25  |
+| 4         | 3       | David Brown   | 2024-02-01  | NULL        |
+| 5         | 4       | Emma Wilson   | 2024-01-05  | NULL        |
+| 6         | 5       | Frank Davis   | 2024-01-18  | 2024-02-10  |
+| 7         | 1       | Grace Miller  | 2024-02-05  | NULL        |
+| 8         | 6       | Henry Taylor  | 2024-01-12  | NULL        |
+| 9         | 2       | Ivan Clark    | 2024-02-12  | NULL        |
+| 10        | 2       | Jane Adams    | 2024-02-15  | NULL        |
++-----------+---------+---------------+-------------+-------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT 
+    t1.book_id,
+    t1.title,
+    t1.author,
+    t1.genre,
+    t1.publication_year,
+    t2.current_borrowers
+FROM library_books t1
+JOIN (
+    SELECT 
+        book_id,
+        SUM(CASE WHEN return_date IS NULL THEN 1 ELSE 0 END) AS current_borrowers
+    FROM borrowing_records
+    GROUP BY book_id
+) t2
+ON t1.book_id = t2.book_id
+WHERE t1.total_copies - t2.current_borrowers = 0
+ORDER BY t2.current_borrowers DESC, t1.title ASC;
+```
+
+> Output Example
+
+```text
++---------+------------------+---------------+-----------+------------------+-------------------+
+| book_id | title            | author        | genre     | publication_year | current_borrowers |
++---------+------------------+---------------+-----------+------------------+-------------------+
+| 1       | The Great Gatsby | F. Scott      | Fiction   | 1925             | 3                 | 
+| 3       | 1984             | George Orwell | Dystopian | 1949             | 1                 |
++---------+------------------+---------------+-----------+------------------+-------------------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, GROUP BY, ORDER BY, AS, IS NULL, CASE, WHEN, THEN, ELSE, END
+
+> `SQL Functions Used:` SUM
+
+---
+
+
 ### <div align="center">Find Customer Referee</div>
 
 > Table 
@@ -1510,6 +1623,78 @@ ORDER BY product_id;
 ---
 
 
+### <div align="center">Find Total Time Spent by Each Employee</div>
+
+> Table 
+
+```text
+Table: Employees
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| emp_id      | int  |
+| event_day   | date |
+| in_time     | int  |
+| out_time    | int  |
++-------------+------+
+```
+
+> Problem 
+
+(emp_id, event_day, in_time) is the primary key (combinations of columns with unique values) of this table.
+The table shows the employees' entries and exits in an office.
+event_day is the day at which this event happened, in_time is the minute at which the employee entered the office, and out_time is the minute at which they left the office.
+in_time and out_time are between 1 and 1440.
+It is guaranteed that no two events on the same day intersect in time, and in_time < out_time.
+Write a solution to calculate the total time in minutes spent by each employee on each day at the office. Note that within one day, an employee can enter and leave more than once. The time spent in the office for a single entry is out_time - in_time.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Employees table:
++--------+------------+---------+----------+
+| emp_id | event_day  | in_time | out_time |
++--------+------------+---------+----------+
+| 1      | 2020-11-28 | 4       | 32       |
+| 1      | 2020-11-28 | 55      | 200      |
+| 1      | 2020-12-03 | 1       | 42       |
+| 2      | 2020-11-28 | 3       | 33       |
+| 2      | 2020-12-09 | 47      | 74       |
++--------+------------+---------+----------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT
+    event_day AS day,
+    emp_id,
+    SUM(out_time - in_time) AS total_time
+FROM Employees
+GROUP BY emp_id, event_day;
+```
+
+> Output Example
+
+```text
++------------+--------+------------+
+| day        | emp_id | total_time |
++------------+--------+------------+
+| 2020-11-28 | 1      | 173        |
+| 2020-11-28 | 2      | 30         |
+| 2020-12-03 | 1      | 41         |
+| 2020-12-09 | 2      | 27         |
++------------+--------+------------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS
+
+> `SQL Functions Used:` SUM
+
+---
+
+
 ### <div align="center">Find Users With Valid E-Mails</div>
 
 > Table 
@@ -1579,6 +1764,97 @@ WHERE REGEXP_LIKE(
 > `SQL Keywords Used:` SELECT, FROM, WHERE
 
 > `SQL Functions Used:` REGEXP_LIKE
+
+---
+
+
+### <div align="center">Find Users with High Token Usage</div>
+
+> Table 
+
+```text
+Table: prompts
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| user_id     | int     |
+| prompt      | varchar |
+| tokens      | int     |
++-------------+---------+
+```
+
+> Problem 
+
+(user_id, prompt) is the primary key (unique value) for this table.
+Each row represents a prompt submitted by a user to an AI system along with the number of tokens consumed.
+Write a solution to analyze AI prompt usage patterns based on the following requirements:
+For each user, calculate the total number of prompts they have submitted.
+For each user, calculate the average tokens used per prompt (Rounded to 2 decimal places).
+Only include users who have submitted at least 3 prompts.
+Only include users who have submitted at least one prompt with tokens greater than their own average token usage.
+Return the result table ordered by average tokens in descending order, and then by user_id in ascending order.
+Example:
+
+> Input Example
+
+```text
+prompts table:
+
++---------+--------------------------+--------+
+| user_id | prompt                   | tokens |
++---------+--------------------------+--------+
+| 1       | Write a blog outline     | 120    |
+| 1       | Generate SQL query       | 80     |
+| 1       | Summarize an article     | 200    |
+| 2       | Create resume bullet     | 60     |
+| 2       | Improve LinkedIn bio     | 70     |
+| 3       | Explain neural networks  | 300    |
+| 3       | Generate interview Q&A   | 250    |
+| 3       | Write cover letter       | 180    |
+| 3       | Optimize Python code     | 220    |
++---------+--------------------------+--------+
+```
+
+> SQL Query **Solution**
+
+```sql
+WITH user_stats AS (
+    SELECT 
+        user_id,
+        COUNT(*) AS prompt_count,
+        ROUND(AVG(tokens), 2) AS avg_tokens
+    FROM prompts
+    GROUP BY user_id
+    HAVING COUNT(*) >= 3
+)
+SELECT 
+    s.user_id,
+    s.prompt_count,
+    s.avg_tokens
+FROM user_stats s
+WHERE EXISTS (
+    SELECT 1
+    FROM prompts p
+    WHERE p.user_id = s.user_id
+      AND p.tokens > s.avg_tokens
+)
+ORDER BY s.avg_tokens DESC, s.user_id ASC;
+```
+
+> Output Example
+
+```text
++---------+---------------+------------+
+| user_id | prompt_count  | avg_tokens |
++---------+---------------+------------+
+| 3       | 4             | 237.5      |
+| 1       | 3             | 133.33     |
++---------+---------------+------------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY, AS, AND, EXISTS, WITH
+
+> `SQL Functions Used:` COUNT, AVG, ROUND
 
 ---
 
@@ -2561,6 +2837,81 @@ GROUP BY query_name;
 > `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, CASE, WHEN, THEN, ELSE, END
 
 > `SQL Functions Used:` COUNT, SUM, AVG, ROUND, POSITION
+
+---
+
+
+### <div align="center">Rearrange Products Table</div>
+
+> Table 
+
+```text
+Table: Products
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| product_id  | int     |
+| store1      | int     |
+| store2      | int     |
+| store3      | int     |
++-------------+---------+
+```
+
+> Problem 
+
+product_id is the primary key (column with unique values) for this table.
+Each row in this table indicates the product's price in 3 different stores: store1, store2, and store3.
+If the product is not available in a store, the price will be null in that store's column.
+Write a solution to rearrange the Products table so that each row has (product_id, store, price). If a product is not available in a store, do not include a row with that product_id and store combination in the result table.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Products table:
++------------+--------+--------+--------+
+| product_id | store1 | store2 | store3 |
++------------+--------+--------+--------+
+| 0          | 95     | 100    | 105    |
+| 1          | 70     | null   | 80     |
++------------+--------+--------+--------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT product_id, 'store1' AS store, store1 AS price
+FROM Products
+WHERE store1 IS NOT NULL
+
+UNION ALL
+
+SELECT product_id, 'store2' AS store, store2 AS price
+FROM Products
+WHERE store2 IS NOT NULL
+
+UNION ALL
+
+SELECT product_id, 'store3' AS store, store3 AS price
+FROM Products
+WHERE store3 IS NOT NULL;
+```
+
+> Output Example
+
+```text
++------------+--------+-------+
+| product_id | store  | price |
++------------+--------+-------+
+| 0          | store1 | 95    |
+| 0          | store2 | 100   |
+| 0          | store3 | 105   |
+| 1          | store1 | 70    |
+| 1          | store3 | 80    |
++------------+--------+-------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, UNION, ALL, AS, IS NOT NULL, ALL
 
 ---
 
