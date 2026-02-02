@@ -248,6 +248,78 @@ GROUP BY departmentId);
 ---
 
 
+### <div align="center">Exchange Seats</div>
+
+> Table 
+
+```text
+Table: Seat
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| student     | varchar |
++-------------+---------+
+```
+
+> Problem 
+
+id is the primary key (unique value) column for this table.
+Each row of this table indicates the name and the ID of a student.
+The ID sequence always starts from 1 and increments continuously.
+Write a solution to swap the seat id of every two consecutive students. If the number of students is odd, the id of the last student is not swapped.
+Return the result table ordered by id in ascending order.
+
+> Input Example
+
+```text
+Seat table:
++----+---------+
+| id | student |
++----+---------+
+| 1  | Abbot   |
+| 2  | Doris   |
+| 3  | Emerson |
+| 4  | Green   |
+| 5  | Jeames  |
++----+---------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT
+    CASE
+        WHEN id % 2 = 1 AND id != (SELECT MAX(id) FROM seat) THEN id + 1
+        WHEN id % 2 = 0 THEN id - 1
+        ELSE id
+    END AS id,
+    student
+FROM seat
+ORDER BY id ASC;
+```
+
+> Output Example
+
+```text
++----+---------+
+| id | student |
++----+---------+
+| 1  | Doris   |
+| 2  | Abbot   |
+| 3  | Green   |
+| 4  | Emerson |
+| 5  | Jeames  |
++----+---------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, ORDER BY, AS, AND, CASE, WHEN, THEN, ELSE, END
+
+> `SQL Functions Used:` MAX
+
+---
+
+
 ### <div align="center">Friend Requests II: Who Has the Most Friends</div>
 
 > Table 
@@ -391,6 +463,84 @@ AND (lat, lon) IN (
 > `SQL Keywords Used:` SELECT, FROM, WHERE, GROUP BY, HAVING, AS, AND, IN
 
 > `SQL Functions Used:` COUNT, SUM, ROUND
+
+---
+
+
+### <div align="center">Last Person to Fit in the Bus</div>
+
+> Table 
+
+```text
+Table: Queue
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| person_id   | int     |
+| person_name | varchar |
+| weight      | int     |
+| turn        | int     |
++-------------+---------+
+```
+
+> Problem 
+
+person_id column contains unique values.
+This table has the information about all people waiting for a bus.
+The person_id and turn columns will contain all numbers from 1 to n, where n is the number of rows in the table.
+turn determines the order of which the people will board the bus, where turn=1 denotes the first person to board and turn=n denotes the last person to board.
+weight is the weight of the person in kilograms.
+There is a queue of people waiting to board a bus. However, the bus has a weight limit of 1000 kilograms, so there may be some people who cannot board.
+Write a solution to find the person_name of the last person that can fit on the bus without exceeding the weight limit. The test cases are generated such that the first person does not exceed the weight limit.
+Note that only one person can board the bus at any given turn.
+
+> Input Example
+
+```text
+Queue table:
++-----------+-------------+--------+------+
+| person_id | person_name | weight | turn |
++-----------+-------------+--------+------+
+| 5         | Alice       | 250    | 1    |
+| 4         | Bob         | 175    | 5    |
+| 3         | Alex        | 350    | 2    |
+| 6         | John Cena   | 400    | 3    |
+| 1         | Winston     | 500    | 6    |
+| 2         | Marie       | 200    | 4    |
++-----------+-------------+--------+------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT person_name
+FROM (
+    SELECT 
+        turn, 
+        person_id, 
+        person_name,
+        weight,
+        SUM(weight) OVER (ORDER BY turn ASC) AS total_weight
+    FROM queue
+) t
+WHERE total_weight <= 1000
+ORDER BY turn DESC
+LIMIT 1;
+```
+
+> Output Example
+
+```text
++-------------+
+| person_name |
++-------------+
+| John Cena   |
++-------------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, ORDER BY, LIMIT, AS, OVER
+
+> `SQL Functions Used:` SUM
 
 ---
 
