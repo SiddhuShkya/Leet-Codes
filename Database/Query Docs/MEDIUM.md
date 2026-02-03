@@ -621,6 +621,248 @@ FROM (
 ---
 
 
+### <div align="center">Market Analysis I</div>
+
+> Table 
+
+```text
+Table: Users
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| user_id        | int     |
+| join_date      | date    |
+| favorite_brand | varchar |
++----------------+---------+
+ 
+Table: Orders
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| order_id      | int     |
+| order_date    | date    |
+| item_id       | int     |
+| buyer_id      | int     |
+| seller_id     | int     |
++---------------+---------+
+ 
+Table: Items
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| item_id       | int     |
+| item_brand    | varchar |
++---------------+---------+
+```
+
+> Problem 
+
+user_id is the primary key (column with unique values) of this table.
+This table has the info of the users of an online shopping website where users can sell and buy items.
+order_id is the primary key (column with unique values) of this table.
+item_id is a foreign key (reference column) to the Items table.
+buyer_id and seller_id are foreign keys to the Users table.
+item_id is the primary key (column with unique values) of this table.
+Write a solution to find for each user, the join date and the number of orders they made as a buyer in 2019.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Users table:
++---------+------------+----------------+
+| user_id | join_date  | favorite_brand |
++---------+------------+----------------+
+| 1       | 2018-01-01 | Lenovo         |
+| 2       | 2018-02-09 | Samsung        |
+| 3       | 2018-01-19 | LG             |
+| 4       | 2018-05-21 | HP             |
++---------+------------+----------------+
+Orders table:
++----------+------------+---------+----------+-----------+
+| order_id | order_date | item_id | buyer_id | seller_id |
++----------+------------+---------+----------+-----------+
+| 1        | 2019-08-01 | 4       | 1        | 2         |
+| 2        | 2018-08-02 | 2       | 1        | 3         |
+| 3        | 2019-08-03 | 3       | 2        | 3         |
+| 4        | 2018-08-04 | 1       | 4        | 2         |
+| 5        | 2018-08-04 | 1       | 3        | 4         |
+| 6        | 2019-08-05 | 2       | 2        | 4         |
++----------+------------+---------+----------+-----------+
+Items table:
++---------+------------+
+| item_id | item_brand |
++---------+------------+
+| 1       | Samsung    |
+| 2       | Lenovo     |
+| 3       | LG         |
+| 4       | HP         |
++---------+------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT 
+    u.user_id AS buyer_id,
+    u.join_date,
+    COUNT(
+        CASE 
+            WHEN o.order_date BETWEEN '2019-01-01' AND '2019-12-31' 
+            THEN o.order_id 
+        END
+    ) AS orders_in_2019
+FROM Users u
+LEFT JOIN Orders o
+    ON u.user_id = o.buyer_id
+GROUP BY u.user_id, u.join_date;
+```
+
+> Output Example
+
+```text
++-----------+------------+----------------+
+| buyer_id  | join_date  | orders_in_2019 |
++-----------+------------+----------------+
+| 1         | 2018-01-01 | 1              |
+| 2         | 2018-02-09 | 2              |
+| 3         | 2018-01-19 | 0              |
+| 4         | 2018-05-21 | 0              |
++-----------+------------+----------------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON, GROUP BY, AS, AND, BETWEEN, CASE, WHEN, THEN, END
+
+> `SQL Functions Used:` COUNT
+
+---
+
+
+### <div align="center">Movie Rating</div>
+
+> Table 
+
+```text
+Table: Movies
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| movie_id      | int     |
+| title         | varchar |
++---------------+---------+
+Table: Users
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| user_id       | int     |
+| name          | varchar |
++---------------+---------+
+Table: MovieRating
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| movie_id      | int     |
+| user_id       | int     |
+| rating        | int     |
+| created_at    | date    |
++---------------+---------+
+```
+
+> Problem 
+
+movie_id is the primary key (column with unique values) for this table.
+title is the name of the movie.
+Each movie has a unique title.
+user_id is the primary key (column with unique values) for this table.
+The column 'name' has unique values.
+(movie_id, user_id) is the primary key (column with unique values) for this table.
+This table contains the rating of a movie by a user in their review.
+created_at is the user's review date. 
+Write a solution to:
+Find the name of the user who has rated the greatest number of movies. In case of a tie, return the lexicographically smaller user name.
+Find the movie name with the highest average rating in February 2020. In case of a tie, return the lexicographically smaller movie name.
+
+> Input Example
+
+```text
+Movies table:
++-------------+--------------+
+| movie_id    |  title       |
++-------------+--------------+
+| 1           | Avengers     |
+| 2           | Frozen 2     |
+| 3           | Joker        |
++-------------+--------------+
+Users table:
++-------------+--------------+
+| user_id     |  name        |
++-------------+--------------+
+| 1           | Daniel       |
+| 2           | Monica       |
+| 3           | Maria        |
+| 4           | James        |
++-------------+--------------+
+MovieRating table:
++-------------+--------------+--------------+-------------+
+| movie_id    | user_id      | rating       | created_at  |
++-------------+--------------+--------------+-------------+
+| 1           | 1            | 3            | 2020-01-12  |
+| 1           | 2            | 4            | 2020-02-11  |
+| 1           | 3            | 2            | 2020-02-12  |
+| 1           | 4            | 1            | 2020-01-01  |
+| 2           | 1            | 5            | 2020-02-17  | 
+| 2           | 2            | 2            | 2020-02-01  | 
+| 2           | 3            | 2            | 2020-03-01  |
+| 3           | 1            | 3            | 2020-02-22  | 
+| 3           | 2            | 4            | 2020-02-25  | 
++-------------+--------------+--------------+-------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+(
+    SELECT u.name AS results
+    FROM MovieRating mr
+    JOIN Users u
+        ON mr.user_id = u.user_id
+    GROUP BY u.user_id, u.name
+    ORDER BY COUNT(*) DESC, u.name ASC
+    LIMIT 1
+)
+
+UNION ALL
+
+(
+    SELECT m.title AS results
+    FROM MovieRating mr
+    JOIN Movies m
+        ON mr.movie_id = m.movie_id
+    WHERE mr.created_at BETWEEN '2020-02-01' AND '2020-02-29'
+    GROUP BY m.movie_id, m.title
+    ORDER BY AVG(mr.rating) DESC, m.title ASC
+    LIMIT 1
+);
+```
+
+> Output Example
+
+```text
++--------------+
+| results      |
++--------------+
+| Daniel       |
+| Frozen 2     |
++--------------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, GROUP BY, ORDER BY, LIMIT, UNION, ALL, AS, AND, BETWEEN, ALL
+
+> `SQL Functions Used:` COUNT, AVG
+
+---
+
+
 ### <div align="center">Nth Highest Salary</div>
 
 > Table 
