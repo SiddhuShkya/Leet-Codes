@@ -387,6 +387,87 @@ LIMIT 1;
 ---
 
 
+### <div align="center">Immediate Food Delivery II</div>
+
+> Table 
+
+```text
+Table: Delivery
++-----------------------------+---------+
+| Column Name                 | Type    |
++-----------------------------+---------+
+| delivery_id                 | int     |
+| customer_id                 | int     |
+| order_date                  | date    |
+| customer_pref_delivery_date | date    |
++-----------------------------+---------+
+```
+
+> Problem 
+
+delivery_id is the column of unique values of this table.
+The table holds information about food delivery to customers that make orders at some date and specify a preferred delivery date (on the same order date or after it).
+If the customer's preferred delivery date is the same as the order date, then the order is called immediate; otherwise, it is called scheduled.
+The first order of a customer is the order with the earliest order date that the customer made. It is guaranteed that a customer has precisely one first order.
+Write a solution to find the percentage of immediate orders in the first orders of all customers, rounded to 2 decimal places.
+
+> Input Example
+
+```text
+Delivery table:
++-------------+-------------+------------+-----------------------------+
+| delivery_id | customer_id | order_date | customer_pref_delivery_date |
++-------------+-------------+------------+-----------------------------+
+| 1           | 1           | 2019-08-01 | 2019-08-02                  |
+| 2           | 2           | 2019-08-02 | 2019-08-02                  |
+| 3           | 1           | 2019-08-11 | 2019-08-12                  |
+| 4           | 3           | 2019-08-24 | 2019-08-24                  |
+| 5           | 3           | 2019-08-21 | 2019-08-22                  |
+| 6           | 2           | 2019-08-11 | 2019-08-13                  |
+| 7           | 4           | 2019-08-09 | 2019-08-09                  |
++-------------+-------------+------------+-----------------------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT 
+    ROUND(
+        SUM(
+            CASE 
+                WHEN d.order_date = d.customer_pref_delivery_date THEN 1 
+                ELSE 0 
+            END
+        ) * 100.0 / COUNT(*),
+        2
+    ) AS immediate_percentage
+FROM delivery d
+JOIN (
+    SELECT customer_id, MIN(order_date) AS first_date
+    FROM delivery
+    GROUP BY customer_id
+) t
+ON d.customer_id = t.customer_id
+AND d.order_date = t.first_date;
+```
+
+> Output Example
+
+```text
++----------------------+
+| immediate_percentage |
++----------------------+
+| 50.00                |
++----------------------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, JOIN, ON, GROUP BY, AS, AND, CASE, WHEN, THEN, ELSE, END
+
+> `SQL Functions Used:` COUNT, SUM, MIN, ROUND
+
+---
+
+
 ### <div align="center">Investments In 2016</div>
 
 > Table 
@@ -734,6 +815,87 @@ GROUP BY u.user_id, u.join_date;
 > `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON, GROUP BY, AS, AND, BETWEEN, CASE, WHEN, THEN, END
 
 > `SQL Functions Used:` COUNT
+
+---
+
+
+### <div align="center">Monthly Transactions I</div>
+
+> Table 
+
+```text
+Table: Transactions
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| id            | int     |
+| country       | varchar |
+| state         | enum    |
+| amount        | int     |
+| trans_date    | date    |
++---------------+---------+
+```
+
+> Problem 
+
+id is the primary key of this table.
+The table has information about incoming transactions.
+The state column is an enum of type ["approved", "declined"].
+Write an SQL query to find for each month and country, the number of transactions and their total amount, the number of approved transactions and their total amount.
+Return the result table in any order.
+The query result format is in the following example.
+
+> Input Example
+
+```text
+Transactions table:
++------+---------+----------+--------+------------+
+| id   | country | state    | amount | trans_date |
++------+---------+----------+--------+------------+
+| 121  | US      | approved | 1000   | 2018-12-18 |
+| 122  | US      | declined | 2000   | 2018-12-19 |
+| 123  | US      | approved | 2000   | 2019-01-01 |
+| 124  | DE      | approved | 2000   | 2019-01-07 |
++------+---------+----------+--------+------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT
+    DATE_FORMAT(trans_date, '%Y-%m') AS month,
+    country,
+    COUNT(*) AS trans_count,
+    SUM(
+        CASE 
+            WHEN state = 'approved' THEN 1 
+            ELSE 0 END)
+         AS approved_count,
+    SUM(amount) AS trans_total_amount,
+    SUM(
+        CASE 
+            WHEN state = 'approved' THEN amount 
+            ELSE 0 END
+        ) AS approved_total_amount
+FROM Transactions
+GROUP BY DATE_FORMAT(trans_date, '%Y-%m'), country;
+```
+
+> Output Example
+
+```text
++----------+---------+-------------+----------------+--------------------+-----------------------+
+| month    | country | trans_count | approved_count | trans_total_amount | approved_total_amount |
++----------+---------+-------------+----------------+--------------------+-----------------------+
+| 2018-12  | US      | 2           | 1              | 3000               | 1000                  |
+| 2019-01  | US      | 1           | 1              | 2000               | 2000                  |
+| 2019-01  | DE      | 1           | 1              | 2000               | 2000                  |
++----------+---------+-------------+----------------+--------------------+-----------------------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, CASE, WHEN, THEN, ELSE, END
+
+> `SQL Functions Used:` COUNT, SUM, DATE_FORMAT
 
 ---
 
