@@ -14,6 +14,87 @@ Each problem includes:
 
 ---
 
+### <div align="center">Capital Gain Or Loss</div>
+
+> Table 
+
+```text
+Table: Stocks
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| stock_name    | varchar |
+| operation     | enum    |
+| operation_day | int     |
+| price         | int     |
++---------------+---------+
+```
+
+> Problem 
+
+(stock_name, operation_day) is the primary key (combination of columns with unique values) for this table.
+The operation column is an ENUM (category) of type ('Sell', 'Buy')
+Each row of this table indicates that the stock which has stock_name had an operation on the day operation_day with the price.
+It is guaranteed that each 'Sell' operation for a stock has a corresponding 'Buy' operation in a previous day. It is also guaranteed that each 'Buy' operation for a stock has a corresponding 'Sell' operation in an upcoming day.
+Write a solution to report the Capital gain/loss for each stock.
+The Capital gain/loss of a stock is the total gain or loss after buying and selling the stock one or many times.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Stocks table:
++---------------+-----------+---------------+--------+
+| stock_name    | operation | operation_day | price  |
++---------------+-----------+---------------+--------+
+| Leetcode      | Buy       | 1             | 1000   |
+| Corona Masks  | Buy       | 2             | 10     |
+| Leetcode      | Sell      | 5             | 9000   |
+| Handbags      | Buy       | 17            | 30000  |
+| Corona Masks  | Sell      | 3             | 1010   |
+| Corona Masks  | Buy       | 4             | 1000   |
+| Corona Masks  | Sell      | 5             | 500    |
+| Corona Masks  | Buy       | 6             | 1000   |
+| Handbags      | Sell      | 29            | 7000   |
+| Corona Masks  | Sell      | 10            | 10000  |
++---------------+-----------+---------------+--------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT 
+    stock_name,
+    (sell - buy) AS capital_gain_loss
+from (
+    SELECT
+        stock_name,
+        SUM(CASE WHEN operation = 'Buy'  THEN price ELSE 0 END) AS buy,
+        SUM(CASE WHEN operation = 'Sell' THEN price ELSE 0 END) AS sell
+    FROM Stocks
+    GROUP BY stock_name
+)t;
+```
+
+> Output Example
+
+```text
++---------------+-------------------+
+| stock_name    | capital_gain_loss |
++---------------+-------------------+
+| Corona Masks  | 9500              |
+| Leetcode      | 8000              |
+| Handbags      | -23000            |
++---------------+-------------------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, GROUP BY, AS, CASE, WHEN, THEN, ELSE, END
+
+> `SQL Functions Used:` SUM
+
+---
+
+
 ### <div align="center">Consecutive Numbers</div>
 
 > Table 
@@ -383,6 +464,80 @@ LIMIT 1;
 > `SQL Keywords Used:` SELECT, FROM, GROUP BY, ORDER BY, LIMIT, UNION, ALL, AS, ALL
 
 > `SQL Functions Used:` COUNT
+
+---
+
+
+### <div align="center">Game Play Analysis IV</div>
+
+> Table 
+
+```text
+Table: Activity
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| player_id    | int     |
+| device_id    | int     |
+| event_date   | date    |
+| games_played | int     |
++--------------+---------+
+```
+
+> Problem 
+
+(player_id, event_date) is the primary key (combination of columns with unique values) of this table.
+This table shows the activity of players of some games.
+Each row is a record of a player who logged in and played a number of games (possibly 0) before logging out on someday using some device.
+Write a solution to report the fraction of players that logged in again on the day after the day they first logged in, rounded to 2 decimal places. In other words, you need to determine the number of players who logged in on the day immediately following their initial login, and divide it by the number of total players.
+
+> Input Example
+
+```text
+Activity table:
++-----------+-----------+------------+--------------+
+| player_id | device_id | event_date | games_played |
++-----------+-----------+------------+--------------+
+| 1         | 2         | 2016-03-01 | 5            |
+| 1         | 2         | 2016-03-02 | 6            |
+| 2         | 3         | 2017-06-25 | 1            |
+| 3         | 1         | 2016-03-02 | 0            |
+| 3         | 4         | 2018-07-03 | 5            |
++-----------+-----------+------------+--------------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT 
+    ROUND(
+        COUNT(DISTINCT a.player_id) * 1.0 
+        / COUNT(DISTINCT f.player_id),
+        2
+    ) AS fraction
+FROM (
+    SELECT player_id, MIN(event_date) AS first_login
+    FROM Activity
+    GROUP BY player_id
+) f
+LEFT JOIN Activity a
+    ON a.player_id = f.player_id
+    AND DATEDIFF(a.event_date, f.first_login) = 1;
+```
+
+> Output Example
+
+```text
++-----------+
+| fraction  |
++-----------+
+| 0.33      |
++-----------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON, GROUP BY, AS, DISTINCT, AND
+
+> `SQL Functions Used:` COUNT, MIN, ROUND, DATEDIFF
 
 ---
 
