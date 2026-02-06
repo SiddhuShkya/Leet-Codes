@@ -95,6 +95,111 @@ from (
 ---
 
 
+### <div align="center">Confirmation Rate</div>
+
+> Table 
+
+```text
+Table: Signups
++----------------+----------+
+| Column Name    | Type     |
++----------------+----------+
+| user_id        | int      |
+| time_stamp     | datetime |
++----------------+----------+
+ 
+Table: Confirmations
++----------------+----------+
+| Column Name    | Type     |
++----------------+----------+
+| user_id        | int      |
+| time_stamp     | datetime |
+| action         | ENUM     |
++----------------+----------+
+```
+
+> Problem 
+
+user_id is the column of unique values for this table.
+Each row contains information about the signup time for the user with ID user_id.
+(user_id, time_stamp) is the primary key (combination of columns with unique values) for this table.
+user_id is a foreign key (reference column) to the Signups table.
+action is an ENUM (category) of the type ('confirmed', 'timeout')
+Each row of this table indicates that the user with ID user_id requested a confirmation message at time_stamp and that confirmation message was either confirmed ('confirmed') or expired without confirming ('timeout').
+The confirmation rate of a user is the number of 'confirmed' messages divided by the total number of requested confirmation messages. The confirmation rate of a user that did not request any confirmation messages is 0. Round the confirmation rate to two decimal places.
+Write a solution to find the confirmation rate of each user.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Signups table:
++---------+---------------------+
+| user_id | time_stamp          |
++---------+---------------------+
+| 3       | 2020-03-21 10:16:13 |
+| 7       | 2020-01-04 13:57:59 |
+| 2       | 2020-07-29 23:09:44 |
+| 6       | 2020-12-09 10:39:37 |
++---------+---------------------+
+Confirmations table:
++---------+---------------------+-----------+
+| user_id | time_stamp          | action    |
++---------+---------------------+-----------+
+| 3       | 2021-01-06 03:30:46 | timeout   |
+| 3       | 2021-07-14 14:00:00 | timeout   |
+| 7       | 2021-06-12 11:57:29 | confirmed |
+| 7       | 2021-06-13 12:58:28 | confirmed |
+| 7       | 2021-06-14 13:59:27 | confirmed |
+| 2       | 2021-01-22 00:00:00 | confirmed |
+| 2       | 2021-02-28 23:59:59 | timeout   |
++---------+---------------------+-----------+
+```
+
+> SQL Query **Solution**
+
+```sql
+SELECT 
+    s.user_id,
+    ROUND(
+        CASE 
+            WHEN c.action_count IS NOT NULL THEN c.confirmed_count * 1.0 / c.action_count
+            ELSE 0
+        END, 2
+    ) AS confirmation_rate
+FROM signups s
+LEFT JOIN (
+    SELECT
+        user_id,
+        SUM(CASE WHEN action = 'timeout' THEN 1 ELSE 0 END) +
+        SUM(CASE WHEN action = 'confirmed' THEN 1 ELSE 0 END) AS action_count,
+        SUM(CASE WHEN action = 'confirmed' THEN 1 ELSE 0 END) AS confirmed_count
+    FROM confirmations
+    GROUP BY user_id
+) c
+ON s.user_id = c.user_id;
+```
+
+> Output Example
+
+```text
++---------+-------------------+
+| user_id | confirmation_rate |
++---------+-------------------+
+| 6       | 0.00              |
+| 3       | 0.00              |
+| 7       | 1.00              |
+| 2       | 0.50              |
++---------+-------------------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON, GROUP BY, AS, IS NOT NULL, CASE, WHEN, THEN, ELSE, END
+
+> `SQL Functions Used:` SUM, ROUND
+
+---
+
+
 ### <div align="center">Consecutive Numbers</div>
 
 > Table 
@@ -154,6 +259,91 @@ WHERE l1.num = l2.num AND l2.num = l3.num;
 ```
 
 > `SQL Keywords Used:` SELECT, FROM, WHERE, JOIN, ON, AS, DISTINCT, AND
+
+---
+
+
+### <div align="center">Count Salary Categories</div>
+
+> Table 
+
+```text
+Table: Accounts
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| account_id  | int  |
+| income      | int  |
++-------------+------+
+```
+
+> Problem 
+
+account_id is the primary key (column with unique values) for this table.
+Each row contains information about the monthly income for one bank account.
+Write a solution to calculate the number of bank accounts for each salary category. The salary categories are:
+"Low Salary": All the salaries strictly less than $20000.
+"Average Salary": All the salaries in the inclusive range [$20000, $50000].
+"High Salary": All the salaries strictly greater than $50000.
+The result table must contain all three categories. If there are no accounts in a category, return 0.
+Return the result table in any order.
+
+> Input Example
+
+```text
+Accounts table:
++------------+--------+
+| account_id | income |
++------------+--------+
+| 3          | 108939 |
+| 2          | 12747  |
+| 8          | 87709  |
+| 6          | 91796  |
++------------+--------+
+```
+
+> SQL Query **Solution**
+
+```sql
+WITH all_categories AS (
+    SELECT 'Low Salary' AS category
+    UNION ALL
+    SELECT 'Average Salary'
+    UNION ALL
+    SELECT 'High Salary'
+)
+SELECT 
+    c.category,
+    COUNT(t.category) AS accounts_count
+FROM all_categories c
+LEFT JOIN (
+    SELECT
+        CASE
+            WHEN income < 20000 THEN 'Low Salary'
+            WHEN income <= 50000 THEN 'Average Salary'
+            ELSE 'High Salary'
+        END AS category
+    FROM accounts
+) t
+ON c.category = t.category
+GROUP BY c.category;
+```
+
+> Output Example
+
+```text
++----------------+----------------+
+| category       | accounts_count |
++----------------+----------------+
+| Low Salary     | 1              |
+| Average Salary | 0              |
+| High Salary    | 3              |
++----------------+----------------+
+```
+
+> `SQL Keywords Used:` SELECT, FROM, JOIN, LEFT JOIN, ON, GROUP BY, UNION, ALL, AS, CASE, WHEN, THEN, ELSE, END, ALL, WITH
+
+> `SQL Functions Used:` COUNT
 
 ---
 
